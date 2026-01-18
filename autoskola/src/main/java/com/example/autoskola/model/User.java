@@ -16,6 +16,7 @@ import java.util.List;
 @Entity(name = "users")
 @Getter
 @Setter
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User implements UserDetails {
 
     @Id
@@ -37,6 +38,9 @@ public class User implements UserDetails {
 
     @Column
     private String lastname;
+
+    @Column
+    private boolean enabled = false;
 
 
     @Column
