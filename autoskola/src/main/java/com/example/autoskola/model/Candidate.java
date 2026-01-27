@@ -18,15 +18,17 @@ public class Candidate extends User{
     @OneToOne(mappedBy = "candidate")
     private TimePreference timePreference;
 
-    @Column
+    @Column(nullable = false)
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "instructor_id", unique = true)
+    @JoinColumn(name = "instructor_id")
     private Instructor instructor;  // nije dodeljen  na pocektu, bice null
 
     @Column
     private TrainingStatus status = TrainingStatus.THEORY;
+
+
 
 
 }

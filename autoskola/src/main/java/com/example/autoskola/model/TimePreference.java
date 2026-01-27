@@ -17,8 +17,11 @@ public class TimePreference {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private LocalDate date;
+    @Column
     private LocalTime startTime;
+    @Column
     private LocalTime endTime;
 
     @OneToOne(fetch = FetchType.EAGER)

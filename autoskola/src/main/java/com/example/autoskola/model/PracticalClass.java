@@ -9,20 +9,30 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class InstructorDocuments {
+public class PracticalClass {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private DocumentType documentType;
+    private LocalDateTime startTime;
+    @Column
+    private LocalDateTime endTime;
 
-    @Column(nullable = false)
-    private LocalDateTime expiryDate;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", nullable = false)
     private Instructor instructor;
+
+    @ManyToOne
+    @JoinColumn(name = "candidate_id", nullable = false)
+    private Candidate candidate;
+
+    @Column(nullable = false)
+    private boolean accepted = false; // da li je cas prihvacen od strane kandidata
+
+
+
 
 }
