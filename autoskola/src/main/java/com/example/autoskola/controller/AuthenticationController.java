@@ -3,9 +3,8 @@ package com.example.autoskola.controller;
 import com.example.autoskola.dto.AuthenticationRequestDTO;
 import com.example.autoskola.dto.AuthenticationResponseDTO;
 import com.example.autoskola.dto.RegistrationDTO;
-import com.example.autoskola.model.Candidate;
-import com.example.autoskola.model.User;
-import com.example.autoskola.model.VerificationToken;
+import com.example.autoskola.model.*;
+import com.example.autoskola.service.AdminService;
 import com.example.autoskola.service.CandidateService;
 import com.example.autoskola.service.RegistrationService;
 import com.example.autoskola.service.UserService;
@@ -19,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import com.example.autoskola.model.Role;
 
 
 import java.time.LocalDateTime;
@@ -42,6 +40,9 @@ public class AuthenticationController {
 
     @Autowired
     private CandidateService candidateService;
+
+    @Autowired
+    private AdminService adminService;
 
     @Autowired
     private RegistrationService registrationService;
@@ -97,12 +98,26 @@ public class AuthenticationController {
         long expiresIn = tokenUtils.getExpiredIn();
         String role = user.getRole().getName();
 
-
-
-
         return ResponseEntity.ok(new AuthenticationResponseDTO(jwt, expiresIn,role));
+    }
 
 
+    @PostMapping("/register/admin")
+    public ResponseEntity<User> registerAdmin(@RequestBody RegistrationDTO registrationDTO) {
+
+        User existUser = userService.getByEmail(registrationDTO.getEmail());
+        if (existUser != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        existUser = userService.getByUsername(registrationDTO.getUsername());
+        if (existUser != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        Admin admin = adminService.save(registrationDTO);
+
+        return new ResponseEntity<>(admin, HttpStatus.CREATED);
     }
 
 
