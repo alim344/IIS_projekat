@@ -33,7 +33,7 @@ public class CandidateService {
         c.setUsername(registrationDTO.getUsername());
         c.setCategory(registrationDTO.getCategory());
         c.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
-        c.setRoles(roleService.findByName("ROLE_CANDIDATE"));;
+        c.setRole(roleService.findByName("ROLE_CANDIDATE"));
         return candidateRepository.save(c);
 
     }

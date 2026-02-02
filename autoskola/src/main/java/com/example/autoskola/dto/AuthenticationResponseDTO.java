@@ -5,32 +5,30 @@ import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class AuthenticationResponseDTO {
 
 
-    @Getter
-    @Setter
     private String token;
 
-    @Getter
-    @Setter
+
     private Long expiresIn;
 
-    /*@Getter
-    @Setter
-    private List<String> roles;*/
+
+    private String role;
 
 
     public AuthenticationResponseDTO() {
         this.token = null;
         this.expiresIn = null;
-      //  this.roles = null;
+        this.role = null;
     }
 
-    public AuthenticationResponseDTO(String token, long expiresIn) {
+    public AuthenticationResponseDTO(String token, long expiresIn, String role) {
         this.token = token;
         this.expiresIn = expiresIn;
-       // this.roles = roles;
+        this.role = role;
     }
 
 

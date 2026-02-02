@@ -55,6 +55,11 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
+        existUser = userService.getByUsername(registrationDTO.getUsername());
+        if (existUser != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
 
         Candidate candidate = candidateService.save(registrationDTO);
         registrationService.verifyMail(candidate);
@@ -89,11 +94,13 @@ public class AuthenticationController {
 
         User user = (User) authentication.getPrincipal();
         String jwt = tokenUtils.generateToken(user.getEmail());
-        int expiresIn = tokenUtils.getExpiredIn();
+        long expiresIn = tokenUtils.getExpiredIn();
+        String role = user.getRole().getName();
 
 
 
-        return ResponseEntity.ok(new AuthenticationResponseDTO(jwt, expiresIn));
+
+        return ResponseEntity.ok(new AuthenticationResponseDTO(jwt, expiresIn,role));
 
 
     }
