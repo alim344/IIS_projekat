@@ -63,7 +63,7 @@ public class AuthenticationController {
 
 
         Candidate candidate = candidateService.save(registrationDTO);
-        registrationService.verifyMail(candidate);
+        //registrationService.verifyMail(candidate);
 
         return new ResponseEntity<>(candidate, HttpStatus.CREATED);
     }

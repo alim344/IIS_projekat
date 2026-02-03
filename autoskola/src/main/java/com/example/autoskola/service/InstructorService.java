@@ -40,6 +40,13 @@ public class InstructorService {
 
     }
 
+    public long getIdByEmail(String email){
+
+        Instructor instructor = instructorRepository.findByEmail(email);
+        return instructor.getId();
+
+    }
+
 
 
 
