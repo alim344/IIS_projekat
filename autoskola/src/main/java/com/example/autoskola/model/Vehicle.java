@@ -1,5 +1,6 @@
 package com.example.autoskola.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,5 +29,6 @@ public class Vehicle {
     private Integer currentMileage;
 
     @OneToOne(mappedBy = "vehicle")
+    @JsonIgnore
     private Instructor instructor;
 }

@@ -2,11 +2,11 @@ package com.example.autoskola.controller;
 
 import com.example.autoskola.dto.AuthenticationRequestDTO;
 import com.example.autoskola.dto.AuthenticationResponseDTO;
+import com.example.autoskola.dto.InstructorRegistrationDTO;
 import com.example.autoskola.dto.RegistrationDTO;
-import com.example.autoskola.model.Candidate;
-import com.example.autoskola.model.User;
-import com.example.autoskola.model.VerificationToken;
+import com.example.autoskola.model.*;
 import com.example.autoskola.service.CandidateService;
+import com.example.autoskola.service.InstructorService;
 import com.example.autoskola.service.RegistrationService;
 import com.example.autoskola.service.UserService;
 import com.example.autoskola.util.TokenUtils;
@@ -19,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import com.example.autoskola.model.Role;
 
 
 import java.time.LocalDateTime;
@@ -45,6 +44,8 @@ public class AuthenticationController {
 
     @Autowired
     private RegistrationService registrationService;
+    @Autowired
+    private InstructorService instructorService;
 
 
     @PostMapping("/register")
@@ -101,7 +102,22 @@ public class AuthenticationController {
 
 
         return ResponseEntity.ok(new AuthenticationResponseDTO(jwt, expiresIn,role));
+    }
 
+    @PostMapping("/instructor_reg")
+    public ResponseEntity<User> instructorSignIn(@RequestBody InstructorRegistrationDTO dto){
+        User existUser = userService.getByEmail(dto.getEmail());
+        if (existUser != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        existUser = userService.getByUsername(dto.getUsername());
+        if (existUser != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        Instructor instructor = instructorService.save(dto);
+        return new ResponseEntity<>(instructor, HttpStatus.CREATED);
 
     }
 
