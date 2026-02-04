@@ -1,6 +1,5 @@
 package com.example.autoskola.dto;
 
-import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.VehicleStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,14 +19,14 @@ public class VehicleDTO {
 
     private Integer currentMileage;
 
-    private Instructor instructor;
+    private Long instructorId;
 
     public VehicleDTO(String registrationNumber, LocalDate registrationExpiryDate,
-                      VehicleStatus status, Integer currentMileage, Instructor instructor) {
+                      VehicleStatus status, Integer currentMileage, Long instructorId) {
         this.registrationNumber = registrationNumber;
         this.registrationExpiryDate = registrationExpiryDate;
         this.status = status;
         this.currentMileage = currentMileage;
-        this.instructor = instructor;
+        this.instructorId = instructorId;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.autoskola.controller;
 
+import com.example.autoskola.dto.InstructorDTO;
 import com.example.autoskola.dto.VehicleDTO;
 import com.example.autoskola.model.Vehicle;
 import com.example.autoskola.service.VehicleService;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/vehicles")
@@ -45,4 +48,28 @@ public class VehicleController {
         Vehicle vehicle = vehicleService.returnVehicleToService(id);
         return ResponseEntity.ok(vehicle);
     }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<VehicleDTO>> getAll() {
+        List<Vehicle> vehicles = vehicleService.findAll();
+
+        List<VehicleDTO> dtos = vehicles.stream()
+                .map(v -> new VehicleDTO(v.getRegistrationNumber(), v.getRegistrationExpiryDate(), v.getStatus(),
+                        v.getCurrentMileage(), v.getInstructor() != null ? v.getInstructor().getId() : null))
+                .toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<VehicleDTO> findById(@PathVariable Long id) {
+        Vehicle vehicle = vehicleService.findById(id)
+                .orElseThrow(()-> new RuntimeException("Vehicle does not exist."));
+        return ResponseEntity.ok(new VehicleDTO(vehicle.getRegistrationNumber(), vehicle.getRegistrationExpiryDate(),
+                vehicle.getStatus(), vehicle.getCurrentMileage(),
+                vehicle.getInstructor() != null ? vehicle.getInstructor().getId() : null));
+    }
+
 }
