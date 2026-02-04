@@ -19,6 +19,7 @@ public class Candidate extends User{
     private TimePreference timePreference;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Category category;
 
     @ManyToOne
@@ -26,6 +27,7 @@ public class Candidate extends User{
     private Instructor instructor;  // nije dodeljen  na pocektu, bice null
 
     @Column
+    @Enumerated(EnumType.STRING)
     private TrainingStatus status = TrainingStatus.THEORY;
 
 

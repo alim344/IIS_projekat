@@ -38,4 +38,9 @@ public class CandidateService {
 
     }
 
+    public long getIdByEmail(String email) {
+        Candidate c = candidateRepository.getByEmail(email);
+        return c.getId();
+    }
+
 }
