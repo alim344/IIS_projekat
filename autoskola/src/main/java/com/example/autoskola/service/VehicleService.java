@@ -9,11 +9,33 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class VehicleService {
 
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    public Optional<Vehicle> findById(Long id) {
+        return vehicleRepository.findById(id);
+    }
+
+    public List<Vehicle> findAll() {
+        List<Vehicle> vehicles = vehicleRepository.findAll();
+
+        LocalDate today = LocalDate.now();
+
+        for (Vehicle v : vehicles) {
+            if (v.getRegistrationExpiryDate().isBefore(today)) {
+                v.setStatus(VehicleStatus.OUT_OF_SERVICE);
+            }
+        }
+
+        return vehicles;
+    }
 
     public Vehicle addVehicle(VehicleDTO v) {
         if(vehicleRepository.existsByRegistrationNumber(v.getRegistrationNumber())) {
