@@ -4,6 +4,8 @@ import com.example.autoskola.dto.VehicleDTO;
 import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.Vehicle;
 import com.example.autoskola.model.VehicleStatus;
+
+
 import com.example.autoskola.repository.VehicleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ public class VehicleService {
 
     @Autowired
     private VehicleRepository vehicleRepository;
+
 
     public Vehicle addVehicle(VehicleDTO v) {
         if(vehicleRepository.existsByRegistrationNumber(v.getRegistrationNumber())) {
@@ -83,5 +86,10 @@ public class VehicleService {
         return vehicleRepository.save(vehicle);
     }
 
+
+
+    public Vehicle getById(long id){
+        return vehicleRepository.getById(id);
+    }
 
 }

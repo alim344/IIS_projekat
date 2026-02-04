@@ -3,16 +3,25 @@ package com.example.autoskola.service;
 import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.Vehicle;
 import com.example.autoskola.model.VehicleStatus;
+
+import com.example.autoskola.dto.InstructorRegistrationDTO;
+
 import com.example.autoskola.repository.InstructorRepository;
 import com.example.autoskola.repository.VehicleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 
 @Service
 public class InstructorService {
@@ -20,8 +29,16 @@ public class InstructorService {
     @Autowired
     private InstructorRepository instructorRepository;
 
+
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
+    private VehicleService vehicleService;
 
     public Optional<Instructor> findById(Long id) {
         return instructorRepository.findById(id);
@@ -55,4 +72,31 @@ public class InstructorService {
 
         return ResponseEntity.ok().build();
     }
+
+    public Instructor save(InstructorRegistrationDTO dto){
+
+        Instructor i = new Instructor();
+
+        i.setName(dto.getFirstName());
+        i.setEmail(dto.getEmail());
+        i.setLastname(dto.getLastName());
+        i.setEnabled(true);
+        i.setLastPasswordResetDate(Timestamp.valueOf(LocalDateTime.now()));
+        i.setUsername(dto.getUsername());
+        i.setPassword(passwordEncoder.encode(dto.getPassword()));
+        i.setRole(roleService.findByName("ROLE_INSTRUCTOR"));
+        i.setVehicle(vehicleService.getById(dto.getVehicleId()));
+        return instructorRepository.save(i);
+
+    }
+
+    public long getIdByEmail(String email){
+
+        Instructor instructor = instructorRepository.findByEmail(email);
+        return instructor.getId();
+
+    }
+
+
+
 }

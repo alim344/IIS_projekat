@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CandidateRepository extends JpaRepository<Candidate, Long> {
 
         Candidate save(Candidate candidate);
+        Candidate getByEmail(String email);
 }

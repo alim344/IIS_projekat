@@ -1,6 +1,7 @@
 package com.example.autoskola.model;
 
 import jakarta.persistence.Entity;
+
 import lombok.Getter;
 import lombok.Setter;
 

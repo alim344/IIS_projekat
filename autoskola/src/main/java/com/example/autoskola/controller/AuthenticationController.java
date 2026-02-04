@@ -1,5 +1,6 @@
 package com.example.autoskola.controller;
 
+
 import com.example.autoskola.dto.AuthenticationRequestDTO;
 import com.example.autoskola.dto.AuthenticationResponseDTO;
 import com.example.autoskola.dto.RegistrationDTO;
@@ -8,6 +9,10 @@ import com.example.autoskola.service.AdminService;
 import com.example.autoskola.service.CandidateService;
 import com.example.autoskola.service.RegistrationService;
 import com.example.autoskola.service.UserService;
+
+import com.example.autoskola.dto.*;
+import com.example.autoskola.model.*;
+import com.example.autoskola.service.*;
 import com.example.autoskola.util.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,6 +51,10 @@ public class AuthenticationController {
 
     @Autowired
     private RegistrationService registrationService;
+    @Autowired
+    private InstructorService instructorService;
+    @Autowired
+    private ProfessorService professorService;
 
 
     @PostMapping("/register")
@@ -63,7 +72,7 @@ public class AuthenticationController {
 
 
         Candidate candidate = candidateService.save(registrationDTO);
-        registrationService.verifyMail(candidate);
+        //registrationService.verifyMail(candidate);
 
         return new ResponseEntity<>(candidate, HttpStatus.CREATED);
     }
@@ -101,6 +110,37 @@ public class AuthenticationController {
         return ResponseEntity.ok(new AuthenticationResponseDTO(jwt, expiresIn,role));
     }
 
+    @PostMapping("/instructor_reg")
+    public ResponseEntity<User> instructorSignIn(@RequestBody InstructorRegistrationDTO dto){
+        User existUser = userService.getByEmail(dto.getEmail());
+        if (existUser != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        existUser = userService.getByUsername(dto.getUsername());
+        if (existUser != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        Instructor instructor = instructorService.save(dto);
+        return new ResponseEntity<>(instructor, HttpStatus.CREATED);
+
+    }
+
+    @PostMapping("/prof_reg")
+    public ResponseEntity<User> professorSignIn(@RequestBody ProfessorRegistrationDTO dto) {
+        User existUser = userService.getByEmail(dto.getEmail());
+        if (existUser != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        existUser = userService.getByUsername(dto.getUsername());
+        if (existUser != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        Professor prof = professorService.saveFromDTO(dto);
+        return new ResponseEntity<>(prof, HttpStatus.CREATED);
+    }
 
     @PostMapping("/register/admin")
     public ResponseEntity<User> registerAdmin(@RequestBody RegistrationDTO registrationDTO) {
