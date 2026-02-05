@@ -1,5 +1,6 @@
 package com.example.autoskola.service;
 
+import com.example.autoskola.dto.ProfessorDTO;
 import com.example.autoskola.dto.ProfessorRegistrationDTO;
 import com.example.autoskola.model.Professor;
 import com.example.autoskola.repository.ProfessorRepository;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProfessorService {
@@ -19,6 +22,7 @@ public class ProfessorService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
     private RoleService roleService;
 
@@ -37,5 +41,12 @@ public class ProfessorService {
         return professorRepository.save(p);
     }
 
+    public Optional<Professor> findById(Long id) {
+        return professorRepository.findById(id);
+    }
+
+    public List<Professor> findAll() {
+        return professorRepository.findAll();
+    }
 
 }

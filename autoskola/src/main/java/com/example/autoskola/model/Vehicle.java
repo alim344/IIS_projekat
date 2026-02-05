@@ -28,7 +28,7 @@ public class Vehicle {
     @Column(nullable = false)
     private Integer currentMileage;
 
-    @OneToOne
-    @JoinColumn(name = "instructor_id", unique = true)
+    @OneToOne(mappedBy = "vehicle")
     private Instructor instructor;
+
 }

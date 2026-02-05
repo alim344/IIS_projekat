@@ -61,13 +61,11 @@ public class InstructorService {
         if(instructor.getVehicle() != null) {
             Vehicle currentVehicle = instructor.getVehicle();
             currentVehicle.setStatus(VehicleStatus.AVAILABLE);
-            currentVehicle.setInstructor(null);
 
             instructor.setVehicle(null);
         }
 
         vehicle.setStatus(VehicleStatus.IN_USE);
-        vehicle.setInstructor(instructor);
         instructor.setVehicle(vehicle);
 
         return ResponseEntity.ok().build();
@@ -96,7 +94,5 @@ public class InstructorService {
         return instructor.getId();
 
     }
-
-
 
 }

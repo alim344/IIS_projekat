@@ -19,14 +19,11 @@ public class VehicleDTO {
 
     private Integer currentMileage;
 
-    private Long instructorId;
-
     public VehicleDTO(String registrationNumber, LocalDate registrationExpiryDate,
-                      VehicleStatus status, Integer currentMileage, Long instructorId) {
+                      VehicleStatus status, Integer currentMileage) {
         this.registrationNumber = registrationNumber;
         this.registrationExpiryDate = registrationExpiryDate;
         this.status = status;
         this.currentMileage = currentMileage;
-        this.instructorId = instructorId;
     }
 }

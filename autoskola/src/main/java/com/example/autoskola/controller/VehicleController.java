@@ -56,7 +56,7 @@ public class VehicleController {
 
         List<VehicleDTO> dtos = vehicles.stream()
                 .map(v -> new VehicleDTO(v.getRegistrationNumber(), v.getRegistrationExpiryDate(), v.getStatus(),
-                        v.getCurrentMileage(), v.getInstructor() != null ? v.getInstructor().getId() : null))
+                        v.getCurrentMileage()))
                 .toList();
 
         return ResponseEntity.ok(dtos);
@@ -68,8 +68,7 @@ public class VehicleController {
         Vehicle vehicle = vehicleService.findById(id)
                 .orElseThrow(()-> new RuntimeException("Vehicle does not exist."));
         return ResponseEntity.ok(new VehicleDTO(vehicle.getRegistrationNumber(), vehicle.getRegistrationExpiryDate(),
-                vehicle.getStatus(), vehicle.getCurrentMileage(),
-                vehicle.getInstructor() != null ? vehicle.getInstructor().getId() : null));
+                vehicle.getStatus(), vehicle.getCurrentMileage()));
     }
 
 }

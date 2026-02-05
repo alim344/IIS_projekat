@@ -21,7 +21,6 @@ public class VehicleService {
     @Autowired
     private VehicleRepository vehicleRepository;
 
-
     public Optional<Vehicle> findById(Long id) {
         return vehicleRepository.findById(id);
     }
@@ -82,20 +81,21 @@ public class VehicleService {
 
     @Transactional
     public Vehicle reportVehicleOutOfService(Long vehicleId) {
+
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
+
         if (vehicle.getStatus() == VehicleStatus.IN_USE) {
             if (vehicle.getInstructor() != null) {
-                Instructor instructor = vehicle.getInstructor();
-                instructor.setVehicle(null);
+                vehicle.getInstructor().setVehicle(null);
                 vehicle.setInstructor(null);
             }
         }
 
         vehicle.setStatus(VehicleStatus.OUT_OF_SERVICE);
 
-        return vehicleRepository.save(vehicle);
+        return vehicle;
     }
 
     @Transactional
@@ -107,7 +107,6 @@ public class VehicleService {
 
         return vehicleRepository.save(vehicle);
     }
-
 
 
     public Vehicle getById(long id){
