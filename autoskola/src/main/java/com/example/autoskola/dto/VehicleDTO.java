@@ -1,5 +1,6 @@
 package com.example.autoskola.dto;
 
+import com.example.autoskola.model.Vehicle;
 import com.example.autoskola.model.VehicleStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,11 +20,11 @@ public class VehicleDTO {
 
     private Integer currentMileage;
 
-    public VehicleDTO(String registrationNumber, LocalDate registrationExpiryDate,
-                      VehicleStatus status, Integer currentMileage) {
-        this.registrationNumber = registrationNumber;
-        this.registrationExpiryDate = registrationExpiryDate;
-        this.status = status;
-        this.currentMileage = currentMileage;
+
+    public VehicleDTO(Vehicle vehicle) {
+        this.registrationNumber = vehicle.getRegistrationNumber();
+        this.registrationExpiryDate = vehicle.getRegistrationExpiryDate();
+        this.status = vehicle.getStatus();
+        this.currentMileage = vehicle.getCurrentMileage();
     }
 }

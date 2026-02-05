@@ -1,6 +1,10 @@
 package com.example.autoskola.service;
 
+import com.example.autoskola.dto.InstructorDTO;
+import com.example.autoskola.dto.InstructorDocumentsDTO;
+import com.example.autoskola.dto.InstructorUpdateDTO;
 import com.example.autoskola.model.Instructor;
+import com.example.autoskola.model.InstructorDocuments;
 import com.example.autoskola.model.Vehicle;
 import com.example.autoskola.model.VehicleStatus;
 
@@ -29,14 +33,15 @@ public class InstructorService {
     @Autowired
     private InstructorRepository instructorRepository;
 
-
     @Autowired
     private VehicleRepository vehicleRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
     private RoleService roleService;
+
     @Autowired
     private VehicleService vehicleService;
 
@@ -55,7 +60,7 @@ public class InstructorService {
                 .orElseThrow(() -> new RuntimeException("Vehicle not found."));
 
         if(vehicle.getStatus() != VehicleStatus.AVAILABLE) {
-            throw new IllegalStateException("Vehicle is not available");
+            throw new IllegalStateException("Vehicle is not available.");
         }
 
         if(instructor.getVehicle() != null) {
@@ -93,6 +98,47 @@ public class InstructorService {
         Instructor instructor = instructorRepository.findByEmail(email);
         return instructor.getId();
 
+    }
+
+    @Transactional
+    public Instructor update(Long instructorId, InstructorUpdateDTO dto) {
+        Instructor instructor = instructorRepository.findById(instructorId)
+                .orElseThrow(() -> new RuntimeException("Instructor not found."));
+
+        if (dto.getName() != null) instructor.setName(dto.getName());
+        if (dto.getLastname() != null) instructor.setLastname(dto.getLastname());
+
+        if (dto.getVehicleId() != null) {
+            Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
+                    .orElseThrow(() -> new RuntimeException("Vehicle not found."));
+
+            if (instructor.getVehicle() != null) {
+                instructor.getVehicle().setInstructor(null);
+                Vehicle currentVehicle = instructor.getVehicle();
+                currentVehicle.setStatus(VehicleStatus.AVAILABLE);
+                currentVehicle.setInstructor(null);
+            }
+
+            if (vehicle.getInstructor() != null &&
+                    !vehicle.getInstructor().getId().equals(instructorId)) {
+                throw new RuntimeException("Vehicle already assigned to another instructor.");
+            }
+
+            instructor.setVehicle(vehicle);
+            vehicle.setStatus(VehicleStatus.IN_USE);
+            vehicle.setInstructor(instructor);
+        }
+
+        if (dto.getDocuments() != null && !dto.getDocuments().isEmpty()) {
+            for (InstructorDocumentsDTO docDto : dto.getDocuments()) {
+                instructor.getDocuments().stream()
+                        .filter(d -> d.getDocumentType().equals(docDto.getDocumentType()))
+                        .findFirst()
+                        .ifPresent(d -> d.setExpiryDate(docDto.getExpiryDate()));
+            }
+        }
+
+        return instructorRepository.save(instructor);
     }
 
 }

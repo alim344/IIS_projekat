@@ -1,6 +1,7 @@
 package com.example.autoskola.controller;
 
 import com.example.autoskola.dto.InstructorDTO;
+import com.example.autoskola.dto.InstructorUpdateDTO;
 import com.example.autoskola.dto.VehicleDTO;
 import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.User;
@@ -26,10 +27,9 @@ public class InstructorController {
         User user = (User) authentication.getPrincipal();
 
         Instructor instructor = instructorService.findById(user.getId())
-                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+                .orElseThrow(() -> new RuntimeException("Instructor not found."));
 
-        return ResponseEntity.ok(new InstructorDTO(instructor.getUsername(), instructor.getEmail(),
-                instructor.getName(), instructor.getLastname()));
+        return ResponseEntity.ok(new InstructorDTO(instructor));
     }
 
     @GetMapping("/all")
@@ -38,8 +38,7 @@ public class InstructorController {
         List<Instructor> instructors = instructorService.findAll();
 
         List<InstructorDTO> dtos = instructors.stream()
-                .map(i -> new InstructorDTO(i.getUsername(), i.getEmail(), i.getName(),
-                        i.getLastname()))
+                .map(i -> new InstructorDTO(i))
                 .toList();
 
         return ResponseEntity.ok(dtos);
@@ -49,10 +48,9 @@ public class InstructorController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<InstructorDTO> getInstructorById(@PathVariable Long id) {
         Instructor instructor = instructorService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+                .orElseThrow(() -> new RuntimeException("Instructor not found."));
 
-        return ResponseEntity.ok(new InstructorDTO(instructor.getUsername(), instructor.getEmail(),
-                instructor.getName(), instructor.getLastname()));
+        return ResponseEntity.ok(new InstructorDTO(instructor));
     }
 
     @PutMapping("/{instructorId}/vehicle/{vehicleId}")
@@ -62,7 +60,17 @@ public class InstructorController {
             @PathVariable Long vehicleId) {
 
         instructorService.assignVehicleToInstructor(instructorId, vehicleId);
-        return ResponseEntity.ok("Vehicle assigned successfully");
+        return ResponseEntity.ok("Vehicle assigned successfully.");
     }
+
+   @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<InstructorDTO> updateInstructor(@PathVariable Long id, @RequestBody InstructorUpdateDTO instructorDto) {
+       Instructor updatedInstructor = instructorService.update(id, instructorDto);
+
+       InstructorDTO response = new InstructorDTO(updatedInstructor);
+
+       return ResponseEntity.ok(response);
+   }
 
 }

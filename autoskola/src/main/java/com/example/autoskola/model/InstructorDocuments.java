@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -15,11 +15,12 @@ public class InstructorDocuments {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DocumentType documentType;
 
     @Column(nullable = false)
-    private LocalDateTime expiryDate;
+    private LocalDate expiryDate;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", nullable = false)

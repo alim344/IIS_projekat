@@ -41,7 +41,7 @@ public class VehicleService {
 
     public Vehicle addVehicle(VehicleDTO v) {
         if(vehicleRepository.existsByRegistrationNumber(v.getRegistrationNumber())) {
-            throw new RuntimeException("Vehicle with this registration already exists");
+            throw new RuntimeException("Vehicle with this registration already exists.");
         }
 
         Vehicle vehicle = new Vehicle();
@@ -55,7 +55,7 @@ public class VehicleService {
 
     @Transactional
     public Vehicle updateVehicle(Long id, VehicleDTO v) {
-        Vehicle vehicle = vehicleRepository.findById(id).orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        Vehicle vehicle = vehicleRepository.findById(id).orElseThrow(() -> new RuntimeException("Vehicle not found."));
 
         if (v.getStatus() != null) {
             vehicle.setStatus(v.getStatus());
@@ -63,7 +63,7 @@ public class VehicleService {
 
         if (v.getCurrentMileage() != null) {
             if (v.getCurrentMileage() < vehicle.getCurrentMileage()) {
-                throw new IllegalArgumentException("Mileage cannot be lower than current mileage");
+                throw new IllegalArgumentException("Mileage cannot be lower than current mileage.");
             }
             vehicle.setCurrentMileage(v.getCurrentMileage());
         }
@@ -83,7 +83,7 @@ public class VehicleService {
     public Vehicle reportVehicleOutOfService(Long vehicleId) {
 
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                .orElseThrow(() -> new RuntimeException("Vehicle not found."));
 
 
         if (vehicle.getStatus() == VehicleStatus.IN_USE) {
@@ -101,13 +101,12 @@ public class VehicleService {
     @Transactional
     public Vehicle returnVehicleToService(Long vehicleId) {
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                .orElseThrow(() -> new RuntimeException("Vehicle not found."));
 
         vehicle.setStatus(VehicleStatus.AVAILABLE);
 
         return vehicleRepository.save(vehicle);
     }
-
 
     public Vehicle getById(long id){
         return vehicleRepository.getById(id);

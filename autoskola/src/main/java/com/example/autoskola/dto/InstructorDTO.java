@@ -4,6 +4,8 @@ import com.example.autoskola.model.Instructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class InstructorDTO {
@@ -16,13 +18,24 @@ public class InstructorDTO {
 
     private String lastName;
 
-    private Long vehicle_id;
+    private VehicleDTO vehicle;
 
-    public InstructorDTO(String username, String email, String name, String lastName) {
-            this.username = username;
-            this.email = email;
-            this.name = name;
-            this.lastName = lastName;
+    private List<InstructorDocumentsDTO> documents;
+
+    public InstructorDTO(Instructor instructor) {
+        this.username = instructor.getUsername();
+        this.email = instructor.getEmail();
+        this.name = instructor.getName();
+        this.lastName = instructor.getLastname();
+
+        if (instructor.getVehicle() != null) {
+            this.vehicle = new VehicleDTO(instructor.getVehicle());
         }
+
+        this.documents = instructor.getDocuments()
+                .stream()
+                .map(doc -> new InstructorDocumentsDTO(doc))
+                .toList();
+    }
 
 }
