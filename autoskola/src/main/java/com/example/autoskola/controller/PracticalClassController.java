@@ -1,5 +1,6 @@
 package com.example.autoskola.controller;
 
+import com.example.autoskola.dto.PracticalDTO;
 import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.service.CandidateService;
 import com.example.autoskola.service.InstructorService;
@@ -66,6 +67,14 @@ public class PracticalClassController {
         String email = tokenUtils.getEmailFromToken(token);
         long candidateId = candidateService.getIdByEmail(email);
         return ResponseEntity.ok(practicalClassService.getCandidateThisWeekPracticalClasses(candidateId));
+    }
+
+    @GetMapping("/fullschedule")
+    public ResponseEntity<List<PracticalDTO>> getInstructorClasses(HttpServletRequest request){
+        String token= tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        long instructorId = instructorService.getIdByEmail(email);
+        return ResponseEntity.ok(practicalClassService.getInstructorSchedule(instructorId));
     }
 
 

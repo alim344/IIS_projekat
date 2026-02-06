@@ -14,4 +14,6 @@ public interface PracticalClassRepository extends JpaRepository<PracticalClass, 
     List<PracticalClass> findByCandidateIdAndStartTimeBetween(Long candidateId,
                                                               LocalDateTime startOfNextWeek,
                                                               LocalDateTime startOfWeekAfterNext);
+    List<PracticalClass> findByInstructorId(Long instructorId);
+
 }

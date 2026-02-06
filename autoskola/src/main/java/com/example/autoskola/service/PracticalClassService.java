@@ -1,5 +1,7 @@
 package com.example.autoskola.service;
 
+import com.example.autoskola.dto.PracticalDTO;
+import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.repository.PracticalClassRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -76,4 +79,28 @@ public class PracticalClassService {
                 endOfThisWeek
         );
     }
+
+    public List<PracticalDTO> getInstructorSchedule(long instructor_id){
+        List<PracticalClass> classes =  practicalClassRepository.findByInstructorId(instructor_id);
+
+        List<PracticalDTO> practicalDTOs = new ArrayList<>();
+
+
+        for(PracticalClass pclass: classes){
+            PracticalDTO dto = new PracticalDTO();
+            dto.setStartTime(pclass.getStartTime());
+            dto.setEndTime(pclass.getEndTime());
+
+            Candidate c = pclass.getCandidate();
+            dto.setName(c.getName());
+            dto.setLastname(c.getLastname());
+            dto.setCategory(c.getCategory().toString());
+            dto.setEmail(c.getEmail());
+            practicalDTOs.add(dto);
+        }
+        return practicalDTOs;
+    }
+
+
+
 }
