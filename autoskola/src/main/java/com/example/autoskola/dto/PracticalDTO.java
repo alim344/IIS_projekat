@@ -16,15 +16,17 @@ public class PracticalDTO {
     private String lastname;
     private String email;
     private String category;
+    private boolean accepted;
 
     public PracticalDTO() {}
-    public PracticalDTO(String name, String lastname, String category,LocalDateTime startTime, LocalDateTime endTime,String email) {
+    public PracticalDTO(String name, String lastname, String category,LocalDateTime startTime, LocalDateTime endTime,String email,boolean accepted) {
         this.name = name;
         this.lastname = lastname;
         this.category = category;
         this.startTime = startTime;
         this.endTime = endTime;
         this.email = email;
+        this.accepted = accepted;
     }
 
 

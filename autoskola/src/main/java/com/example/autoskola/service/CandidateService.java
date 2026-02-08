@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CandidateService {
@@ -42,5 +44,17 @@ public class CandidateService {
         Candidate c = candidateRepository.getByEmail(email);
         return c.getId();
     }
+
+
+    public List<Long> getIdsByInstructorId(long instructorId) {
+        List<Candidate> candidates = candidateRepository.getByInstructorId(instructorId);
+        List<Long> ids = new ArrayList<>();
+        for (Candidate c : candidates) {
+            ids.add(c.getId());
+        }
+        return ids;
+    }
+
+
 
 }

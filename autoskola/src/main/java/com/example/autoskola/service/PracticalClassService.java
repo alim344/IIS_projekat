@@ -90,12 +90,14 @@ public class PracticalClassService {
             PracticalDTO dto = new PracticalDTO();
             dto.setStartTime(pclass.getStartTime());
             dto.setEndTime(pclass.getEndTime());
+            dto.setAccepted(pclass.isAccepted());
 
             Candidate c = pclass.getCandidate();
             dto.setName(c.getName());
             dto.setLastname(c.getLastname());
             dto.setCategory(c.getCategory().toString());
             dto.setEmail(c.getEmail());
+
             practicalDTOs.add(dto);
         }
         return practicalDTOs;
