@@ -88,6 +88,7 @@ public class PracticalClassService {
 
         for(PracticalClass pclass: classes){
             PracticalDTO dto = new PracticalDTO();
+            dto.setId(pclass.getId());
             dto.setStartTime(pclass.getStartTime());
             dto.setEndTime(pclass.getEndTime());
             dto.setAccepted(pclass.isAccepted());

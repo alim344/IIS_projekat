@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 public class PracticalDTO {
 
+    private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String name;
@@ -19,7 +20,8 @@ public class PracticalDTO {
     private boolean accepted;
 
     public PracticalDTO() {}
-    public PracticalDTO(String name, String lastname, String category,LocalDateTime startTime, LocalDateTime endTime,String email,boolean accepted) {
+    public PracticalDTO(Long id, String name, String lastname, String category,LocalDateTime startTime, LocalDateTime endTime,String email,boolean accepted) {
+        this.id = id;
         this.name = name;
         this.lastname = lastname;
         this.category = category;
