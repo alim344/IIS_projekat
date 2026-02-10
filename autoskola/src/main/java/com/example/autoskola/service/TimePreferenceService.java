@@ -41,6 +41,7 @@ public class TimePreferenceService {
             dto.setCandidate_name(c.getName());
             dto.setCanddiate_lastname(c.getLastname());
             dto.setEmail(c.getEmail());
+            dto.setCategory(c.getCategory().toString());
             dtos.add(dto);
         }
         return dtos;
