@@ -64,13 +64,20 @@ public class InstructorController {
     }
 
    @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<InstructorDTO> updateInstructor(@PathVariable Long id, @RequestBody InstructorUpdateDTO instructorDto) {
+   @PreAuthorize("hasRole('ROLE_ADMIN')")
+   public ResponseEntity<InstructorDTO> updateInstructor(@PathVariable Long id, @RequestBody InstructorUpdateDTO instructorDto) {
        Instructor updatedInstructor = instructorService.update(id, instructorDto);
 
        InstructorDTO response = new InstructorDTO(updatedInstructor);
 
        return ResponseEntity.ok(response);
+   }
+
+   @PutMapping("/{id}/remove-vehicle")
+   @PreAuthorize("hasRole('ROLE_ADMIN')")
+   public ResponseEntity<?> removeVehicle(@PathVariable Long id) {
+        instructorService.removeVehicle(id);
+       return ResponseEntity.ok("Vehicle removed successfully.");
    }
 
 }

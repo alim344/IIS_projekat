@@ -3,6 +3,7 @@ package com.example.autoskola.controller;
 import com.example.autoskola.dto.InstructorDTO;
 import com.example.autoskola.dto.VehicleDTO;
 import com.example.autoskola.model.Vehicle;
+import com.example.autoskola.model.VehicleStatus;
 import com.example.autoskola.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,18 @@ public class VehicleController {
         Vehicle vehicle = vehicleService.findById(id)
                 .orElseThrow(()-> new RuntimeException("Vehicle does not exist."));
         return ResponseEntity.ok(new VehicleDTO(vehicle));
+    }
+
+    @GetMapping("/available")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<VehicleDTO>> getAvailableVehicles() {
+        List<Vehicle> vehicles = vehicleService.findAllByStatus(VehicleStatus.AVAILABLE);
+
+        List<VehicleDTO> dtos = vehicles.stream()
+                .map(v -> new VehicleDTO(v))
+                .toList();
+
+        return ResponseEntity.ok(dtos);
     }
 
 }

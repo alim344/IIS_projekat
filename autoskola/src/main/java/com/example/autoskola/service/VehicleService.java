@@ -112,4 +112,8 @@ public class VehicleService {
         return vehicleRepository.getById(id);
     }
 
+    public List<Vehicle> findAllByStatus(VehicleStatus status) {
+        return vehicleRepository.findAllByStatus(status);
+    }
+
 }

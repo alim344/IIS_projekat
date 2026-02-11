@@ -141,4 +141,18 @@ public class InstructorService {
         return instructorRepository.save(instructor);
     }
 
+    @Transactional
+    public void removeVehicle(Long id) {
+        Instructor instructor = instructorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Instructor not found."));
+
+        Vehicle vehicle = vehicleRepository.findById(instructor.getVehicle().getId())
+                .orElseThrow(()->new RuntimeException("Vehicle not found"));
+
+        vehicle.setInstructor(null);
+        vehicle.setStatus(VehicleStatus.AVAILABLE);
+        instructor.setVehicle(null);
+
+    }
+
 }

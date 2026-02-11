@@ -10,6 +10,8 @@ import java.util.List;
 @Setter
 public class InstructorDTO {
 
+    private Long id;
+
     private String username;
 
     private String email;
@@ -23,6 +25,7 @@ public class InstructorDTO {
     private List<InstructorDocumentsDTO> documents;
 
     public InstructorDTO(Instructor instructor) {
+        this.id = instructor.getId();
         this.username = instructor.getUsername();
         this.email = instructor.getEmail();
         this.name = instructor.getName();
