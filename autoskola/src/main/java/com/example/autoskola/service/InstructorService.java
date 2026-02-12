@@ -76,7 +76,7 @@ public class InstructorService {
         return ResponseEntity.ok().build();
     }
 
-    public Instructor save(InstructorRegistrationDTO dto){
+    public Instructor saveFromDTO(InstructorRegistrationDTO dto){
 
         Instructor i = new Instructor();
 
@@ -93,11 +93,19 @@ public class InstructorService {
 
     }
 
+    public Instructor save(Instructor i){
+        return instructorRepository.save(i);
+    }
+
     public long getIdByEmail(String email){
 
         Instructor instructor = instructorRepository.findByEmail(email);
         return instructor.getId();
 
+    }
+
+    public Instructor findByEmail(String email){
+        return instructorRepository.findByEmail(email);
     }
 
     @Transactional

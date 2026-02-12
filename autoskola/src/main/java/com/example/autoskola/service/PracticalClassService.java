@@ -1,9 +1,12 @@
 package com.example.autoskola.service;
 
+import com.example.autoskola.dto.DraftPracticalClassDTO;
 import com.example.autoskola.dto.PracticalDTO;
 import com.example.autoskola.model.Candidate;
+import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.repository.PracticalClassRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +21,8 @@ public class PracticalClassService {
 
     @Autowired
     private PracticalClassRepository practicalClassRepository;
-
+    @Autowired
+    private CandidateService candidateService;
 
 
     public List<PracticalClass> getInstructorNextWeekClasses(long instructorId){
@@ -102,6 +106,59 @@ public class PracticalClassService {
             practicalDTOs.add(dto);
         }
         return practicalDTOs;
+    }
+
+    public boolean existsById(long id){
+       return practicalClassRepository.existsById(id);
+    }
+
+    public void deleteById(long id){
+        if (!existsById(id)) {
+            throw new EntityNotFoundException("Class not found");
+        }
+        practicalClassRepository.deleteById(id);
+    }
+
+    public PracticalClass save(PracticalClass practicalClass){
+      return  practicalClassRepository.save(practicalClass);
+    }
+
+    public PracticalClass findById(long id){
+        return practicalClassRepository.findById(id);
+    }
+
+    public PracticalClass updateDateTime(PracticalDTO dto){
+
+        PracticalClass pclass = findById(dto.getId());
+
+        if(pclass== null){
+            return null;
+        }
+
+        pclass.setStartTime(dto.getStartTime());
+        pclass.setEndTime(dto.getEndTime());
+
+        return practicalClassRepository.save(pclass);
+
+    }
+
+    public List<PracticalClass> saveManualSchedule(List<DraftPracticalClassDTO> dtos, Instructor instructor){
+
+        List<PracticalClass> newPClasses = new ArrayList<>();
+
+        for(DraftPracticalClassDTO dto: dtos){
+            PracticalClass pc = new PracticalClass();
+
+            pc.setStartTime(dto.getStartTime());
+            pc.setEndTime(dto.getEndTime());
+            Candidate c = candidateService.findByEmail(dto.getEmail());
+            pc.setCandidate(c);
+            pc.setAccepted(false);
+            pc.setInstructor(instructor);
+            newPClasses.add(pc);
+
+        }
+       return practicalClassRepository.saveAll(newPClasses);
     }
 
 

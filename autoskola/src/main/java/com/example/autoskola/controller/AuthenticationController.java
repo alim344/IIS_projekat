@@ -71,7 +71,7 @@ public class AuthenticationController {
         }
 
 
-        Candidate candidate = candidateService.save(registrationDTO);
+        Candidate candidate = candidateService.saveFromDTO(registrationDTO);
         //registrationService.verifyMail(candidate);
 
         return new ResponseEntity<>(candidate, HttpStatus.CREATED);
@@ -122,7 +122,7 @@ public class AuthenticationController {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        Instructor instructor = instructorService.save(dto);
+        Instructor instructor = instructorService.saveFromDTO(dto);
         return new ResponseEntity<>(instructor, HttpStatus.CREATED);
 
     }

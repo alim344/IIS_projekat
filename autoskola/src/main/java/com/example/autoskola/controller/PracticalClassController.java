@@ -1,14 +1,20 @@
 package com.example.autoskola.controller;
 
+import com.example.autoskola.dto.DraftPracticalClassDTO;
 import com.example.autoskola.dto.PracticalDTO;
+import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.service.CandidateService;
 import com.example.autoskola.service.InstructorService;
 import com.example.autoskola.service.PracticalClassService;
 import com.example.autoskola.util.TokenUtils;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,5 +83,34 @@ public class PracticalClassController {
         return ResponseEntity.ok(practicalClassService.getInstructorSchedule(instructorId));
     }
 
+    @DeleteMapping("/deleteById/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable long id){
+        practicalClassService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/updateDateTime")
+    public ResponseEntity<PracticalClass> updateClass(@RequestBody PracticalDTO dto){
+
+        PracticalClass pclass = practicalClassService.updateDateTime(dto);
+
+        if(pclass == null){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return ResponseEntity.ok(pclass);
+
+    }
+
+    @PostMapping("/manual_schedule/save")
+    public ResponseEntity<String> saveManualSchedule(@RequestBody List<DraftPracticalClassDTO> dtos, HttpServletRequest request){
+
+        String token= tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Instructor i = instructorService.findByEmail(email);
+
+        practicalClassService.saveManualSchedule(dtos, i);
+        return ResponseEntity.ok("saved");
+    }
 
 }

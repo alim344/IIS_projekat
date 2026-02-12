@@ -16,4 +16,12 @@ public interface PracticalClassRepository extends JpaRepository<PracticalClass, 
                                                               LocalDateTime startOfWeekAfterNext);
     List<PracticalClass> findByInstructorId(Long instructorId);
 
+    void deleteById(Long id);
+
+    boolean existsById(long id);
+
+    PracticalClass save(PracticalClass p);
+
+    PracticalClass findById(long id);
+
 }
