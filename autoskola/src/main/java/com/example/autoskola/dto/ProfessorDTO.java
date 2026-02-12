@@ -1,5 +1,6 @@
 package com.example.autoskola.dto;
 
+import com.example.autoskola.model.Professor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ProfessorDTO {
+    private Long id;
+
     private String username;
 
     private String email;
@@ -16,10 +19,12 @@ public class ProfessorDTO {
 
     private String lastName;
 
-    public ProfessorDTO(String username, String email, String name, String lastName) {
-        this.username = username;
-        this.email = email;
-        this.name = name;
-        this.lastName = lastName;
+    public ProfessorDTO(Professor professor) {
+        this.id = professor.getId();
+        this.username = professor.getUsername();
+        this.email = professor.getEmail();
+        this.name = professor.getName();
+        this.lastName = professor.getLastname();
     }
+    
 }

@@ -4,6 +4,7 @@ import com.example.autoskola.dto.ProfessorDTO;
 import com.example.autoskola.dto.ProfessorRegistrationDTO;
 import com.example.autoskola.model.Professor;
 import com.example.autoskola.repository.ProfessorRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,18 @@ public class ProfessorService {
 
     public List<Professor> findAll() {
         return professorRepository.findAll();
+    }
+
+    @Transactional
+    public Professor update(Long professorId, ProfessorDTO dto) {
+        Professor professor = professorRepository.findById(professorId)
+                .orElseThrow(() -> new RuntimeException("Professor not found."));
+
+        if (dto.getName() != null) professor.setName(dto.getName());
+        if (dto.getLastName() != null) professor.setLastname(dto.getLastName());
+
+
+        return professorRepository.save(professor);
     }
 
 }
