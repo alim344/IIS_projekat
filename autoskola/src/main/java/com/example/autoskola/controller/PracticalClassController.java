@@ -103,14 +103,14 @@ public class PracticalClassController {
     }
 
     @PostMapping("/manual_schedule/save")
-    public ResponseEntity<List<PracticalClass>> saveManualSchedule(@RequestBody List<DraftPracticalClassDTO> dtos, HttpServletRequest request){
+    public ResponseEntity<String> saveManualSchedule(@RequestBody List<DraftPracticalClassDTO> dtos, HttpServletRequest request){
 
         String token= tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         Instructor i = instructorService.findByEmail(email);
 
-
-        return ResponseEntity.ok(practicalClassService.saveManualSchedule(dtos, i));
+        practicalClassService.saveManualSchedule(dtos, i);
+        return ResponseEntity.ok("saved");
     }
 
 }
