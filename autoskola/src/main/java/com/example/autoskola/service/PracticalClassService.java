@@ -1,7 +1,9 @@
 package com.example.autoskola.service;
 
+import com.example.autoskola.dto.DraftPracticalClassDTO;
 import com.example.autoskola.dto.PracticalDTO;
 import com.example.autoskola.model.Candidate;
+import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.repository.PracticalClassRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,7 +21,8 @@ public class PracticalClassService {
 
     @Autowired
     private PracticalClassRepository practicalClassRepository;
-
+    @Autowired
+    private CandidateService candidateService;
 
 
     public List<PracticalClass> getInstructorNextWeekClasses(long instructorId){
@@ -136,7 +139,26 @@ public class PracticalClassService {
         pclass.setEndTime(dto.getEndTime());
 
         return practicalClassRepository.save(pclass);
-       
+
+    }
+
+    public List<PracticalClass> saveManualSchedule(List<DraftPracticalClassDTO> dtos, Instructor instructor){
+
+        List<PracticalClass> newPClasses = new ArrayList<>();
+
+        for(DraftPracticalClassDTO dto: dtos){
+            PracticalClass pc = new PracticalClass();
+
+            pc.setStartTime(dto.getStartTime());
+            pc.setEndTime(dto.getEndTime());
+            Candidate c = candidateService.findByEmail(dto.getEmail());
+            pc.setCandidate(c);
+            pc.setAccepted(false);
+            pc.setInstructor(instructor);
+            newPClasses.add(pc);
+
+        }
+       return practicalClassRepository.saveAll(newPClasses);
     }
 
 

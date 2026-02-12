@@ -31,7 +31,7 @@ public class CandidateService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Candidate save(RegistrationDTO registrationDTO) {
+    public Candidate saveFromDTO(RegistrationDTO registrationDTO) {
 
         Candidate c = new Candidate();
 
@@ -45,6 +45,10 @@ public class CandidateService {
         c.setRole(roleService.findByName("ROLE_CANDIDATE"));
         return candidateRepository.save(c);
 
+    }
+
+    public Candidate save(Candidate c){
+        return candidateRepository.save(c);
     }
 
     public long getIdByEmail(String email) {
@@ -113,5 +117,7 @@ public class CandidateService {
         return candidateRepository.findById(id);
     }
 
-
+    public Candidate findByEmail(String email){
+        return candidateRepository.getByEmail(email);
+    }
 }

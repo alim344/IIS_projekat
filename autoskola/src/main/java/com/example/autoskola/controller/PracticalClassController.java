@@ -1,12 +1,15 @@
 package com.example.autoskola.controller;
 
+import com.example.autoskola.dto.DraftPracticalClassDTO;
 import com.example.autoskola.dto.PracticalDTO;
+import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.service.CandidateService;
 import com.example.autoskola.service.InstructorService;
 import com.example.autoskola.service.PracticalClassService;
 import com.example.autoskola.util.TokenUtils;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
@@ -97,6 +100,17 @@ public class PracticalClassController {
 
         return ResponseEntity.ok(pclass);
 
+    }
+
+    @PostMapping("/manual_schedule/save")
+    public ResponseEntity<List<PracticalClass>> saveManualSchedule(@RequestBody List<DraftPracticalClassDTO> dtos, HttpServletRequest request){
+
+        String token= tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Instructor i = instructorService.findByEmail(email);
+
+
+        return ResponseEntity.ok(practicalClassService.saveManualSchedule(dtos, i));
     }
 
 }
