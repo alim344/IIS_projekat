@@ -90,9 +90,9 @@ public class PracticalClassController {
     }
 
     @PatchMapping("/updateDateTime")
-    public ResponseEntity<PracticalClass> updateClass(@RequestBody PracticalDTO dto){
+    public ResponseEntity<PracticalDTO> updateClass(@RequestBody PracticalDTO dto){
 
-        PracticalClass pclass = practicalClassService.updateDateTime(dto);
+        PracticalDTO pclass = practicalClassService.updateDateTime(dto);
 
         if(pclass == null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);

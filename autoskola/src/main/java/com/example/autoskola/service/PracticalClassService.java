@@ -127,7 +127,7 @@ public class PracticalClassService {
         return practicalClassRepository.findById(id);
     }
 
-    public PracticalClass updateDateTime(PracticalDTO dto){
+    public PracticalDTO updateDateTime(PracticalDTO dto){
 
         PracticalClass pclass = findById(dto.getId());
 
@@ -138,7 +138,8 @@ public class PracticalClassService {
         pclass.setStartTime(dto.getStartTime());
         pclass.setEndTime(dto.getEndTime());
 
-        return practicalClassRepository.save(pclass);
+        practicalClassRepository.save(pclass);
+        return dto;
 
     }
 
