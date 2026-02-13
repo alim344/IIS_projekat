@@ -66,21 +66,23 @@ public class CandidateService {
         return ids;
     }
 
-    public Candidate updateProfile(Long id, UpdateCandidateProfileDTO dto) {
+    public CandidateProfileDTO updateProfile(Long id, UpdateCandidateProfileDTO dto) {
         Candidate candidate = candidateRepository.findById(id).orElseThrow(() -> new RuntimeException("Candidate not found."));
 
-        if (dto.getFirstName() != null) candidate.setName(dto.getFirstName());
-        if (dto.getLastName() != null) candidate.setLastname(dto.getLastName());
+        if (dto.getFirstName() != null)
+            candidate.setName(dto.getFirstName());
+        if (dto.getLastName() != null)
+            candidate.setLastname(dto.getLastName());
 
-        if (dto.getEmail() != null) {
+        if (dto.getEmail() != null)
             candidate.setEmail(dto.getEmail());
-        }
 
-        if (dto.getUsername() != null) {
+        if (dto.getUsername() != null)
             candidate.setUsername(dto.getUsername());
-        }
 
-        return candidateRepository.save(candidate);
+        Candidate saved = candidateRepository.save(candidate);
+
+        return new CandidateProfileDTO(saved);
     }
 
 //    public CandidateProfileDTO getCandidateProfile() {

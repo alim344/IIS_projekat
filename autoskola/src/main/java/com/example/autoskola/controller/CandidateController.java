@@ -23,11 +23,9 @@ public class CandidateController {
     private UserService userService;
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateCandidateProfile(@PathVariable Long id, @RequestBody UpdateCandidateProfileDTO candidateDTO) {
+    public ResponseEntity<CandidateProfileDTO> updateCandidateProfile(@PathVariable Long id, @RequestBody UpdateCandidateProfileDTO candidateDTO) {
 
-        Candidate updatedProfile = candidateService.updateProfile(id, candidateDTO);
-
-        CandidateProfileDTO response = new CandidateProfileDTO(updatedProfile);
+        CandidateProfileDTO response = candidateService.updateProfile(id, candidateDTO);
         return ResponseEntity.ok(response);
 
     }
