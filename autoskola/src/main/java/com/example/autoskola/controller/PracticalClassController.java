@@ -113,4 +113,17 @@ public class PracticalClassController {
         return ResponseEntity.ok("saved");
     }
 
+    @PostMapping("/saveClass")
+    public ResponseEntity<DraftPracticalClassDTO> saveClass(@RequestBody DraftPracticalClassDTO dto, HttpServletRequest request){
+        String token= tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Instructor i = instructorService.findByEmail(email);
+
+        if(dto.getStartTime() == null || dto.getEndTime() == null ){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return ResponseEntity.ok(practicalClassService.saveByDraftDTO(dto,i));
+    }
+
 }

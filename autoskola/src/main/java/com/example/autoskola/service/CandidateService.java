@@ -56,15 +56,10 @@ public class CandidateService {
         return c.getId();
     }
 
-
-    public List<Long> getIdsByInstructorId(long instructorId) {
-        List<Candidate> candidates = candidateRepository.getByInstructorId(instructorId);
-        List<Long> ids = new ArrayList<>();
-        for (Candidate c : candidates) {
-            ids.add(c.getId());
-        }
-        return ids;
+    public List<Candidate> getByInstructorId(long instructorId) {
+        return candidateRepository.getByInstructorId(instructorId);
     }
+    
 
     public CandidateProfileDTO updateProfile(Long id, UpdateCandidateProfileDTO dto) {
         Candidate candidate = candidateRepository.findById(id).orElseThrow(() -> new RuntimeException("Candidate not found."));
