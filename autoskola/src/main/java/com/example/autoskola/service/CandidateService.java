@@ -85,35 +85,15 @@ public class CandidateService {
         return new CandidateProfileDTO(saved);
     }
 
-//    public CandidateProfileDTO getCandidateProfile() {
-//        Authentication authentication =
-//                SecurityContextHolder.getContext().getAuthentication();
-//
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-//        }
-//
-//        Object principal = authentication.getPrincipal();
-//
-//        if (!(principal instanceof Candidate)) {
-//            throw new ResponseStatusException(
-//                    HttpStatus.FORBIDDEN,
-//                    "Only candidates can view this profile"
-//            );
-//        }
-//
-//        Candidate candidate = (Candidate) principal;
-//
-//        return new CandidateProfileDTO(
-//                candidate.getName(),
-//                candidate.getLastname(),
-//                candidate.getEmail(),
-//                candidate.getUsername(),
-//                candidate.getInstructor(),
-//                candidate.getStatus(),
-//                candidate.getCategory()
-//        );
-//    }
+    public CandidateProfileDTO getMyProfile(Long userId) {
+        Candidate candidate = candidateRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Candidate not found"
+                ));
+
+        return new CandidateProfileDTO(candidate);
+    }
 
     public Optional<Candidate> findById(Long id) {
         return candidateRepository.findById(id);

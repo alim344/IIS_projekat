@@ -33,13 +33,8 @@ public class CandidateController {
     @GetMapping("/myprofile")
     public ResponseEntity<CandidateProfileDTO> getMyProfile(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Candidate candidate = candidateService.findById(user.getId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Candidate not found"
-                ));
 
-        CandidateProfileDTO dto = new CandidateProfileDTO(candidate);
+        CandidateProfileDTO dto = candidateService.getMyProfile(user.getId());
 
         return ResponseEntity.ok(dto);
     }
