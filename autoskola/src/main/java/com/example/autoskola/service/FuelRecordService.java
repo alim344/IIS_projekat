@@ -8,6 +8,7 @@ import com.example.autoskola.repository.FuelRecordRepository;
 import com.example.autoskola.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,9 +21,14 @@ public class FuelRecordService {
     @Autowired
     private VehicleRepository vehicleRepository;
 
+    @Transactional
     public FuelRecord createFuelRecord(FuelRecordDTO dto, Instructor instructor) {
         Vehicle vehicle = vehicleRepository.findById(dto.getVehicleId())
-                .orElseThrow(()-> new RuntimeException("Vehicle not found."));
+                .orElseThrow(() -> new RuntimeException("Vehicle not found."));
+
+        if (dto.getMileageAtRefuel() < vehicle.getCurrentMileage()) {
+            throw new IllegalArgumentException("Mileage cannot be lower than current vehicle mileage.");
+        }
 
         FuelRecord record = new FuelRecord();
         record.setLiters(dto.getLiters());
@@ -32,7 +38,12 @@ public class FuelRecordService {
         record.setInstructor(instructor);
         record.setVehicle(vehicle);
 
-        return fuelRecordRepository.save(record);
+        FuelRecord savedRecord = fuelRecordRepository.save(record);
+
+        vehicle.setCurrentMileage(dto.getMileageAtRefuel());
+        vehicleRepository.save(vehicle);
+
+        return savedRecord;
     }
 
     public List<FuelRecord> findByVehicle(Long vehicleId) {

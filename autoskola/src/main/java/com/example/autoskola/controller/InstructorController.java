@@ -80,4 +80,19 @@ public class InstructorController {
        return ResponseEntity.ok("Vehicle removed successfully.");
    }
 
+    @GetMapping("/my-vehicle")
+    @PreAuthorize("hasRole('ROLE_INSTRUCTOR')")
+    public ResponseEntity<VehicleDTO> getMyVehicle(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        Instructor instructor = instructorService.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("Instructor not found."));
+
+        if (instructor.getVehicle() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new VehicleDTO(instructor.getVehicle()));
+    }
+
 }
