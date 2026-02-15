@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +107,37 @@ public class PracticalClassService {
             practicalDTOs.add(dto);
         }
         return practicalDTOs;
+    }
+
+    public List<PracticalDTO> getCopiedSchedule(long instructor_id){
+
+        List<PracticalDTO>  fullschedule = getInstructorSchedule(instructor_id);
+        List<PracticalDTO> nextWeekCopiedSchedule = new ArrayList<>();
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+        LocalDateTime weekStart = startOfWeek.atStartOfDay();
+        LocalDateTime weekEnd = endOfWeek.atTime(LocalTime.MAX);
+
+        for(PracticalDTO dto: fullschedule){
+
+            LocalDateTime start = dto.getStartTime();
+            LocalDateTime end = dto.getEndTime();
+
+            if (dto.getStartTime().isAfter(weekStart) && dto.getEndTime().isBefore(weekEnd)) {
+                dto.setStartTime(start.plusWeeks(1));
+                dto.setEndTime(end.plusWeeks(1));
+                dto.setAccepted(false);
+                dto.setId(null);
+                nextWeekCopiedSchedule.add(dto);
+            }
+        }
+
+        return nextWeekCopiedSchedule;
+
+
     }
 
     public boolean existsById(long id){

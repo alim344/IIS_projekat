@@ -126,4 +126,17 @@ public class PracticalClassController {
         return ResponseEntity.ok(practicalClassService.saveByDraftDTO(dto,i));
     }
 
+
+    @GetMapping("/getCopiedSchedule")
+    public ResponseEntity<List<PracticalDTO>> getCopiedSchedule(HttpServletRequest request){
+
+        String token= tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        long instructorId = instructorService.getIdByEmail(email);
+
+        return ResponseEntity.ok(practicalClassService.getCopiedSchedule(instructorId));
+    }
+
+
+
 }
