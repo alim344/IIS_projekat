@@ -22,18 +22,15 @@ public class TimePreferenceService {
         timePreferenceRepository.save(timePreference);
     }
 
-    public List<TimePreference> getCandidatesTimePreferencesByIds(Long instructorId) {
-        List<Long> ids = candidateService.getIdsByInstructorId(instructorId);
-        return timePreferenceRepository.findByCandidate_IdIn(ids);
-    }
+
 
     public List<TimePrefInstructorDTO> getCandidateTimePreferencesDTO(Long instructorId) {
 
-        List<TimePreference> timePreferences = getCandidatesTimePreferencesByIds(instructorId);
+        List<Candidate> candidates = candidateService.getByInstructorId(instructorId);
 
         List<TimePrefInstructorDTO> dtos = new ArrayList<>();
-        for (TimePreference pref : timePreferences) {
-            Candidate c = pref.getCandidate();
+        for (Candidate c : candidates) {
+            TimePreference pref = c.getTimePreference();
             TimePrefInstructorDTO dto = new TimePrefInstructorDTO();
             dto.setEndTime(pref.getEndTime());
             dto.setStartTime(pref.getStartTime());

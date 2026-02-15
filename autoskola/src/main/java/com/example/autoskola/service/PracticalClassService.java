@@ -162,6 +162,18 @@ public class PracticalClassService {
        return practicalClassRepository.saveAll(newPClasses);
     }
 
+    public DraftPracticalClassDTO saveByDraftDTO(DraftPracticalClassDTO dto, Instructor i){
+        PracticalClass pc = new PracticalClass();
+
+        pc.setStartTime(dto.getStartTime());
+        pc.setEndTime(dto.getEndTime());
+        Candidate c = candidateService.findByEmail(dto.getEmail());
+        pc.setCandidate(c);
+        pc.setAccepted(false);
+        pc.setInstructor(i);
+        save(pc);
+        return dto;
+    }
 
 
 }
