@@ -9,6 +9,8 @@ import com.example.autoskola.model.User;
 import com.example.autoskola.service.CandidateService;
 import com.example.autoskola.service.PreferenceService;
 import com.example.autoskola.service.UserService;
+import com.example.autoskola.util.TokenUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,8 @@ public class CandidateController {
 
     @Autowired
     private PreferenceService preferenceService;
+    @Autowired
+    private TokenUtils tokenUtils;
 
     @PutMapping("/update/{id}")
     public ResponseEntity<CandidateProfileDTO> updateCandidateProfile(@PathVariable Long id, @RequestBody UpdateCandidateProfileDTO candidateDTO) {
@@ -90,5 +94,13 @@ public class CandidateController {
         PreferencesDTO response = preferenceService.updatePreferences(user.getId(), dto);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getstatus")
+    public ResponseEntity<String> getCandidateStatus(HttpServletRequest request) {
+        String token= tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Candidate candidate = candidateService.findByEmail(email);
+        return ResponseEntity.ok(candidate.getStatus().toString());
     }
 }

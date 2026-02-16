@@ -113,4 +113,6 @@ public class CandidateService {
     public Candidate findByEmail(String email){
         return candidateRepository.getByEmail(email);
     }
+
+
 }

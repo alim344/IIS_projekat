@@ -1,5 +1,6 @@
 package com.example.autoskola.service;
 
+import com.example.autoskola.dto.CandidatePracticalDTO;
 import com.example.autoskola.dto.DraftPracticalClassDTO;
 import com.example.autoskola.dto.PracticalDTO;
 import com.example.autoskola.model.Candidate;
@@ -212,9 +213,32 @@ public class PracticalClassService {
         return dto;
     }
 
-    public List<PracticalDTO> getCandidateSchedule(long candidate_id){
+    public List<CandidatePracticalDTO> getCandidateSchedule(long candidate_id){
         List<PracticalClass> classes =  practicalClassRepository.findByCandidateId(candidate_id);
-        return switchToPracticalDTO(classes);
+        return switchToCandidatePracticalDTO(classes);
+
+    }
+
+    public List<CandidatePracticalDTO> switchToCandidatePracticalDTO(List<PracticalClass> pclass){
+
+        List<CandidatePracticalDTO> dtos = new ArrayList<>();
+
+        for(PracticalClass pc: pclass){
+
+            CandidatePracticalDTO dto = new CandidatePracticalDTO();
+            dto.setId(pc.getId());
+            dto.setStartTime(pc.getStartTime());
+            dto.setEndTime(pc.getEndTime());
+            Instructor instructor = pc.getInstructor();
+            dto.setInstructorName(instructor.getName());
+            dto.setInstructorLastName(instructor.getLastname());
+
+            dto.setPreferredLocation(pc.getCandidate().getPreferredLocation());
+            dto.setAccepted(pc.isAccepted());
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
 
 
