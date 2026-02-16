@@ -85,13 +85,12 @@ public class PracticalClassService {
         );
     }
 
-    public List<PracticalDTO> getInstructorSchedule(long instructor_id){
-        List<PracticalClass> classes =  practicalClassRepository.findByInstructorId(instructor_id);
 
-        List<PracticalDTO> practicalDTOs = new ArrayList<>();
+    public List<PracticalDTO> switchToPracticalDTO(List<PracticalClass> practicalClassList){
 
+        List<PracticalDTO> practicalDTOList = new ArrayList<>();
 
-        for(PracticalClass pclass: classes){
+        for(PracticalClass pclass: practicalClassList){
             PracticalDTO dto = new PracticalDTO();
             dto.setId(pclass.getId());
             dto.setStartTime(pclass.getStartTime());
@@ -104,9 +103,15 @@ public class PracticalClassService {
             dto.setCategory(c.getCategory().toString());
             dto.setEmail(c.getEmail());
 
-            practicalDTOs.add(dto);
+            practicalDTOList.add(dto);
         }
-        return practicalDTOs;
+        return practicalDTOList;
+
+    }
+
+    public List<PracticalDTO> getInstructorSchedule(long instructor_id){
+        List<PracticalClass> classes =  practicalClassRepository.findByInstructorId(instructor_id);
+        return switchToPracticalDTO(classes);
     }
 
     public List<PracticalDTO> getCopiedSchedule(long instructor_id){
@@ -205,6 +210,11 @@ public class PracticalClassService {
         pc.setInstructor(i);
         save(pc);
         return dto;
+    }
+
+    public List<PracticalDTO> getCandidateSchedule(long candidate_id){
+        List<PracticalClass> classes =  practicalClassRepository.findByCandidateId(candidate_id);
+        return switchToPracticalDTO(classes);
     }
 
 

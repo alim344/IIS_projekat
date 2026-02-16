@@ -24,4 +24,6 @@ public interface PracticalClassRepository extends JpaRepository<PracticalClass, 
 
     PracticalClass findById(long id);
 
+    List<PracticalClass> findByCandidateId(Long candidateId);
+
 }
