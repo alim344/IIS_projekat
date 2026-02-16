@@ -1,11 +1,14 @@
 package com.example.autoskola.service;
 
 import com.example.autoskola.dto.CandidateProfileDTO;
+import com.example.autoskola.dto.PracticalDTO;
 import com.example.autoskola.dto.RegistrationDTO;
 import com.example.autoskola.dto.UpdateCandidateProfileDTO;
 import com.example.autoskola.model.Candidate;
+import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.model.TrainingStatus;
 import com.example.autoskola.repository.CandidateRepository;
+import com.example.autoskola.repository.PracticalClassRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -30,6 +33,8 @@ public class CandidateService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PracticalClassRepository practicalClassRepository;
 
     public Candidate saveFromDTO(RegistrationDTO registrationDTO) {
 

@@ -126,4 +126,13 @@ public class PracticalClassController {
         return ResponseEntity.ok(practicalClassService.saveByDraftDTO(dto,i));
     }
 
+    @GetMapping("/candidate/fullschedule")
+    public ResponseEntity<List<PracticalDTO>> getCandidateSchedule(HttpServletRequest request){
+        String token= tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        long id = candidateService.getIdByEmail(email);
+
+        return ResponseEntity.ok(practicalClassService.getCandidateSchedule(id));
+    }
+
 }
