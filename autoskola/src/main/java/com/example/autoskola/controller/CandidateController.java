@@ -1,10 +1,13 @@
 package com.example.autoskola.controller;
 
 import com.example.autoskola.dto.CandidateProfileDTO;
+import com.example.autoskola.dto.PreferencesDTO;
+import com.example.autoskola.dto.PreferencesUpdateDTO;
 import com.example.autoskola.dto.UpdateCandidateProfileDTO;
 import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.User;
 import com.example.autoskola.service.CandidateService;
+import com.example.autoskola.service.PreferenceService;
 import com.example.autoskola.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,9 @@ public class CandidateController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PreferenceService preferenceService;
 
     @PutMapping("/update/{id}")
     public ResponseEntity<CandidateProfileDTO> updateCandidateProfile(@PathVariable Long id, @RequestBody UpdateCandidateProfileDTO candidateDTO) {
@@ -54,6 +60,34 @@ public class CandidateController {
         System.out.println("DTO: " + dto.getFirstName() + " " + dto.getLastName());
 
         CandidateProfileDTO response = candidateService.updateProfile(user.getId(), dto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/preferences")
+    public ResponseEntity<PreferencesDTO> getPreferences(Authentication authentication) {
+        if (authentication == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+
+        User user = (User) authentication.getPrincipal();
+        PreferencesDTO preferences = preferenceService.getPreferences(user.getId());
+
+        return ResponseEntity.ok(preferences);
+    }
+
+    // UPDATE
+    @PutMapping("/preferences")
+    public ResponseEntity<PreferencesDTO> updatePreferences(
+            @RequestBody PreferencesUpdateDTO dto,
+            Authentication authentication) {
+
+        if (authentication == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+
+        User user = (User) authentication.getPrincipal();
+        PreferencesDTO response = preferenceService.updatePreferences(user.getId(), dto);
 
         return ResponseEntity.ok(response);
     }

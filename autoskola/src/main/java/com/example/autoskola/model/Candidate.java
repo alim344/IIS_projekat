@@ -30,7 +30,7 @@ public class Candidate extends User{
     @Enumerated(EnumType.STRING)
     private TrainingStatus status = TrainingStatus.THEORY;
 
-
-
+    @Column(name = "preferred_location")
+    private String preferredLocation;
 
 }
