@@ -62,10 +62,16 @@ public class CandidateService {
     
 
     public CandidateProfileDTO updateProfile(Long id, UpdateCandidateProfileDTO dto) {
+        System.out.println("=== UPDATE PROFILE SERVICE ===");
+        System.out.println("ID: " + id);
+        System.out.println("DTO: " + dto.getFirstName() + " " + dto.getLastName());
+
+
         Candidate candidate = candidateRepository.findById(id).orElseThrow(() -> new RuntimeException("Candidate not found."));
 
         if (dto.getFirstName() != null)
             candidate.setName(dto.getFirstName());
+
         if (dto.getLastName() != null)
             candidate.setLastname(dto.getLastName());
 
@@ -77,7 +83,12 @@ public class CandidateService {
 
         Candidate saved = candidateRepository.save(candidate);
 
-        return new CandidateProfileDTO(saved);
+        CandidateProfileDTO response = new CandidateProfileDTO(saved);
+
+        System.out.println("Response ID: " + response.getId());
+        System.out.println("Response name: " + response.getFirstName());
+
+        return response;
     }
 
     public CandidateProfileDTO getMyProfile(Long userId) {

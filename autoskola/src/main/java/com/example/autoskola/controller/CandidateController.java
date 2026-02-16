@@ -38,4 +38,23 @@ public class CandidateController {
 
         return ResponseEntity.ok(dto);
     }
+
+    @PutMapping("/myprofile")
+    public ResponseEntity<CandidateProfileDTO> updateMyProfile(
+            @RequestBody UpdateCandidateProfileDTO dto,
+            Authentication authentication) {
+
+        if (authentication == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+
+        User user = (User) authentication.getPrincipal();
+
+        System.out.println("Updating profile for user ID: " + user.getId());
+        System.out.println("DTO: " + dto.getFirstName() + " " + dto.getLastName());
+
+        CandidateProfileDTO response = candidateService.updateProfile(user.getId(), dto);
+
+        return ResponseEntity.ok(response);
+    }
 }

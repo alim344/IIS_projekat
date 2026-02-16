@@ -6,6 +6,7 @@ import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.TrainingStatus;
 
 public class CandidateProfileDTO {
+    private Long candidateId;
     private String firstName;
     private String lastName;
     private String email;
@@ -35,6 +36,14 @@ public class CandidateProfileDTO {
         this.instructor = candidate.getInstructor();
         this.status = candidate.getStatus();
         this.category = candidate.getCategory();
+    }
+
+    public Long getId() {
+        return candidateId;
+    }
+
+    public void setId(Long candidateId) {
+        this.candidateId = candidateId;
     }
 
     public String getFirstName() {
