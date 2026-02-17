@@ -163,4 +163,8 @@ public class InstructorService {
 
     }
 
+    public Long findVehicleIdByInstructorId(Long id) {
+        return instructorRepository.findVehicleIdByInstructorId(id);
+    }
+
 }

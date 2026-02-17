@@ -24,6 +24,7 @@ public class TestDataLoader implements CommandLineRunner {
     private final VehicleRepository vehicleRepository;
     private final TimePreferenceRepository timePreferenceRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PracticalClassRepository practicalClassRepository;
 
     @Override
     public void run(String... args) {
@@ -90,6 +91,8 @@ public class TestDataLoader implements CommandLineRunner {
         vehicle1.setInstructor(instructor);
         vehicleRepository.save(vehicle1);
 
+
+        instructorRepository.save(instructor);
         // ---------------- CANDIDATE ----------------
         Candidate candidate = new Candidate();
         candidate.setEmail("ana@gmail.com");
@@ -115,6 +118,32 @@ public class TestDataLoader implements CommandLineRunner {
         pref.setStartTime(LocalTime.of(9,0));
         pref.setEndTime(LocalTime.of(13,0));
         timePreferenceRepository.save(pref);
+
+        // ---------------- PRACTICAL CLASSES ----------------
+        PracticalClass class1 = new PracticalClass();
+        class1.setCandidate(candidate);
+        class1.setInstructor(instructor);
+        class1.setStartTime(LocalDateTime.now().plusDays(1).withHour(9).withMinute(0));
+        class1.setEndTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(30));
+        class1.setAccepted(false);
+        practicalClassRepository.save(class1);
+
+        PracticalClass class2 = new PracticalClass();
+        class2.setCandidate(candidate);
+        class2.setInstructor(instructor);
+        class2.setStartTime(LocalDateTime.now().plusDays(2).withHour(11).withMinute(0));
+        class2.setEndTime(LocalDateTime.now().plusDays(2).withHour(12).withMinute(30));
+        class2.setAccepted(true);
+        practicalClassRepository.save(class2);
+
+        //cas koji je prosao
+        PracticalClass class3 = new PracticalClass();
+        class3.setCandidate(candidate);
+        class3.setInstructor(instructor);
+        class3.setStartTime(LocalDateTime.now().minusDays(2).withHour(12).withMinute(30));
+        class3.setEndTime(LocalDateTime.now().minusDays(2).withHour(15).withMinute(30));
+        class3.setAccepted(true);
+        practicalClassRepository.save(class3);
 
         System.out.println("TEST DATA LOADED SUCCESSFULLY");
     }

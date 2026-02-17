@@ -1,5 +1,6 @@
 package com.example.autoskola.repository;
 
+import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.PracticalClass;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -25,5 +26,6 @@ public interface PracticalClassRepository extends JpaRepository<PracticalClass, 
     PracticalClass findById(long id);
 
     List<PracticalClass> findByCandidateId(Long candidateId);
+
 
 }

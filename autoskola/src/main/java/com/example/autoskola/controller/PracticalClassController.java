@@ -2,6 +2,7 @@ package com.example.autoskola.controller;
 
 import com.example.autoskola.dto.DraftPracticalClassDTO;
 import com.example.autoskola.dto.PracticalDTO;
+import com.example.autoskola.dto.RecordPracticalDTO;
 import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.service.CandidateService;
@@ -149,6 +150,17 @@ public class PracticalClassController {
 
         return ResponseEntity.ok(practicalClassService.getCandidateSchedule(id));
     }
+
+    @PutMapping("/{classId}/record")
+    public ResponseEntity<PracticalDTO> recordClass(@PathVariable long classId, @RequestBody RecordPracticalDTO dto, HttpServletRequest request){
+        String token= tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        long instructorId = instructorService.getIdByEmail(email);
+
+        PracticalDTO updated = practicalClassService.saveRecordPracticalClass(classId, instructorId, dto);
+        return ResponseEntity.ok(updated);
+    }
+
 
 
 }
