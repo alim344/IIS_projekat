@@ -15,6 +15,7 @@ public class CandidatePracticalDTO {
     private LocalDateTime endTime;
     private String instructorName;
     private String instructorLastName;
+    private String instructorEmail;
     private String preferredLocation;
     private boolean accepted;
 

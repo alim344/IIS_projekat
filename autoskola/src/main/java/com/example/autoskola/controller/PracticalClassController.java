@@ -151,5 +151,10 @@ public class PracticalClassController {
         return ResponseEntity.ok(practicalClassService.getCandidateSchedule(id));
     }
 
+    @PatchMapping("/acceptClass/{classId}")
+    public ResponseEntity<String> acceptPracticalClass(@PathVariable long classId){
+        practicalClassService.acceptClass(classId);
+        return ResponseEntity.ok("Class accepted");
+    }
 
 }

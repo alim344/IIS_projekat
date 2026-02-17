@@ -232,6 +232,7 @@ public class PracticalClassService {
             Instructor instructor = pc.getInstructor();
             dto.setInstructorName(instructor.getName());
             dto.setInstructorLastName(instructor.getLastname());
+            dto.setInstructorEmail(instructor.getEmail());
 
             dto.setPreferredLocation(pc.getCandidate().getPreferredLocation());
             dto.setAccepted(pc.isAccepted());
@@ -240,6 +241,14 @@ public class PracticalClassService {
 
         return dtos;
     }
+
+
+    public void acceptClass(long class_id){
+        PracticalClass practicalClass = practicalClassRepository.findById(class_id);
+        practicalClass.setAccepted(true);
+        practicalClassRepository.save(practicalClass);
+    }
+
 
 
 }
