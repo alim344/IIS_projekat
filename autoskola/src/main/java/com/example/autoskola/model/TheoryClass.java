@@ -33,7 +33,9 @@ public class TheoryClass {
     @Column(nullable = false)
     private int enrolledStudents;
 
-
+    @ManyToOne
+    @JoinColumn(name = "lesson_id",nullable = false)
+    private TheoryLesson theoryLesson;
 
 
 }

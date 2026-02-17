@@ -10,6 +10,10 @@ import com.example.autoskola.repository.CandidateClassRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +31,23 @@ public class CandidateClassRequestService {
         candidateClassRequestRepository.save(candidateClassRequest);
     }
 
+    public String computeWeekRange(LocalDateTime startTime){
+
+        LocalDate date = startTime.toLocalDate();
+
+        // get the Monday and Sunday of that week
+        LocalDate monday = date.with(DayOfWeek.MONDAY);
+        LocalDate sunday = date.with(DayOfWeek.SUNDAY);
+
+        // format dates like "Feb 16"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d");
+
+        return String.format("%s – %s",
+                monday.format(formatter),
+                sunday.format(formatter));
+    }
+
+
     public void saveFromDTO(ChangePClassRequestDTO requestDTO, String candidate_email) {
         CandidateClassRequest request = new CandidateClassRequest();
 
@@ -37,6 +58,7 @@ public class CandidateClassRequestService {
         request.setCandidate(candidate);
         request.setStatus(CandidateClassRequestStatus.PENDING);
         request.setText(requestDTO.getText());
+        request.setDeclinedWeek(computeWeekRange(requestDTO.getDate()));
 
         save(request);
 
@@ -55,6 +77,7 @@ public class CandidateClassRequestService {
                 dto.setText(request.getText());
                 dto.setStatus(request.getStatus().toString());
                 dto.setId(request.getId());
+                dto.setDeclineWeek(request.getDeclinedWeek());
                 Candidate candidate = request.getCandidate();
                 dto.setEmail(candidate.getEmail());
                 dto.setCandidate_name(candidate.getName());

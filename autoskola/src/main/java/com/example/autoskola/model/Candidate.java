@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CollectionId;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,5 +33,8 @@ public class Candidate extends User{
 
     @Column(name = "preferred_location")
     private String preferredLocation;
+
+
+
 
 }

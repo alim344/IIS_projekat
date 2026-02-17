@@ -16,6 +16,9 @@ public class CandidateClassRequest {
     @Column
     private String text;
 
+    @Column
+    private String declinedWeek;
+
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", nullable = false)
