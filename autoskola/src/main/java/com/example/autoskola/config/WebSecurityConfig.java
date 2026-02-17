@@ -75,7 +75,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()	// /h2-console/** ako se koristi H2 baza)
                 .requestMatchers("/api/foo").permitAll()		// /api/foo
                 .requestMatchers("/candidates/**").permitAll()
-                .requestMatchers("/auth/**","/practicalclass/**","/time_pref/**").permitAll()
+                .requestMatchers("/auth/**","/practicalclass/**","/time_pref/**","/request/**").permitAll()
                 .requestMatchers(
                         "/favicon.ico",
                         "/webjars/**",
