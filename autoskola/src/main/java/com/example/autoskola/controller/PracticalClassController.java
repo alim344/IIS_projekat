@@ -8,6 +8,7 @@ import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.service.CandidateService;
 import com.example.autoskola.service.InstructorService;
 import com.example.autoskola.service.PracticalClassService;
+import com.example.autoskola.service.ScheduledNotificationService;
 import com.example.autoskola.util.TokenUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServlet;
@@ -33,6 +34,8 @@ public class PracticalClassController {
     private InstructorService instructorService;
     @Autowired
     private CandidateService candidateService;
+    @Autowired
+    private ScheduledNotificationService scheduledNotificationService;
 
     @GetMapping("/nextWeek/instructor")
     public ResponseEntity<List<PracticalClass>> getNextWeeksInstructorClasses( @RequestParam long instructorId){
@@ -86,7 +89,7 @@ public class PracticalClassController {
 
     @DeleteMapping("/deleteById/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable long id){
-        practicalClassService.deleteById(id);
+        practicalClassService.deleteClass(id);
         return ResponseEntity.ok().build();
     }
 
@@ -123,7 +126,6 @@ public class PracticalClassController {
         if(dto.getStartTime() == null || dto.getEndTime() == null ){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-
         return ResponseEntity.ok(practicalClassService.saveByDraftDTO(dto,i));
     }
 
@@ -136,7 +138,13 @@ public class PracticalClassController {
         String email = tokenUtils.getEmailFromToken(token);
         long instructorId = instructorService.getIdByEmail(email);
 
-        return ResponseEntity.ok(practicalClassService.getCopiedSchedule(instructorId));
+        List<PracticalDTO> dtos = practicalClassService.getCopiedSchedule(instructorId);
+
+        if(dtos == null){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return ResponseEntity.ok(dtos);
     }
 
 

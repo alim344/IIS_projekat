@@ -48,7 +48,7 @@ public class CandidateClassRequestService {
     }
 
 
-    public void saveFromDTO(ChangePClassRequestDTO requestDTO, String candidate_email) {
+    public void saveFromDTO(ChangePClassRequestDTO requestDTO, String candidate_email){
         CandidateClassRequest request = new CandidateClassRequest();
 
         Instructor i = instructorService.findByEmail(requestDTO.getInstructorEmail());
@@ -61,8 +61,6 @@ public class CandidateClassRequestService {
         request.setDeclinedWeek(computeWeekRange(requestDTO.getDate()));
 
         save(request);
-
-
     }
 
     public List<InstPracticalRequestDTO> getInstructorRequests(long instructor_id) {

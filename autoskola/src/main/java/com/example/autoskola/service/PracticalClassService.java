@@ -25,6 +25,9 @@ public class PracticalClassService {
     private PracticalClassRepository practicalClassRepository;
     @Autowired
     private CandidateService candidateService;
+    @Autowired
+    private ScheduledNotificationService scheduledNotificationService;
+
 
 
     public List<PracticalClass> getInstructorNextWeekClasses(long instructorId){
@@ -132,17 +135,35 @@ public class PracticalClassService {
             LocalDateTime start = dto.getStartTime();
             LocalDateTime end = dto.getEndTime();
 
-            if (dto.getStartTime().isAfter(weekStart) && dto.getEndTime().isBefore(weekEnd)) {
-                dto.setStartTime(start.plusWeeks(1));
-                dto.setEndTime(end.plusWeeks(1));
-                dto.setAccepted(false);
-                dto.setId(null);
-                nextWeekCopiedSchedule.add(dto);
+            if(start.isAfter(weekStart) && end.isBefore(weekEnd)){
+
+                LocalDateTime newStart = start.plusWeeks(1);
+                LocalDateTime newEnd = end.plusWeeks(1);
+
+                boolean exists = practicalClassRepository.existsOverlap(instructor_id, newStart, newEnd);
+
+                if(exists){
+                    return null;
+                }
+
+                PracticalDTO copy = new PracticalDTO();
+
+                copy.setName(dto.getName());
+                copy.setLastname(dto.getLastname());
+                copy.setCategory(dto.getCategory());
+                copy.setEmail(dto.getEmail());
+                copy.setStartTime(newStart);
+                copy.setEndTime(newEnd);
+                copy.setAccepted(false);
+                copy.setId(null);
+
+                nextWeekCopiedSchedule.add(copy);
+
             }
+
         }
 
         return nextWeekCopiedSchedule;
-
 
     }
 
@@ -155,6 +176,13 @@ public class PracticalClassService {
             throw new EntityNotFoundException("Class not found");
         }
         practicalClassRepository.deleteById(id);
+    }
+
+    public void deleteClass(long id){
+        PracticalClass pc = practicalClassRepository.findById(id);
+        LocalDateTime startTime = pc.getStartTime();
+        scheduledNotificationService.sendDeletionNotification(startTime,pc.getCandidate());
+        deleteById(id);
     }
 
     public PracticalClass save(PracticalClass practicalClass){
@@ -173,8 +201,11 @@ public class PracticalClassService {
             return null;
         }
 
+        scheduledNotificationService.sendUpdateNotification(pclass,dto);
+
         pclass.setStartTime(dto.getStartTime());
         pclass.setEndTime(dto.getEndTime());
+
 
         practicalClassRepository.save(pclass);
         return dto;
@@ -194,6 +225,7 @@ public class PracticalClassService {
             pc.setCandidate(c);
             pc.setAccepted(false);
             pc.setInstructor(instructor);
+            scheduledNotificationService.sendCreateNotification(pc.getStartTime(),pc.getCandidate());
             newPClasses.add(pc);
 
         }
@@ -210,6 +242,9 @@ public class PracticalClassService {
         pc.setAccepted(false);
         pc.setInstructor(i);
         save(pc);
+
+        scheduledNotificationService.sendCreateNotification(pc.getStartTime(),c);
+
         return dto;
     }
 
