@@ -15,7 +15,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import org.springframework.web.server.ResponseStatusException;
+
+
+
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -35,6 +39,11 @@ public class PracticalClassService {
     private VehicleService vehicleService;
     @Autowired
     private InstructorService instructorService;
+    @Autowired
+    private ScheduledNotificationService scheduledNotificationService;
+    @Autowired
+    private CandidateClassRequestService candidateClassRequestService;
+
 
 
     public List<PracticalClass> getInstructorNextWeekClasses(long instructorId) {
@@ -113,6 +122,7 @@ public class PracticalClassService {
             dto.setLastname(c.getLastname());
             dto.setCategory(c.getCategory().toString());
             dto.setEmail(c.getEmail());
+            dto.setPreferredLocation( c.getPreferredLocation());
 
             practicalDTOList.add(dto);
         }
@@ -142,17 +152,37 @@ public class PracticalClassService {
             LocalDateTime start = dto.getStartTime();
             LocalDateTime end = dto.getEndTime();
 
-            if (dto.getStartTime().isAfter(weekStart) && dto.getEndTime().isBefore(weekEnd)) {
-                dto.setStartTime(start.plusWeeks(1));
-                dto.setEndTime(end.plusWeeks(1));
-                dto.setAccepted(false);
-                dto.setId(null);
-                nextWeekCopiedSchedule.add(dto);
+            if(start.isAfter(weekStart) && end.isBefore(weekEnd)){
+
+                LocalDateTime newStart = start.plusWeeks(1);
+                LocalDateTime newEnd = end.plusWeeks(1);
+
+                boolean exists = practicalClassRepository.existsOverlap(instructor_id, newStart, newEnd);
+
+                if(exists){
+                    return null;
+                }
+
+                PracticalDTO copy = new PracticalDTO();
+
+                copy.setName(dto.getName());
+                copy.setLastname(dto.getLastname());
+                copy.setCategory(dto.getCategory());
+                copy.setEmail(dto.getEmail());
+                copy.setStartTime(newStart);
+                copy.setEndTime(newEnd);
+                copy.setAccepted(false);
+                copy.setId(null);
+                copy.setPreferredLocation(dto.getPreferredLocation());
+                copy.setNote(dto.getNote());
+
+                nextWeekCopiedSchedule.add(copy);
+
             }
+
         }
 
         return nextWeekCopiedSchedule;
-
 
     }
 
@@ -167,8 +197,17 @@ public class PracticalClassService {
         practicalClassRepository.deleteById(id);
     }
 
-    public PracticalClass save(PracticalClass practicalClass) {
-        return practicalClassRepository.save(practicalClass);
+
+    public void deleteClass(long id){
+        PracticalClass pc = practicalClassRepository.findById(id);
+        LocalDateTime startTime = pc.getStartTime();
+        scheduledNotificationService.sendDeletionNotification(startTime,pc.getCandidate());
+        deleteById(id);
+    }
+
+    public PracticalClass save(PracticalClass practicalClass){
+      return  practicalClassRepository.save(practicalClass);
+
     }
 
     public PracticalClass findById(long id) {
@@ -183,8 +222,11 @@ public class PracticalClassService {
             return null;
         }
 
+        scheduledNotificationService.sendUpdateNotification(pclass,dto);
+
         pclass.setStartTime(dto.getStartTime());
         pclass.setEndTime(dto.getEndTime());
+
 
         practicalClassRepository.save(pclass);
         return dto;
@@ -204,13 +246,17 @@ public class PracticalClassService {
             pc.setCandidate(c);
             pc.setAccepted(false);
             pc.setInstructor(instructor);
+            scheduledNotificationService.sendCreateNotification(pc.getStartTime(),pc.getCandidate());
             newPClasses.add(pc);
 
         }
         return practicalClassRepository.saveAll(newPClasses);
     }
 
-    public DraftPracticalClassDTO saveByDraftDTO(DraftPracticalClassDTO dto, Instructor i) {
+
+    @Transactional
+    public DraftPracticalClassDTO saveByDraftDTO(DraftPracticalClassDTO dto, Instructor i, Long requestId){
+
         PracticalClass pc = new PracticalClass();
 
         pc.setStartTime(dto.getStartTime());
@@ -220,6 +266,17 @@ public class PracticalClassService {
         pc.setAccepted(false);
         pc.setInstructor(i);
         save(pc);
+
+        if(requestId != null){
+            candidateClassRequestService.acceptRequest(requestId);
+            scheduledNotificationService.sendRequestAcceptedNotification(pc.getCandidate(),dto.getStartTime());
+        }
+
+        scheduledNotificationService.sendCreateNotification(pc.getStartTime(),c);
+
+
+
+
         return dto;
     }
 
@@ -243,6 +300,7 @@ public class PracticalClassService {
             dto.setInstructorName(instructor.getName());
             dto.setInstructorLastName(instructor.getLastname());
             dto.setInstructorEmail(instructor.getEmail());
+
 
             dto.setPreferredLocation(pc.getCandidate().getPreferredLocation());
             dto.setAccepted(pc.isAccepted());

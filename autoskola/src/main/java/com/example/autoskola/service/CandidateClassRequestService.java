@@ -26,6 +26,8 @@ public class CandidateClassRequestService {
     private InstructorService instructorService;
     @Autowired
     private CandidateService candidateService;
+    @Autowired
+    private ScheduledNotificationService scheduledNotificationService;
 
     public void save(CandidateClassRequest candidateClassRequest) {
         candidateClassRequestRepository.save(candidateClassRequest);
@@ -48,7 +50,7 @@ public class CandidateClassRequestService {
     }
 
 
-    public void saveFromDTO(ChangePClassRequestDTO requestDTO, String candidate_email) {
+    public void saveFromDTO(ChangePClassRequestDTO requestDTO, String candidate_email){
         CandidateClassRequest request = new CandidateClassRequest();
 
         Instructor i = instructorService.findByEmail(requestDTO.getInstructorEmail());
@@ -61,8 +63,6 @@ public class CandidateClassRequestService {
         request.setDeclinedWeek(computeWeekRange(requestDTO.getDate()));
 
         save(request);
-
-
     }
 
     public List<InstPracticalRequestDTO> getInstructorRequests(long instructor_id) {
@@ -91,6 +91,7 @@ public class CandidateClassRequestService {
 
     public void acceptRequest(long request_id) {
         CandidateClassRequest candidateClassRequest = candidateClassRequestRepository.findById(request_id);
+
         if(candidateClassRequest.getStatus() == CandidateClassRequestStatus.PENDING) {
             candidateClassRequest.setStatus(CandidateClassRequestStatus.ACCEPTED);
             save(candidateClassRequest);
@@ -101,6 +102,8 @@ public class CandidateClassRequestService {
         CandidateClassRequest candidateClassRequest = candidateClassRequestRepository.findById(request_id);
         if(candidateClassRequest.getStatus() == CandidateClassRequestStatus.PENDING) {
             candidateClassRequest.setStatus(CandidateClassRequestStatus.DECLINED);
+            Candidate c = candidateClassRequest.getCandidate();
+            scheduledNotificationService.sendRequestDeniedNotification(c);
             save(candidateClassRequest);
         }
     }
