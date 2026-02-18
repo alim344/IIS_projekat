@@ -4,6 +4,7 @@ import com.example.autoskola.model.*;
 import com.example.autoskola.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.load-test-data", havingValue = "true")
 public class TestDataLoader implements CommandLineRunner {
 
     private final UserRepository userRepository;
