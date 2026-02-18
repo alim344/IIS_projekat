@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,8 +26,6 @@ public class TheoryClass {
     @JoinColumn(name = "professor_id",nullable = false)
     private Professor professor;
 
-    @Column(nullable = false)
-    private String name;
 
     @Column(nullable = false)
     private int capacity;
@@ -36,6 +36,14 @@ public class TheoryClass {
     @ManyToOne
     @JoinColumn(name = "lesson_id",nullable = false)
     private TheoryLesson theoryLesson;
+
+    @ManyToMany
+    @JoinTable(
+            name = "theory_class_enrollment",
+            joinColumns = @JoinColumn(name = "theory_class_id"),
+            inverseJoinColumns = @JoinColumn(name = "candidate_id")
+    )
+    private List<Candidate> students = new ArrayList<>();
 
 
 }

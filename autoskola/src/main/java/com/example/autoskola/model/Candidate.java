@@ -6,7 +6,10 @@ import lombok.Setter;
 import org.hibernate.annotations.CollectionId;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -34,7 +37,21 @@ public class Candidate extends User{
     @Column(name = "preferred_location")
     private String preferredLocation;
 
+
     @Column
     private boolean theoryCompleted;
+
+    @ManyToMany
+    @JoinTable(
+            name = "candidate_attended_lessons",
+            joinColumns = @JoinColumn(name = "candidate_id"),
+            inverseJoinColumns = @JoinColumn(name = "lesson_id")
+    )
+    private Set<TheoryLesson> attendedLessons = new HashSet<>();
+
+    @ManyToMany(mappedBy = "students")
+    private List<TheoryClass> scheduledClasses = new ArrayList<>();
+
+
 
 }
