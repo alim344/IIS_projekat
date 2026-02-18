@@ -116,6 +116,7 @@ public class PracticalClassService {
             dto.setStartTime(pclass.getStartTime());
             dto.setEndTime(pclass.getEndTime());
             dto.setAccepted(pclass.isAccepted());
+            dto.setNote(pclass.getNotes());
 
             Candidate c = pclass.getCandidate();
             dto.setName(c.getName());
@@ -301,7 +302,7 @@ public class PracticalClassService {
             dto.setInstructorLastName(instructor.getLastname());
             dto.setInstructorEmail(instructor.getEmail());
 
-
+            dto.setNote(pc.getNotes());
             dto.setPreferredLocation(pc.getCandidate().getPreferredLocation());
             dto.setAccepted(pc.isAccepted());
             dtos.add(dto);
