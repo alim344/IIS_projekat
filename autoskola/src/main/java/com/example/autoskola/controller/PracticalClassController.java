@@ -118,7 +118,7 @@ public class PracticalClassController {
     }
 
     @PostMapping("/saveClass")
-    public ResponseEntity<DraftPracticalClassDTO> saveClass(@RequestBody DraftPracticalClassDTO dto, HttpServletRequest request){
+    public ResponseEntity<DraftPracticalClassDTO> saveClass(@RequestBody DraftPracticalClassDTO dto,@RequestParam(required = false) Long requestId, HttpServletRequest request){
         String token= tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         Instructor i = instructorService.findByEmail(email);
@@ -126,7 +126,7 @@ public class PracticalClassController {
         if(dto.getStartTime() == null || dto.getEndTime() == null ){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return ResponseEntity.ok(practicalClassService.saveByDraftDTO(dto,i));
+        return ResponseEntity.ok(practicalClassService.saveByDraftDTO(dto,i,requestId));
     }
 
 

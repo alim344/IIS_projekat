@@ -26,6 +26,8 @@ public class CandidateClassRequestService {
     private InstructorService instructorService;
     @Autowired
     private CandidateService candidateService;
+    @Autowired
+    private ScheduledNotificationService scheduledNotificationService;
 
     public void save(CandidateClassRequest candidateClassRequest) {
         candidateClassRequestRepository.save(candidateClassRequest);
@@ -89,6 +91,7 @@ public class CandidateClassRequestService {
 
     public void acceptRequest(long request_id) {
         CandidateClassRequest candidateClassRequest = candidateClassRequestRepository.findById(request_id);
+
         if(candidateClassRequest.getStatus() == CandidateClassRequestStatus.PENDING) {
             candidateClassRequest.setStatus(CandidateClassRequestStatus.ACCEPTED);
             save(candidateClassRequest);
@@ -99,6 +102,8 @@ public class CandidateClassRequestService {
         CandidateClassRequest candidateClassRequest = candidateClassRequestRepository.findById(request_id);
         if(candidateClassRequest.getStatus() == CandidateClassRequestStatus.PENDING) {
             candidateClassRequest.setStatus(CandidateClassRequestStatus.DECLINED);
+            Candidate c = candidateClassRequest.getCandidate();
+            scheduledNotificationService.sendRequestDeniedNotification(c);
             save(candidateClassRequest);
         }
     }

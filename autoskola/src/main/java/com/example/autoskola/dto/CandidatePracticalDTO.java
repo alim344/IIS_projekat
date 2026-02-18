@@ -18,10 +18,11 @@ public class CandidatePracticalDTO {
     private String instructorEmail;
     private String preferredLocation;
     private boolean accepted;
+    private String note;
 
 
     public CandidatePracticalDTO() {}
-    public CandidatePracticalDTO(long id, LocalDateTime startTime, LocalDateTime endTime, String instructorName, String instructorLastName, String preferredLocation, boolean accepted) {
+    public CandidatePracticalDTO(long id, LocalDateTime startTime, LocalDateTime endTime, String instructorName, String instructorLastName, String preferredLocation, boolean accepted, String note) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -29,6 +30,7 @@ public class CandidatePracticalDTO {
         this.instructorLastName = instructorLastName;
         this.preferredLocation = preferredLocation;
         this.accepted = accepted;
+        this.note = note;
     }
 
 

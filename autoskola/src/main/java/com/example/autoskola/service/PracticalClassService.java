@@ -10,6 +10,7 @@ import com.example.autoskola.repository.PracticalClassRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -27,7 +28,8 @@ public class PracticalClassService {
     private CandidateService candidateService;
     @Autowired
     private ScheduledNotificationService scheduledNotificationService;
-
+    @Autowired
+    private CandidateClassRequestService candidateClassRequestService;
 
 
     public List<PracticalClass> getInstructorNextWeekClasses(long instructorId){
@@ -106,6 +108,7 @@ public class PracticalClassService {
             dto.setLastname(c.getLastname());
             dto.setCategory(c.getCategory().toString());
             dto.setEmail(c.getEmail());
+            dto.setPreferredLocation( c.getPreferredLocation());
 
             practicalDTOList.add(dto);
         }
@@ -156,6 +159,8 @@ public class PracticalClassService {
                 copy.setEndTime(newEnd);
                 copy.setAccepted(false);
                 copy.setId(null);
+                copy.setPreferredLocation(dto.getPreferredLocation());
+                copy.setNote(dto.getNote());
 
                 nextWeekCopiedSchedule.add(copy);
 
@@ -232,7 +237,8 @@ public class PracticalClassService {
        return practicalClassRepository.saveAll(newPClasses);
     }
 
-    public DraftPracticalClassDTO saveByDraftDTO(DraftPracticalClassDTO dto, Instructor i){
+    @Transactional
+    public DraftPracticalClassDTO saveByDraftDTO(DraftPracticalClassDTO dto, Instructor i, Long requestId){
         PracticalClass pc = new PracticalClass();
 
         pc.setStartTime(dto.getStartTime());
@@ -243,7 +249,15 @@ public class PracticalClassService {
         pc.setInstructor(i);
         save(pc);
 
+        if(requestId != null){
+            candidateClassRequestService.acceptRequest(requestId);
+            scheduledNotificationService.sendRequestAcceptedNotification(pc.getCandidate(),dto.getStartTime());
+        }
+
         scheduledNotificationService.sendCreateNotification(pc.getStartTime(),c);
+
+
+
 
         return dto;
     }
@@ -268,6 +282,7 @@ public class PracticalClassService {
             dto.setInstructorName(instructor.getName());
             dto.setInstructorLastName(instructor.getLastname());
             dto.setInstructorEmail(instructor.getEmail());
+
 
             dto.setPreferredLocation(pc.getCandidate().getPreferredLocation());
             dto.setAccepted(pc.isAccepted());

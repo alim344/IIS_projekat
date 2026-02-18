@@ -93,11 +93,20 @@ public class ScheduledNotificationService {
 
     }
 
-    public void sendRequestAcceptedNotification(LocalDateTime startTime, Candidate candidate){
+    public void sendRequestAcceptedNotification(Candidate candidate, LocalDateTime startTime){
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        String dayDate = String.valueOf(startTime.getDayOfMonth());
         String day = startTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-        String from = startTime.format(timeFormatter);
-        String text = "Your request has been accepted. New class has been created on" + day + " at " + from;
+        String time = startTime.format(timeFormatter);
+
+        String text = "Request update: Your request has been accepted. Your class is scheduled for "+ dayDate +" "+day+ " at " + time;
+        sendNotification(text, candidate);
+    }
+
+    public void sendRequestDeniedNotification(Candidate candidate){
+
+        String text = "Request update: Instructor had no available spots for your requested class, see you next week!!";
         sendNotification(text, candidate);
     }
 
