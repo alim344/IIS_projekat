@@ -32,7 +32,8 @@ public class PracticalClass {
     @Column(nullable = false)
     private boolean accepted = false; // da li je cas prihvacen od strane kandidata
 
-
+    @Column(length = 500)
+    private String notes;
 
 
 }

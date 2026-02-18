@@ -1,5 +1,7 @@
 package com.example.autoskola.dto;
 
+import com.example.autoskola.model.Candidate;
+import com.example.autoskola.model.PracticalClass;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +31,17 @@ public class PracticalDTO {
         this.endTime = endTime;
         this.email = email;
         this.accepted = accepted;
+    }
+
+    public PracticalDTO(Candidate candidate, PracticalClass pc) {
+        this.id = candidate.getId();
+        this.name = candidate.getName();
+        this.lastname = candidate.getLastname();
+        this.category = candidate.getCategory().toString();
+        this.startTime = pc.getStartTime();
+        this.endTime = pc.getEndTime();
+        this.email = candidate.getEmail();
+        this.accepted = pc.isAccepted();
     }
 
 

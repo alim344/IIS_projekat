@@ -116,4 +116,7 @@ public class VehicleService {
         return vehicleRepository.findAllByStatus(status);
     }
 
+    public Vehicle save(Vehicle vehicle) {
+        return vehicleRepository.save(vehicle);
+    }
 }
