@@ -34,7 +34,7 @@ public class Candidate extends User{
     @Column(name = "preferred_location")
     private String preferredLocation;
 
-
-
+    @Column
+    private boolean theoryCompleted;
 
 }

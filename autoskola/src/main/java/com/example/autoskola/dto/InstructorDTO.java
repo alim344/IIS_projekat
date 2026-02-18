@@ -24,12 +24,15 @@ public class InstructorDTO {
 
     private List<InstructorDocumentsDTO> documents;
 
+    private Integer maxCapacity;
+
     public InstructorDTO(Instructor instructor) {
         this.id = instructor.getId();
         this.username = instructor.getUsername();
         this.email = instructor.getEmail();
         this.name = instructor.getName();
         this.lastName = instructor.getLastname();
+        this.maxCapacity = instructor.getMaxCapacity();
 
         if (instructor.getVehicle() != null) {
             this.vehicle = new VehicleDTO(instructor.getVehicle());

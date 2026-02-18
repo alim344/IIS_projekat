@@ -1,10 +1,6 @@
 package com.example.autoskola.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,4 +18,11 @@ public class Instructor extends User{
 
     @OneToMany(mappedBy = "instructor")
     private List<InstructorDocuments> documents;
+
+    @OneToMany(mappedBy = "instructor", fetch = FetchType.LAZY)
+    private List<Candidate> candidates;
+
+    @Column(nullable = false)
+    private Integer maxCapacity;
+
 }

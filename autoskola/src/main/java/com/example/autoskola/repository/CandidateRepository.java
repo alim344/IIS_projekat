@@ -13,4 +13,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
         Optional<Candidate> findById(Long id);
 
         List<Candidate> getByInstructorId(Long instructorId);
+
+        List<Candidate> findByTheoryCompletedTrueAndInstructorIsNull();
 }
