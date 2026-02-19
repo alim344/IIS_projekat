@@ -1,6 +1,7 @@
 package com.example.autoskola.controller;
 
 import com.example.autoskola.dto.ScheduledNotifDTO;
+import com.example.autoskola.model.Candidate;
 import com.example.autoskola.service.CandidateService;
 import com.example.autoskola.service.ScheduledNotificationService;
 import com.example.autoskola.util.TokenUtils;
@@ -32,9 +33,9 @@ public class ScheduledNotificationController {
     public ResponseEntity<List<ScheduledNotifDTO>> getCandidateNotifs(HttpServletRequest req) {
         String token = tokenUtils.getToken(req);
         String email = tokenUtils.getEmailFromToken(token);
-        long candidate_id = candidateService.getIdByEmail(email);
+        Candidate candidate = candidateService.findByEmail(email);
 
-        return ResponseEntity.ok(scheduledNotificationService.getCandidateClassNotif(candidate_id));
+        return ResponseEntity.ok(scheduledNotificationService.getCandidateClassNotif(candidate));
     }
 
 }

@@ -19,8 +19,8 @@ public class ScheduledNotification {
 
 
     @ManyToOne
-    @JoinColumn(name = "candidate_id")
-    private Candidate candidate;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column
     @Enumerated(EnumType.STRING)

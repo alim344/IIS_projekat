@@ -3,10 +3,7 @@ package com.example.autoskola.service;
 import com.example.autoskola.dto.DraftPracticalClassDTO;
 import com.example.autoskola.dto.PracticalDTO;
 import com.example.autoskola.dto.ScheduledNotifDTO;
-import com.example.autoskola.model.Candidate;
-import com.example.autoskola.model.PracticalClass;
-import com.example.autoskola.model.ScheduledNotifType;
-import com.example.autoskola.model.ScheduledNotification;
+import com.example.autoskola.model.*;
 import com.example.autoskola.repository.ScheduledNotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,14 +22,26 @@ public class ScheduledNotificationService {
     private ScheduledNotificationRepository scheduledNotificationRepository;
 
 
+    public void sendNotification(String text, User user, ScheduledNotifType type){
 
-    public List<ScheduledNotification> findByCandidateId(long candidate_id){
-        return scheduledNotificationRepository.findByCandidate_Id(candidate_id);
+        ScheduledNotification notif = new ScheduledNotification();
+        notif.setText(text);
+        notif.setUser(user);
+        notif.setType(type);
+        save(notif);
+
     }
 
-    public List<ScheduledNotifDTO> getCandidateClassNotif(long candidate_id){
+
+
+    public List<ScheduledNotification> findByUser(User user){
+        return scheduledNotificationRepository.findByUser(user);
+    }
+
+
+    public List<ScheduledNotifDTO> getCandidateClassNotif(Candidate candidate){
         List<ScheduledNotifDTO> dtos = new ArrayList<>();
-        List<ScheduledNotification> notifications = findByCandidateId(candidate_id);
+        List<ScheduledNotification> notifications = findByUser(candidate);
         for (ScheduledNotification notification : notifications) {
             ScheduledNotifDTO dto = new ScheduledNotifDTO();
             dto.setText(notification.getText());
@@ -46,15 +55,7 @@ public class ScheduledNotificationService {
         return scheduledNotificationRepository.save(scheduledNotification);
     }
 
-    public void sendNotification(String text, Candidate candidate, ScheduledNotifType type){
 
-        ScheduledNotification notif = new ScheduledNotification();
-        notif.setText(text);
-        notif.setCandidate(candidate);
-        notif.setType(type);
-        save(notif);
-
-    }
 
     public void sendCreateNotification( LocalDateTime startTime, Candidate candidate){
 
