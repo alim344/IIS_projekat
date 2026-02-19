@@ -34,7 +34,7 @@ public class ScheduledNotificationController {
         String email = tokenUtils.getEmailFromToken(token);
         long candidate_id = candidateService.getIdByEmail(email);
 
-        return ResponseEntity.ok(scheduledNotificationService.getCandidateNotif(candidate_id));
+        return ResponseEntity.ok(scheduledNotificationService.getCandidateClassNotif(candidate_id));
     }
 
 }

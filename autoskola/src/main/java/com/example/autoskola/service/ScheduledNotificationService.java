@@ -5,6 +5,7 @@ import com.example.autoskola.dto.PracticalDTO;
 import com.example.autoskola.dto.ScheduledNotifDTO;
 import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.PracticalClass;
+import com.example.autoskola.model.ScheduledNotifType;
 import com.example.autoskola.model.ScheduledNotification;
 import com.example.autoskola.repository.ScheduledNotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,13 @@ public class ScheduledNotificationService {
         return scheduledNotificationRepository.findByCandidate_Id(candidate_id);
     }
 
-    public List<ScheduledNotifDTO> getCandidateNotif(long candidate_id){
+    public List<ScheduledNotifDTO> getCandidateClassNotif(long candidate_id){
         List<ScheduledNotifDTO> dtos = new ArrayList<>();
         List<ScheduledNotification> notifications = findByCandidateId(candidate_id);
         for (ScheduledNotification notification : notifications) {
             ScheduledNotifDTO dto = new ScheduledNotifDTO();
             dto.setText(notification.getText());
+            dto.setType(notification.getType().toString());
             dtos.add(dto);
         }
         return dtos;
@@ -44,11 +46,12 @@ public class ScheduledNotificationService {
         return scheduledNotificationRepository.save(scheduledNotification);
     }
 
-    public void sendNotification(String text,Candidate candidate){
+    public void sendNotification(String text, Candidate candidate, ScheduledNotifType type){
 
         ScheduledNotification notif = new ScheduledNotification();
         notif.setText(text);
         notif.setCandidate(candidate);
+        notif.setType(type);
         save(notif);
 
     }
@@ -60,7 +63,7 @@ public class ScheduledNotificationService {
 
         String from = startTime.format(timeFormatter);
         String text = "Class Update: New class has been created on " + day + " at " + from;
-        sendNotification(text, candidate);
+        sendNotification(text, candidate, ScheduledNotifType.CLASS);
 
     }
 
@@ -89,7 +92,7 @@ public class ScheduledNotificationService {
             );
         }
 
-        sendNotification(text, pclass.getCandidate());
+        sendNotification(text, pclass.getCandidate(),ScheduledNotifType.UPDATE);
 
     }
 
@@ -101,20 +104,20 @@ public class ScheduledNotificationService {
         String time = startTime.format(timeFormatter);
 
         String text = "Request update: Your request has been accepted. Your class is scheduled for "+ dayDate +" "+day+ " at " + time;
-        sendNotification(text, candidate);
+        sendNotification(text, candidate,ScheduledNotifType.REQUEST);
     }
 
     public void sendRequestDeniedNotification(Candidate candidate){
 
         String text = "Request update: Instructor had no available spots for your requested class, see you next week!!";
-        sendNotification(text, candidate);
+        sendNotification(text, candidate,ScheduledNotifType.REQUEST);
     }
 
     public void sendDeletionNotification(LocalDateTime startTime, Candidate candidate){
         String dayDate = String.valueOf(startTime.getDayOfMonth());
         String day = startTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
         String text = "Class Update: Class on " + day + " " + dayDate + ". has been deleted";
-        sendNotification(text, candidate);
+        sendNotification(text, candidate,ScheduledNotifType.CLASS);
     }
 
 

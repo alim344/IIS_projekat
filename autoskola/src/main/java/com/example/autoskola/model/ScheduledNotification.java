@@ -22,4 +22,8 @@ public class ScheduledNotification {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ScheduledNotifType type;
+
 }
