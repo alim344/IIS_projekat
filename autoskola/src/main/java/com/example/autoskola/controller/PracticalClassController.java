@@ -19,6 +19,7 @@ import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,13 +40,13 @@ public class PracticalClassController {
     private ScheduledNotificationService scheduledNotificationService;
 
     @GetMapping("/nextWeek/instructor")
-    public ResponseEntity<List<PracticalClass>> getNextWeeksInstructorClasses( @RequestParam long instructorId){
+    public ResponseEntity<List<PracticalClass>> getNextWeeksInstructorClasses(@RequestParam long instructorId) {
         return ResponseEntity.ok(practicalClassService.getInstructorNextWeekClasses(instructorId));
     }
 
     @GetMapping("/instructor/nextschedule")
-    public ResponseEntity<List<PracticalClass>> getInstructorNextWeekClasses(HttpServletRequest request){
-        String token= tokenUtils.getToken(request);
+    public ResponseEntity<List<PracticalClass>> getInstructorNextWeekClasses(HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         long instructorId = instructorService.getIdByEmail(email);
 
@@ -54,9 +55,9 @@ public class PracticalClassController {
     }
 
     @GetMapping("/instructor/thisschedule")
-    public ResponseEntity<List<PracticalClass>> getInstructorThisWeekClasses(HttpServletRequest request){
+    public ResponseEntity<List<PracticalClass>> getInstructorThisWeekClasses(HttpServletRequest request) {
 
-        String token= tokenUtils.getToken(request);
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         long instructorId = instructorService.getIdByEmail(email);
         return ResponseEntity.ok(practicalClassService.getInstructorThisWeekClasses(instructorId));
@@ -64,8 +65,8 @@ public class PracticalClassController {
 
 
     @GetMapping("/candidate/nextschedlue")
-    public ResponseEntity<List<PracticalClass>> getCandidateNextWeekPracticalClasses(HttpServletRequest request){
-        String token= tokenUtils.getToken(request);
+    public ResponseEntity<List<PracticalClass>> getCandidateNextWeekPracticalClasses(HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         long candidateId = candidateService.getIdByEmail(email);
         return ResponseEntity.ok(practicalClassService.getCandidateNextWeekPracticalClasses(candidateId));
@@ -73,33 +74,33 @@ public class PracticalClassController {
 
 
     @GetMapping("/candidate/thisschedlue")
-    public ResponseEntity<List<PracticalClass>> getCandidateThisWeekPracticalClasses(HttpServletRequest request){
-        String token= tokenUtils.getToken(request);
+    public ResponseEntity<List<PracticalClass>> getCandidateThisWeekPracticalClasses(HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         long candidateId = candidateService.getIdByEmail(email);
         return ResponseEntity.ok(practicalClassService.getCandidateThisWeekPracticalClasses(candidateId));
     }
 
     @GetMapping("/fullschedule")
-    public ResponseEntity<List<PracticalDTO>> getInstructorClasses(HttpServletRequest request){
-        String token= tokenUtils.getToken(request);
+    public ResponseEntity<List<PracticalDTO>> getInstructorClasses(HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         long instructorId = instructorService.getIdByEmail(email);
         return ResponseEntity.ok(practicalClassService.getInstructorSchedule(instructorId));
     }
 
     @DeleteMapping("/deleteById/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable long id){
+    public ResponseEntity<Void> deleteById(@PathVariable long id) {
         practicalClassService.deleteClass(id);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/updateDateTime")
-    public ResponseEntity<PracticalDTO> updateClass(@RequestBody PracticalDTO dto){
+    public ResponseEntity<PracticalDTO> updateClass(@RequestBody PracticalDTO dto) {
 
         PracticalDTO pclass = practicalClassService.updateDateTime(dto);
 
-        if(pclass == null){
+        if (pclass == null) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
@@ -108,9 +109,9 @@ public class PracticalClassController {
     }
 
     @PostMapping("/manual_schedule/save")
-    public ResponseEntity<String> saveManualSchedule(@RequestBody List<DraftPracticalClassDTO> dtos, HttpServletRequest request){
+    public ResponseEntity<String> saveManualSchedule(@RequestBody List<DraftPracticalClassDTO> dtos, HttpServletRequest request) {
 
-        String token= tokenUtils.getToken(request);
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         Instructor i = instructorService.findByEmail(email);
 
@@ -119,29 +120,28 @@ public class PracticalClassController {
     }
 
     @PostMapping("/saveClass")
-    public ResponseEntity<DraftPracticalClassDTO> saveClass(@RequestBody DraftPracticalClassDTO dto,@RequestParam(required = false) Long requestId, HttpServletRequest request){
-        String token= tokenUtils.getToken(request);
+    public ResponseEntity<DraftPracticalClassDTO> saveClass(@RequestBody DraftPracticalClassDTO dto, @RequestParam(required = false) Long requestId, HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         Instructor i = instructorService.findByEmail(email);
 
-        if(dto.getStartTime() == null || dto.getEndTime() == null ){
+        if (dto.getStartTime() == null || dto.getEndTime() == null) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return ResponseEntity.ok(practicalClassService.saveByDraftDTO(dto,i,requestId));
+        return ResponseEntity.ok(practicalClassService.saveByDraftDTO(dto, i, requestId));
     }
 
 
-
     @GetMapping("/getCopiedSchedule")
-    public ResponseEntity<List<PracticalDTO>> getCopiedSchedule(HttpServletRequest request){
+    public ResponseEntity<List<PracticalDTO>> getCopiedSchedule(HttpServletRequest request) {
 
-        String token= tokenUtils.getToken(request);
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         long instructorId = instructorService.getIdByEmail(email);
 
         List<PracticalDTO> dtos = practicalClassService.getCopiedSchedule(instructorId);
 
-        if(dtos == null){
+        if (dtos == null) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
@@ -149,11 +149,9 @@ public class PracticalClassController {
     }
 
 
-
-
     @GetMapping("/candidate/fullschedule")
-    public ResponseEntity<List<CandidatePracticalDTO>> getCandidateSchedule(HttpServletRequest request){
-        String token= tokenUtils.getToken(request);
+    public ResponseEntity<List<CandidatePracticalDTO>> getCandidateSchedule(HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         long id = candidateService.getIdByEmail(email);
 
@@ -161,8 +159,8 @@ public class PracticalClassController {
     }
 
     @PutMapping("/{classId}/record")
-    public ResponseEntity<PracticalDTO> recordClass(@PathVariable long classId, @RequestBody RecordPracticalDTO dto, HttpServletRequest request){
-        String token= tokenUtils.getToken(request);
+    public ResponseEntity<PracticalDTO> recordClass(@PathVariable long classId, @RequestBody RecordPracticalDTO dto, HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
         long instructorId = instructorService.getIdByEmail(email);
 
@@ -172,9 +170,17 @@ public class PracticalClassController {
 
 
     @PatchMapping("/acceptClass/{classId}")
-    public ResponseEntity<String> acceptPracticalClass(@PathVariable long classId){
+    public ResponseEntity<String> acceptPracticalClass(@PathVariable long classId) {
         practicalClassService.acceptClass(classId);
         return ResponseEntity.ok("Class accepted");
     }
 
+    @GetMapping("/admin/instructor/{instructorId}/schedule")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<PracticalDTO>> getInstructorScheduleForAdmin(@PathVariable Long instructorId) {
+        List<PracticalDTO> schedule = practicalClassService.getInstructorSchedule(instructorId);
+        return ResponseEntity.ok(schedule);
+
+
+    }
 }

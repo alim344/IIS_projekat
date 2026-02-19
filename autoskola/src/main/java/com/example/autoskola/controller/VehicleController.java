@@ -2,6 +2,7 @@ package com.example.autoskola.controller;
 
 import com.example.autoskola.dto.InstructorDTO;
 import com.example.autoskola.dto.VehicleDTO;
+import com.example.autoskola.dto.VehicleStatsDTO;
 import com.example.autoskola.model.Vehicle;
 import com.example.autoskola.model.VehicleStatus;
 import com.example.autoskola.service.VehicleService;
@@ -80,6 +81,17 @@ public class VehicleController {
                 .toList();
 
         return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/{id}/stats")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_INSTRUCTOR')")
+    public ResponseEntity<VehicleStatsDTO> getVehicleStats(
+            @PathVariable Long id,
+            @RequestParam int year,
+            @RequestParam int month) {
+
+        VehicleStatsDTO stats = vehicleService.getVehicleStats(id, year, month);
+        return ResponseEntity.ok(stats);
     }
 
 }

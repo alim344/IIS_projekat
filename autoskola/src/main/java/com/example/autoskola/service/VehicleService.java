@@ -1,17 +1,18 @@
 package com.example.autoskola.service;
 
 import com.example.autoskola.dto.VehicleDTO;
-import com.example.autoskola.model.Instructor;
-import com.example.autoskola.model.Vehicle;
-import com.example.autoskola.model.VehicleStatus;
+import com.example.autoskola.dto.VehicleStatsDTO;
+import com.example.autoskola.model.*;
 
 
+import com.example.autoskola.repository.FuelRecordRepository;
 import com.example.autoskola.repository.VehicleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,9 @@ public class VehicleService {
 
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private FuelRecordRepository fuelRecordRepository;
 
     public Optional<Vehicle> findById(Long id) {
         return vehicleRepository.findById(id);
@@ -118,5 +122,49 @@ public class VehicleService {
 
     public Vehicle save(Vehicle vehicle) {
         return vehicleRepository.save(vehicle);
+    }
+
+    public VehicleStatsDTO getVehicleStats(Long vehicleId, int year, int month) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        LocalDate startOfMonth = LocalDate.of(year, month, 1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        List<FuelRecord> fuelRecords = fuelRecordRepository
+                .findByVehicleAndRefuelDateBetweenOrderByRefuelDateAsc(vehicle, startOfMonth, endOfMonth);
+
+        VehicleStatsDTO stats = new VehicleStatsDTO();
+        stats.setVehicleId(vehicleId);
+        stats.setMonth(YearMonth.of(year, month));
+        stats.setFuelRecordCount(fuelRecords.size());
+
+        if (!fuelRecords.isEmpty()) {
+            double totalLiters = fuelRecords.stream().mapToDouble(FuelRecord::getLiters).sum();
+            double totalCost = fuelRecords.stream().mapToDouble(FuelRecord::getTotalCost).sum();
+            stats.setTotalLiters(totalLiters);
+            stats.setTotalCost(totalCost);
+
+            stats.setAvgCostPerLiter(totalCost / totalLiters);
+
+            stats.setStartingMileage(fuelRecords.get(0).getMileageAtRefuel());
+            stats.setEndingMileage(fuelRecords.get(fuelRecords.size() - 1).getMileageAtRefuel());
+
+            stats.setDistanceTraveled(stats.getEndingMileage().intValue() - stats.getStartingMileage().intValue());
+
+            if (stats.getDistanceTraveled() > 0) {
+                stats.setAvgConsumption(totalLiters / stats.getDistanceTraveled() * 100);
+            }
+        } else {
+            stats.setTotalLiters(0);
+            stats.setTotalCost(0);
+            stats.setAvgCostPerLiter(0);
+            stats.setDistanceTraveled(0);
+            stats.setAvgConsumption(0);
+            stats.setStartingMileage(null);
+            stats.setEndingMileage(null);
+        }
+
+        return stats;
     }
 }
