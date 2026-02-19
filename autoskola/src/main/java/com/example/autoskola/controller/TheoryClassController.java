@@ -47,6 +47,13 @@ public class TheoryClassController {
         return ResponseEntity.ok(theoryClassService.getProfessorClasses(p));
     }
 
+    @GetMapping("/fullschedule")
+    public ResponseEntity<List<TheoryClassInfoDTO>> getAllClasses() {
+        return ResponseEntity.ok(theoryClassService.getAllClasses());
+    }
+
+
+
 
     @PatchMapping("/enroll/{classId}")
     public ResponseEntity<String> enroll(@PathVariable long classId, HttpServletRequest request) {

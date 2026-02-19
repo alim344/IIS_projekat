@@ -56,6 +56,10 @@ public class TheoryClassService {
 
     public List<TheoryClassInfoDTO> getProfessorClasses(Professor professor) {
         List<TheoryClass> tclasses = theoryClassRepository.findByProfessorId(professor.getId());
+        return getTheoryClassInfoDTOS(tclasses);
+    }
+
+    private static List<TheoryClassInfoDTO> getTheoryClassInfoDTOS(List<TheoryClass> tclasses) {
         List<TheoryClassInfoDTO> dtos = new ArrayList<>();
         for(TheoryClass theoryClass : tclasses){
             TheoryClassInfoDTO dto = new TheoryClassInfoDTO();
@@ -69,6 +73,11 @@ public class TheoryClassService {
 
         }
         return dtos;
+    }
+
+    public List<TheoryClassInfoDTO> getAllClasses() {
+        List<TheoryClass> theoryClassList = theoryClassRepository.findAll();
+        return getTheoryClassInfoDTOS(theoryClassList);
     }
 
 
