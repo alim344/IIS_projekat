@@ -12,4 +12,6 @@ public interface TheoryClassRepository extends JpaRepository<TheoryClass, Long> 
     List<TheoryClass> findByStudents_Id(Long candidateId);
 
     TheoryClass findById(long id);
+
+    List<TheoryClass> findByProfessorId(Long professorId);
 }
