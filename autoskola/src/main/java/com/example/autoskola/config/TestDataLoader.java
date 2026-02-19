@@ -86,13 +86,13 @@ public class TestDataLoader implements CommandLineRunner {
         instructor.setPassword(passwordEncoder.encode("123"));
         instructor.setEnabled(true);
         instructor.setRole(instructorRole);
+        instructor.setMaxCapacity(5);
         instructorRepository.save(instructor);
 
         // connect instructor ↔ vehicle
         instructor.setVehicle(vehicle1);
         vehicle1.setInstructor(instructor);
         vehicleRepository.save(vehicle1);
-
 
         instructorRepository.save(instructor);
         // ---------------- CANDIDATE ----------------
@@ -146,6 +146,15 @@ public class TestDataLoader implements CommandLineRunner {
         class3.setEndTime(LocalDateTime.now().minusDays(2).withHour(15).withMinute(30));
         class3.setAccepted(true);
         practicalClassRepository.save(class3);
+
+        //cas koji je prosao
+        PracticalClass class4 = new PracticalClass();
+        class4.setCandidate(candidate);
+        class4.setInstructor(instructor);
+        class4.setStartTime(LocalDateTime.now().minusDays(1).withHour(12).withMinute(30));
+        class4.setEndTime(LocalDateTime.now().minusDays(1).withHour(15).withMinute(30));
+        class4.setAccepted(true);
+        practicalClassRepository.save(class4);
 
         System.out.println("TEST DATA LOADED SUCCESSFULLY");
     }
