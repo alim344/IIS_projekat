@@ -1,6 +1,7 @@
 package com.example.autoskola.service;
 
 import com.example.autoskola.dto.CandidateTheoryClassDTO;
+import com.example.autoskola.dto.TheoryClassInfoDTO;
 import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.Professor;
 import com.example.autoskola.model.TheoryClass;
@@ -50,6 +51,33 @@ public class TheoryClassService {
         }
         return dtos;
 
+    }
+
+
+    public List<TheoryClassInfoDTO> getProfessorClasses(Professor professor) {
+        List<TheoryClass> tclasses = theoryClassRepository.findByProfessorId(professor.getId());
+        return getTheoryClassInfoDTOS(tclasses);
+    }
+
+    private static List<TheoryClassInfoDTO> getTheoryClassInfoDTOS(List<TheoryClass> tclasses) {
+        List<TheoryClassInfoDTO> dtos = new ArrayList<>();
+        for(TheoryClass theoryClass : tclasses){
+            TheoryClassInfoDTO dto = new TheoryClassInfoDTO();
+            dto.setId(theoryClass.getId());
+            dto.setCapacity(theoryClass.getCapacity());
+            dto.setStartTime(theoryClass.getStartTime());
+            dto.setEndTime(theoryClass.getEndTime());
+            dto.setEnrolledStudents(theoryClass.getEnrolledStudents());
+            dto.setLessonName(theoryClass.getTheoryLesson().getName());
+            dtos.add(dto);
+
+        }
+        return dtos;
+    }
+
+    public List<TheoryClassInfoDTO> getAllClasses() {
+        List<TheoryClass> theoryClassList = theoryClassRepository.findAll();
+        return getTheoryClassInfoDTOS(theoryClassList);
     }
 
 
