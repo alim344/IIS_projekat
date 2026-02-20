@@ -1,6 +1,7 @@
 package com.example.autoskola.repository;
 
 import com.example.autoskola.model.Candidate;
+import com.example.autoskola.model.TrainingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
         List<Candidate> getByInstructorId(Long instructorId);
 
         List<Candidate> findByTheoryCompletedTrueAndInstructorIsNull();
+
+        List<Candidate> findByStatus(TrainingStatus status);
 }

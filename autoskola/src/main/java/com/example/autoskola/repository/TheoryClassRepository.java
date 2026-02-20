@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface TheoryClassRepository extends JpaRepository<TheoryClass, Long> {
@@ -21,4 +23,8 @@ public interface TheoryClassRepository extends JpaRepository<TheoryClass, Long> 
             "WHERE s.id = :candidateId AND tc.theoryLesson.id = :lessonId")
     boolean isCandidateEnrolledInLesson(@Param("candidateId") Long candidateId,
                                         @Param("lessonId") Long lessonId);
+
+    boolean existsByProfessorIdAndStartTimeBetween(Long professorId, LocalDateTime startTime, LocalDateTime endTime);
+
+    List<TheoryClass> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
 }
