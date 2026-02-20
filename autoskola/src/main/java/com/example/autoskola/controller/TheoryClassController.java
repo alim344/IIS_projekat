@@ -68,6 +68,15 @@ public class TheoryClassController {
         }
     }
 
+    @PatchMapping("/leave/{classId}")
+    public ResponseEntity<String> leave(@PathVariable long classId,HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Candidate c = candidateService.findByEmail(email);
+        theoryClassService.leave(c,classId);
+        return ResponseEntity.ok("You left this class!!");
+    }
+
 
 
 }

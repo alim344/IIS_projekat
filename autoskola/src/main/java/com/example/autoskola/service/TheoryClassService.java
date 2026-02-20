@@ -109,11 +109,38 @@ public class TheoryClassService {
             throw new RuntimeException("You already listened to " + lesson.getName());
         }
 
+        if (theoryClassRepository.isCandidateEnrolledInLesson(c.getId(), lesson.getId())) {
+            throw new RuntimeException("You are already enrolled in a class for this lesson. Leave the class to join this one!");
+        }
+
         tclass.getStudents().add(c);
         tclass.setEnrolledStudents(tclass.getEnrolledStudents() + 1);
 
         theoryClassRepository.save(tclass);
 
+    }
+
+
+    @Transactional
+    public void leave(Candidate c, long class_id) {
+        TheoryClass tclass = findById(class_id);
+        if (tclass == null) {
+            throw new RuntimeException("Class not found");
+        }
+
+        if (!tclass.getStudents().contains(c)) {
+            return;
+        }
+
+        tclass.getStudents().remove(c);
+
+
+        if (tclass.getEnrolledStudents() > 0) {
+            tclass.setEnrolledStudents(tclass.getEnrolledStudents() - 1);
+        }
+
+
+        theoryClassRepository.saveAndFlush(tclass);
     }
 
 
