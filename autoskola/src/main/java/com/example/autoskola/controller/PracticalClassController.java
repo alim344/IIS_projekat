@@ -182,7 +182,7 @@ public class PracticalClassController {
     }
 
 
-    @GetMapping("/schedule/alg")
+    @PostMapping("/schedule/alg")
     public ResponseEntity<List<PracticalDTO>> generateSchedule(@RequestBody GeneratorDTO dto) {
 
         return ResponseEntity.ok(instructorScheduleGenerator.generateSchedule(dto.getLightDays(), dto.getEmails()));
