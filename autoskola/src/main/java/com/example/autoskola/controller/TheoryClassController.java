@@ -1,5 +1,6 @@
 package com.example.autoskola.controller;
 
+import com.example.autoskola.dto.AttendanceTheorySubmitDTO;
 import com.example.autoskola.dto.CandidateTheoryClassDTO;
 import com.example.autoskola.dto.TheoryClassAdminInfoDTO;
 import com.example.autoskola.dto.TheoryClassInfoDTO;
@@ -71,9 +72,6 @@ public class TheoryClassController {
     public ResponseEntity<List<TheoryClassInfoDTO>> getAllClasses() {
         return ResponseEntity.ok(theoryClassService.getAllClasses());
     }
-
-
-
 
     @PatchMapping("/enroll/{classId}")
     public ResponseEntity<String> enroll(@PathVariable long classId, HttpServletRequest request) {
@@ -184,6 +182,40 @@ public class TheoryClassController {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "Error deleting theory class: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    @GetMapping("/class/{classId}/students")
+    public ResponseEntity<?> getClassStudents(
+            @PathVariable Long classId,
+            HttpServletRequest request) {
+
+        String token = tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Professor professor = professorService.findByEmail(email);
+
+        try {
+            TheoryClassAdminInfoDTO dto = theoryClassService.getClassWithStudents(classId, professor.getId());
+            return ResponseEntity.ok(dto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/attendance")
+    public ResponseEntity<String> submitAttendance(
+            @RequestBody AttendanceTheorySubmitDTO dto,
+            HttpServletRequest request) {
+
+        String token = tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Professor professor = professorService.findByEmail(email);
+
+        try {
+            theoryClassService.submitAttendance(dto.getClassId(), dto.getPresentCandidateIds(), professor.getId());
+            return ResponseEntity.ok("Attendance submitted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

@@ -1,15 +1,15 @@
 package com.example.autoskola.service;
 
 import com.example.autoskola.dto.*;
-import com.example.autoskola.model.Candidate;
-import com.example.autoskola.model.Professor;
-import com.example.autoskola.model.TheoryClass;
-import com.example.autoskola.model.TheoryLesson;
+import com.example.autoskola.model.*;
+import com.example.autoskola.repository.CandidateRepository;
 import com.example.autoskola.repository.TheoryClassRepository;
+import com.example.autoskola.repository.TheoryLessonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +20,11 @@ public class TheoryClassService {
     @Autowired
     private TheoryClassRepository theoryClassRepository;
 
+    @Autowired
+    private TheoryLessonRepository theoryLessonRepository;
 
+    @Autowired
+    private CandidateService candidateService;
 
     public List<TheoryClass> findAll(){
         return theoryClassRepository.findAll();
@@ -197,17 +201,59 @@ public class TheoryClassService {
     public void deleteTheoryClass(Long classId) {
         TheoryClass theoryClass = findById(classId);
 
-        // Clear relationships to avoid foreign key constraints
         theoryClass.getStudents().clear();
         theoryClass.setProfessor(null);
         theoryClass.setTheoryLesson(null);
 
-        // Save to update relationships before deletion
         theoryClassRepository.save(theoryClass);
 
-        // Now delete the class
         theoryClassRepository.deleteById(classId);
 
         System.out.println("Theory class with id " + classId + " deleted successfully");
+    }
+
+    @Transactional
+    public void submitAttendance(Long classId, List<Long> presentCandidateIds, Long professorId) {
+        TheoryClass theoryClass = findById(classId);
+
+        if (!theoryClass.getProfessor().getId().equals(professorId)) {
+            throw new RuntimeException("You are not the professor of this class");
+        }
+
+        if (theoryClass.getStartTime().isAfter(LocalDateTime.now())) {
+            throw new RuntimeException("Class has not started yet");
+        }
+
+        TheoryLesson lesson = theoryClass.getTheoryLesson();
+        long totalLessons = theoryLessonRepository.count();
+
+        for (Candidate candidate : theoryClass.getStudents()) {
+            if (presentCandidateIds.contains(candidate.getId())) {
+                boolean alreadyAttended = candidate.getAttendedLessons().stream()
+                        .anyMatch(l -> l.getId().equals(lesson.getId()));
+
+                if (!alreadyAttended) {
+                    candidate.getAttendedLessons().add(lesson);
+
+                    // Provjeri da li je završio sve lekcije
+                    if (candidate.getAttendedLessons().size() >= totalLessons) {
+                        candidate.setTheoryCompleted(true);
+                        candidate.setStatus(TrainingStatus.PENDING);
+                    }
+
+                    candidateService.save(candidate);
+                }
+            }
+        }
+    }
+
+    public TheoryClassAdminInfoDTO getClassWithStudents(Long classId, Long professorId) {
+        TheoryClass theoryClass = findById(classId);
+
+        if (!theoryClass.getProfessor().getId().equals(professorId)) {
+            throw new RuntimeException("You are not the professor of this class");
+        }
+
+        return convertToDTO(theoryClass);
     }
 }
