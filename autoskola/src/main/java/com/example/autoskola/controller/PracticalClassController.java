@@ -1,15 +1,9 @@
 package com.example.autoskola.controller;
 
-import com.example.autoskola.dto.CandidatePracticalDTO;
-import com.example.autoskola.dto.DraftPracticalClassDTO;
-import com.example.autoskola.dto.PracticalDTO;
-import com.example.autoskola.dto.RecordPracticalDTO;
+import com.example.autoskola.dto.*;
 import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.PracticalClass;
-import com.example.autoskola.service.CandidateService;
-import com.example.autoskola.service.InstructorService;
-import com.example.autoskola.service.PracticalClassService;
-import com.example.autoskola.service.ScheduledNotificationService;
+import com.example.autoskola.service.*;
 import com.example.autoskola.util.TokenUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServlet;
@@ -22,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -38,6 +33,8 @@ public class PracticalClassController {
     private CandidateService candidateService;
     @Autowired
     private ScheduledNotificationService scheduledNotificationService;
+    @Autowired
+    private InstructorScheduleGenerator instructorScheduleGenerator;
 
     @GetMapping("/nextWeek/instructor")
     public ResponseEntity<List<PracticalClass>> getNextWeeksInstructorClasses(@RequestParam long instructorId) {
@@ -183,4 +180,13 @@ public class PracticalClassController {
 
 
     }
+
+
+    @GetMapping("/schedule/alg")
+    public ResponseEntity<List<PracticalDTO>> generateSchedule(@RequestBody GeneratorDTO dto) {
+
+        return ResponseEntity.ok(instructorScheduleGenerator.generateSchedule(dto.getLightDays(), dto.getEmails()));
+    }
+
+
 }
