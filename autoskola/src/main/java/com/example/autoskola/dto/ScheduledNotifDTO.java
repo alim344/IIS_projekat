@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 public class ScheduledNotifDTO {
 
-
-
+    public String type;
     public String text;
 
     public ScheduledNotifDTO() {

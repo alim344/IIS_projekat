@@ -1,6 +1,6 @@
 package com.example.autoskola.service;
 
-import com.example.autoskola.dto.CandidateTheoryClassDTO;
+import com.example.autoskola.dto.*;
 import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.Professor;
 import com.example.autoskola.model.TheoryClass;
@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TheoryClassService {
@@ -53,6 +54,33 @@ public class TheoryClassService {
     }
 
 
+    public List<TheoryClassInfoDTO> getProfessorClasses(Professor professor) {
+        List<TheoryClass> tclasses = theoryClassRepository.findByProfessorId(professor.getId());
+        return getTheoryClassInfoDTOS(tclasses);
+    }
+
+    private static List<TheoryClassInfoDTO> getTheoryClassInfoDTOS(List<TheoryClass> tclasses) {
+        List<TheoryClassInfoDTO> dtos = new ArrayList<>();
+        for(TheoryClass theoryClass : tclasses){
+            TheoryClassInfoDTO dto = new TheoryClassInfoDTO();
+            dto.setId(theoryClass.getId());
+            dto.setCapacity(theoryClass.getCapacity());
+            dto.setStartTime(theoryClass.getStartTime());
+            dto.setEndTime(theoryClass.getEndTime());
+            dto.setEnrolledStudents(theoryClass.getEnrolledStudents());
+            dto.setLessonName(theoryClass.getTheoryLesson().getName());
+            dtos.add(dto);
+
+        }
+        return dtos;
+    }
+
+    public List<TheoryClassInfoDTO> getAllClasses() {
+        List<TheoryClass> theoryClassList = theoryClassRepository.findAll();
+        return getTheoryClassInfoDTOS(theoryClassList);
+    }
+
+
     public boolean isStudentEnrolled(TheoryClass theoryClass, Candidate candidate) {
         return theoryClass.getStudents().contains(candidate);
     }
@@ -81,6 +109,10 @@ public class TheoryClassService {
             throw new RuntimeException("You already listened to " + lesson.getName());
         }
 
+        if (theoryClassRepository.isCandidateEnrolledInLesson(c.getId(), lesson.getId())) {
+            throw new RuntimeException("You are already enrolled in a class for this lesson. Leave the class to join this one!");
+        }
+
         tclass.getStudents().add(c);
         tclass.setEnrolledStudents(tclass.getEnrolledStudents() + 1);
 
@@ -89,4 +121,93 @@ public class TheoryClassService {
     }
 
 
+    @Transactional
+    public void leave(Candidate c, long class_id) {
+        TheoryClass tclass = findById(class_id);
+        if (tclass == null) {
+            throw new RuntimeException("Class not found");
+        }
+
+        if (!tclass.getStudents().contains(c)) {
+            return;
+        }
+
+        tclass.getStudents().remove(c);
+
+
+        if (tclass.getEnrolledStudents() > 0) {
+            tclass.setEnrolledStudents(tclass.getEnrolledStudents() - 1);
+        }
+
+
+        theoryClassRepository.saveAndFlush(tclass);
+    }
+
+    public TheoryClassAdminInfoDTO convertToDTO(TheoryClass theoryClass) {
+        TheoryClassAdminInfoDTO dto = new TheoryClassAdminInfoDTO();
+        dto.setId(theoryClass.getId());
+        dto.setStartTime(theoryClass.getStartTime());
+        dto.setEndTime(theoryClass.getEndTime());
+        dto.setCapacity(theoryClass.getCapacity());
+        dto.setEnrolledStudents(theoryClass.getEnrolledStudents());
+
+        if (theoryClass.getTheoryLesson() != null) {
+            dto.setTheoryLesson(new TheoryLessonSimpleDTO(theoryClass.getTheoryLesson()));
+        }
+
+        if (theoryClass.getProfessor() != null) {
+            dto.setProfessor(new ProfessorDTO(theoryClass.getProfessor()));
+        }
+
+        if (theoryClass.getStudents() != null) {
+            dto.setStudents(theoryClass.getStudents().stream()
+                    .map(CandidateSimpleDTO::new)
+                    .collect(Collectors.toList()));
+        }
+
+        return dto;
+    }
+
+    public TheoryClassAdminInfoDTO toDTO(TheoryClass tc) {
+        TheoryClassAdminInfoDTO dto = new TheoryClassAdminInfoDTO();
+        dto.setId(tc.getId());
+        dto.setStartTime(tc.getStartTime());
+        dto.setEndTime(tc.getEndTime());
+        dto.setCapacity(tc.getCapacity());
+        dto.setEnrolledStudents(tc.getEnrolledStudents());
+
+        if (tc.getTheoryLesson() != null) {
+            dto.setTheoryLesson(new TheoryLessonSimpleDTO(tc.getTheoryLesson())); // Use TheoryLessonSimpleDTO instead
+        }
+
+        if (tc.getProfessor() != null) {
+            dto.setProfessor(new ProfessorDTO(tc.getProfessor()));
+        }
+
+        if (tc.getStudents() != null) {
+            dto.setStudents(tc.getStudents().stream()
+                    .map(CandidateSimpleDTO::new)
+                    .collect(Collectors.toList()));
+        }
+
+        return dto;
+    }
+
+    @Transactional
+    public void deleteTheoryClass(Long classId) {
+        TheoryClass theoryClass = findById(classId);
+
+        // Clear relationships to avoid foreign key constraints
+        theoryClass.getStudents().clear();
+        theoryClass.setProfessor(null);
+        theoryClass.setTheoryLesson(null);
+
+        // Save to update relationships before deletion
+        theoryClassRepository.save(theoryClass);
+
+        // Now delete the class
+        theoryClassRepository.deleteById(classId);
+
+        System.out.println("Theory class with id " + classId + " deleted successfully");
+    }
 }

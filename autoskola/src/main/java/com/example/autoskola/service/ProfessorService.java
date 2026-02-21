@@ -62,4 +62,8 @@ public class ProfessorService {
         return professorRepository.save(professor);
     }
 
+    public Professor findByEmail(String email) {
+        return professorRepository.findByEmail(email);
+    }
+
 }

@@ -15,6 +15,8 @@ public class FuelRecordDTO {
     private Integer mileageAtRefuel;
     private Long vehicleId;
     private Long instructorId;
+    private String instructorName;
+    private String instructorLastname;
 
     public FuelRecordDTO() {}
 
@@ -25,14 +27,8 @@ public class FuelRecordDTO {
         this.mileageAtRefuel = record.getMileageAtRefuel();
         this.vehicleId = record.getVehicle().getId();
         this.instructorId = record.getInstructor().getId();
+        this.instructorName = record.getInstructor().getName();
+        this.instructorLastname = record.getInstructor().getLastname();
     }
 
-    public FuelRecordDTO(LocalDate refuelDate, Double liters, Double totalCost, Integer mileageAtRefuel, Long vehicleId, Long instructorId) {
-        this.refuelDate = refuelDate;
-        this.liters = liters;
-        this.totalCost = totalCost;
-        this.mileageAtRefuel = mileageAtRefuel;
-        this.vehicleId = vehicleId;
-        this.instructorId = instructorId;
-    }
 }
