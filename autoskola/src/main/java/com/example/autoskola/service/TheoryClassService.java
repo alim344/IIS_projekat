@@ -192,4 +192,22 @@ public class TheoryClassService {
 
         return dto;
     }
+
+    @Transactional
+    public void deleteTheoryClass(Long classId) {
+        TheoryClass theoryClass = findById(classId);
+
+        // Clear relationships to avoid foreign key constraints
+        theoryClass.getStudents().clear();
+        theoryClass.setProfessor(null);
+        theoryClass.setTheoryLesson(null);
+
+        // Save to update relationships before deletion
+        theoryClassRepository.save(theoryClass);
+
+        // Now delete the class
+        theoryClassRepository.deleteById(classId);
+
+        System.out.println("Theory class with id " + classId + " deleted successfully");
+    }
 }

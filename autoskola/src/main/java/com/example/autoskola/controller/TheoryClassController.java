@@ -167,5 +167,23 @@ public class TheoryClassController {
         return ResponseEntity.ok(dtos);
     }
 
+    @DeleteMapping("/{classId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Map<String, String>> deleteTheoryClass(@PathVariable Long classId) {
+        try {
+            theoryClassService.deleteTheoryClass(classId);
 
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Theory class deleted successfully");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Error deleting theory class: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
 }
