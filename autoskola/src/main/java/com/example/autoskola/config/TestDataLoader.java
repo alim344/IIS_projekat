@@ -184,18 +184,111 @@ public class TestDataLoader implements CommandLineRunner {
         candidateRepository.save(c3);
         savePreference(c3, LocalTime.of(7, 0), LocalTime.of(12, 0));
 
-        // AFTERNOON (14:00-15:00) - preferenca 13:00-17:00
-        Candidate c4 = makeCandidate("stefan@gmail.com", "Stefan", "Stefanovic", "stefan", Category.B, instructor2, candidateRole);
+        Candidate c4 = makeCandidate("ana1@gmail.com", "Anica", "Anic", "anica", Category.B, instructor1, candidateRole);
         candidateRepository.save(c4);
-        savePreference(c4, LocalTime.of(13, 0), LocalTime.of(17, 0));
+        savePreference(c4, LocalTime.of(7, 0), LocalTime.of(12, 0));
 
-        Candidate c5 = makeCandidate("jelena@gmail.com", "Jelena", "Jelenic", "jelena", Category.B, instructor2, candidateRole);
+        Candidate c5 = makeCandidate("miljan@gmail.com", "Miljan", "Milanovic", "miljan", Category.B, instructor1, candidateRole);
         candidateRepository.save(c5);
-        savePreference(c5, LocalTime.of(13, 0), LocalTime.of(17, 0));
+        savePreference(c5, LocalTime.of(7, 0), LocalTime.of(12, 0));
 
-        Candidate c6 = makeCandidate("ivan@gmail.com", "Ivan", "Ivanovic", "ivan", Category.B, instructor2, candidateRole);
+        Candidate c6 = makeCandidate("majamajic@gmail.com", "Maja", "Majic", "majamajic", Category.B, instructor1, candidateRole);
         candidateRepository.save(c6);
-        savePreference(c6, LocalTime.of(13, 0), LocalTime.of(17, 0));
+        savePreference(c6, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        // MORNING (08:00-10:00) - preferenca 07:00-12:00
+        Candidate cc7 = makeCandidate("marko1@gmail.com", "Marko", "Markovic", "marko1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc7);
+        savePreference(cc7, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc8 = makeCandidate("sara1@gmail.com", "Sara", "Saric", "sara1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc8);
+        savePreference(cc8, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc9 = makeCandidate("nikola1@gmail.com", "Nikola", "Nikolic", "nikola1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc9);
+        savePreference(cc9, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc10 = makeCandidate("jelena1@gmail.com", "Jelena", "Jelic", "jelena1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc10);
+        savePreference(cc10, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc11 = makeCandidate("stefan1@gmail.com", "Stefan", "Stefanovic", "stefan1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc11);
+        savePreference(cc11, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc12 = makeCandidate("ana21@gmail.com", "Ana", "Petrovic", "ana21", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc12);
+        savePreference(cc12, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc13 = makeCandidate("david1@gmail.com", "David", "Davidovic", "david1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc13);
+        savePreference(cc13, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc14 = makeCandidate("luna1@gmail.com", "Luna", "Lunic", "luna1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc14);
+        savePreference(cc14, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc15 = makeCandidate("lazar1@gmail.com", "Lazar", "Lazarevic", "lazar1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc15);
+        savePreference(cc15, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc16 = makeCandidate("mina1@gmail.com", "Mina", "Minic", "mina1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc16);
+        savePreference(cc16, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc17 = makeCandidate("dusan1@gmail.com", "Dusan", "Dusanic", "dusan1", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc17);
+        savePreference(cc17, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc18 = makeCandidate("jovana@gmail.com", "Jovana", "Jovanovic", "jovana", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc18);
+        savePreference(cc18, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc19 = makeCandidate("Filip2@gmail.com", "Filip", "Filipovic", "filip2", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc19);
+        savePreference(cc19, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc20 = makeCandidate("teodora2@gmail.com", "Teodora", "Teodorovic", "teodora2", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc20);
+        savePreference(cc20, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc21 = makeCandidate("petar2@gmail.com", "Petar", "Petrovic", "petar2", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc21);
+        savePreference(cc21, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc22 = makeCandidate("katarina2@gmail.com", "Katarina", "Katanic", "katarina2", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc22);
+        savePreference(cc22, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc23 = makeCandidate("uros2@gmail.com", "Uros", "Urosevic", "uros2", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc23);
+        savePreference(cc23, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc24 = makeCandidate("sofija2@gmail.com", "Sofija", "Sofic", "sofija2", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc24);
+        savePreference(cc24, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc25 = makeCandidate("vuk2@gmail.com", "Vuk", "Vukovic", "vuk2", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc25);
+        savePreference(cc25, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        Candidate cc26 = makeCandidate("emilija2@gmail.com", "Emilija", "Emilic", "emilija2", Category.B, instructor1, candidateRole);
+        candidateRepository.save(cc26);
+        savePreference(cc26, LocalTime.of(7, 0), LocalTime.of(12, 0));
+
+        // AFTERNOON (14:00-15:00) - preferenca 13:00-17:00
+        Candidate c17 = makeCandidate("stefan2@gmail.com", "Stefan", "Stefanovic", "stefan2", Category.B, instructor2, candidateRole);
+        candidateRepository.save(c17);
+        savePreference(c17, LocalTime.of(13, 0), LocalTime.of(17, 0));
+
+        Candidate c18 = makeCandidate("veljko2@gmail.com", "Veljko", "Jelenic", "veljko2", Category.B, instructor2, candidateRole);
+        candidateRepository.save(c18);
+        savePreference(c18, LocalTime.of(13, 0), LocalTime.of(17, 0));
+
+        Candidate c19 = makeCandidate("milosiv@gmail.com", "Milos", "Ivanovic", "ivan", Category.B, instructor2, candidateRole);
+        candidateRepository.save(c19);
+        savePreference(c19, LocalTime.of(13, 0), LocalTime.of(17, 0));
 
         // EVENING (18:00-19:00) - preferenca 17:00-20:00
         Candidate c7 = makeCandidate("marija@gmail.com", "Marija", "Maric", "marija", Category.B, instructor1, candidateRole);
