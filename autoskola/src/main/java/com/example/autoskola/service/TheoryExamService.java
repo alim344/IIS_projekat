@@ -1,0 +1,134 @@
+package com.example.autoskola.service;
+
+import com.example.autoskola.dto.EligibleCandidateTheoryDTO;
+import com.example.autoskola.dto.RegisterExamDTO;
+import com.example.autoskola.dto.TheoryExamDTO;
+import com.example.autoskola.model.*;
+import com.example.autoskola.repository.CandidateRepository;
+import com.example.autoskola.repository.ProfessorRepository;
+import com.example.autoskola.repository.TheoryExamRepository;
+import com.example.autoskola.repository.TheoryLessonRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class TheoryExamService {
+    @Autowired
+    private TheoryExamRepository theoryExamRepository;
+
+    @Autowired
+    private CandidateRepository candidateRepository;
+
+    @Autowired
+    private ProfessorRepository professorRepository;
+
+    @Autowired
+    private TheoryLessonRepository theoryLessonRepository;
+
+    private static final int MIN_CANDIDATES_FOR_EXAM = 20;
+
+    public List<EligibleCandidateTheoryDTO> getEligibleCandidates() {
+        List<Candidate> candidates = candidateRepository.findByStatus(TrainingStatus.PENDING);
+
+        return candidates.stream().map(EligibleCandidateTheoryDTO::new).collect(Collectors.toList());
+    }
+
+    public boolean hasMinimumCandidates() {
+        long count = candidateRepository.countByStatus(TrainingStatus.PENDING);
+
+        return count >= MIN_CANDIDATES_FOR_EXAM;
+    }
+
+    @Transactional
+    public TheoryExamDTO registerForExam(Long professorId, RegisterExamDTO dto) {
+
+        if(dto.getCandidateIds().size() < MIN_CANDIDATES_FOR_EXAM) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Minimum candidates required: " + MIN_CANDIDATES_FOR_EXAM);
+        }
+
+        Professor professor = professorRepository.findById(professorId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor not found"));
+
+        List<Candidate> candidates = candidateRepository.findAllById(dto.getCandidateIds());
+
+        List<String> notEligible = candidates.stream()
+                .filter(c -> c.getStatus() != TrainingStatus.PENDING)
+                .map(c -> c.getName() + " " + c.getLastname())
+                .collect(Collectors.toList());
+
+        if(!notEligible.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Following candidates haven't completed theory: " +
+                            String.join(", ", notEligible));
+        }
+
+        int totalLessons = theoryLessonRepository.findAllByOrderByOrderNumberAsc().size();
+
+        List<String> incomplete = candidates.stream()
+                .filter(c -> c.getAttendedLessons().size() < totalLessons)
+                .map(c -> c.getName() + " " + c.getLastname() +
+                        " (" + c.getAttendedLessons().size() + "/" + totalLessons + " lessons)")
+                .collect(Collectors.toList());
+
+        if (!incomplete.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Following candidates haven't attended all lessons: " +
+                            String.join(", ", incomplete));
+        }
+
+        TheoryExam exam = new TheoryExam();
+        exam.setRegistrationDate(LocalDateTime.now());
+        exam.setRegisteredBy(professor);
+        exam.setCandidates(candidates);
+        exam.setStatus(TheoryExamStatus.REQUESTED);
+
+        TheoryExam saved = theoryExamRepository.save(exam);
+        return new TheoryExamDTO(saved);
+    }
+
+    public List<TheoryExamDTO> getAllExams() {
+        return theoryExamRepository.findAll().stream()
+                .map(TheoryExamDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<TheoryExamDTO> getProfessorExams(Long professorId) {
+        return theoryExamRepository.findByRegisteredById(professorId).stream()
+                .map(TheoryExamDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public TheoryExamDTO getExamDetails(Long examId) {
+        TheoryExam exam = theoryExamRepository.findById(examId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Exam not found"));
+
+        return new TheoryExamDTO(exam);
+    }
+    @Transactional
+    public void cancelExam(Long examId, Long professorId) {
+        TheoryExam exam = theoryExamRepository.findById(examId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Exam not found"));
+
+        if (!exam.getRegisteredBy().getId().equals(professorId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You can only cancel exams you registered");
+        }
+
+        if (exam.getStatus() == TheoryExamStatus.COMPLETED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Cannot cancel completed exam");
+        }
+
+        exam.setStatus(TheoryExamStatus.CANCELLED);
+        theoryExamRepository.save(exam);
+    }
+
+}

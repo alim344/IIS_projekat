@@ -1,5 +1,4 @@
 package com.example.autoskola.config;
-
 import com.example.autoskola.model.*;
 import com.example.autoskola.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +10,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.load-test-data", havingValue = "true")
 public class TestDataLoader implements CommandLineRunner {
+
     private final UserRepository userRepository;
     private final CandidateRepository candidateRepository;
     private final InstructorRepository instructorRepository;
@@ -27,7 +28,6 @@ public class TestDataLoader implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final PracticalClassRepository practicalClassRepository;
     private final TheoryLessonRepository theoryLessonRepository;
-    private final TheoryClassRepository theoryClassRepository;
 
     @Override
     public void run(String... args) {
@@ -185,111 +185,18 @@ public class TestDataLoader implements CommandLineRunner {
         candidateRepository.save(c3);
         savePreference(c3, LocalTime.of(7, 0), LocalTime.of(12, 0));
 
-        Candidate c4 = makeCandidate("ana1@gmail.com", "Anica", "Anic", "anica", Category.B, instructor1, candidateRole);
-        candidateRepository.save(c4);
-        savePreference(c4, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate c5 = makeCandidate("miljan@gmail.com", "Miljan", "Milanovic", "miljan", Category.B, instructor1, candidateRole);
-        candidateRepository.save(c5);
-        savePreference(c5, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate c6 = makeCandidate("majamajic@gmail.com", "Maja", "Majic", "majamajic", Category.B, instructor1, candidateRole);
-        candidateRepository.save(c6);
-        savePreference(c6, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        // MORNING (08:00-10:00) - preferenca 07:00-12:00
-        Candidate cc7 = makeCandidate("marko1@gmail.com", "Marko", "Markovic", "marko1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc7);
-        savePreference(cc7, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc8 = makeCandidate("sara1@gmail.com", "Sara", "Saric", "sara1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc8);
-        savePreference(cc8, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc9 = makeCandidate("nikola1@gmail.com", "Nikola", "Nikolic", "nikola1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc9);
-        savePreference(cc9, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc10 = makeCandidate("jelena1@gmail.com", "Jelena", "Jelic", "jelena1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc10);
-        savePreference(cc10, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc11 = makeCandidate("stefan1@gmail.com", "Stefan", "Stefanovic", "stefan1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc11);
-        savePreference(cc11, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc12 = makeCandidate("ana21@gmail.com", "Ana", "Petrovic", "ana21", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc12);
-        savePreference(cc12, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc13 = makeCandidate("david1@gmail.com", "David", "Davidovic", "david1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc13);
-        savePreference(cc13, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc14 = makeCandidate("luna1@gmail.com", "Luna", "Lunic", "luna1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc14);
-        savePreference(cc14, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc15 = makeCandidate("lazar1@gmail.com", "Lazar", "Lazarevic", "lazar1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc15);
-        savePreference(cc15, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc16 = makeCandidate("mina1@gmail.com", "Mina", "Minic", "mina1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc16);
-        savePreference(cc16, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc17 = makeCandidate("dusan1@gmail.com", "Dusan", "Dusanic", "dusan1", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc17);
-        savePreference(cc17, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc18 = makeCandidate("jovana@gmail.com", "Jovana", "Jovanovic", "jovana", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc18);
-        savePreference(cc18, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc19 = makeCandidate("Filip2@gmail.com", "Filip", "Filipovic", "filip2", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc19);
-        savePreference(cc19, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc20 = makeCandidate("teodora2@gmail.com", "Teodora", "Teodorovic", "teodora2", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc20);
-        savePreference(cc20, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc21 = makeCandidate("petar2@gmail.com", "Petar", "Petrovic", "petar2", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc21);
-        savePreference(cc21, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc22 = makeCandidate("katarina2@gmail.com", "Katarina", "Katanic", "katarina2", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc22);
-        savePreference(cc22, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc23 = makeCandidate("uros2@gmail.com", "Uros", "Urosevic", "uros2", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc23);
-        savePreference(cc23, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc24 = makeCandidate("sofija2@gmail.com", "Sofija", "Sofic", "sofija2", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc24);
-        savePreference(cc24, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc25 = makeCandidate("vuk2@gmail.com", "Vuk", "Vukovic", "vuk2", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc25);
-        savePreference(cc25, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
-        Candidate cc26 = makeCandidate("emilija2@gmail.com", "Emilija", "Emilic", "emilija2", Category.B, instructor1, candidateRole);
-        candidateRepository.save(cc26);
-        savePreference(cc26, LocalTime.of(7, 0), LocalTime.of(12, 0));
-
         // AFTERNOON (14:00-15:00) - preferenca 13:00-17:00
-        Candidate c17 = makeCandidate("stefan2@gmail.com", "Stefan", "Stefanovic", "stefan2", Category.B, instructor2, candidateRole);
-        candidateRepository.save(c17);
-        savePreference(c17, LocalTime.of(13, 0), LocalTime.of(17, 0));
+        Candidate c4 = makeCandidate("stefan@gmail.com", "Stefan", "Stefanovic", "stefan", Category.B, instructor2, candidateRole);
+        candidateRepository.save(c4);
+        savePreference(c4, LocalTime.of(13, 0), LocalTime.of(17, 0));
 
-        Candidate c18 = makeCandidate("veljko2@gmail.com", "Veljko", "Jelenic", "veljko2", Category.B, instructor2, candidateRole);
-        candidateRepository.save(c18);
-        savePreference(c18, LocalTime.of(13, 0), LocalTime.of(17, 0));
+        Candidate c5 = makeCandidate("jelena@gmail.com", "Jelena", "Jelenic", "jelena", Category.B, instructor2, candidateRole);
+        candidateRepository.save(c5);
+        savePreference(c5, LocalTime.of(13, 0), LocalTime.of(17, 0));
 
-        Candidate c19 = makeCandidate("milosiv@gmail.com", "Milos", "Ivanovic", "ivan", Category.B, instructor2, candidateRole);
-        candidateRepository.save(c19);
-        savePreference(c19, LocalTime.of(13, 0), LocalTime.of(17, 0));
+        Candidate c6 = makeCandidate("ivan@gmail.com", "Ivan", "Ivanovic", "ivan", Category.B, instructor2, candidateRole);
+        candidateRepository.save(c6);
+        savePreference(c6, LocalTime.of(13, 0), LocalTime.of(17, 0));
 
         // EVENING (18:00-19:00) - preferenca 17:00-20:00
         Candidate c7 = makeCandidate("marija@gmail.com", "Marija", "Maric", "marija", Category.B, instructor1, candidateRole);
@@ -338,43 +245,131 @@ public class TestDataLoader implements CommandLineRunner {
         savePracticalClass(c4, instructor2, LocalDateTime.now().plusDays(1).withHour(14).withMinute(0), LocalDateTime.now().plusDays(1).withHour(15).withMinute(30), false);
         savePracticalClass(c7, instructor1, LocalDateTime.now().plusDays(3).withHour(18).withMinute(0), LocalDateTime.now().plusDays(3).withHour(19).withMinute(30), false);
 
-//        // ---------------- THEORY CLASSES ----------------
-//        // Današnji čas (sada)
-//        TheoryClass theoryClass1 = new TheoryClass();
-//        theoryClass1.setProfessor(professor1);
-//        theoryClass1.setStartTime(LocalDateTime.now());
-//        theoryClass1.setEndTime(LocalDateTime.now().plusHours(1));
-//        theoryClass1.setCapacity(20);
-//        theoryClass1.setEnrolledStudents(0);
-//        theoryClass1.setTheoryLesson(theoryLessonRepository.findAll().get(0));
-//        theoryClassRepository.save(theoryClass1);
-//
-//        // Sutrašnji čas
-//        TheoryClass theoryClass2 = new TheoryClass();
-//        theoryClass2.setProfessor(professor1);
-//        theoryClass2.setStartTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(0));
-//        theoryClass2.setEndTime(LocalDateTime.now().plusDays(1).withHour(12).withMinute(0));
-//        theoryClass2.setCapacity(15);
-//        theoryClass2.setEnrolledStudents(0);
-//        theoryClass2.setTheoryLesson(theoryLessonRepository.findAll().get(1));
-//        theoryClassRepository.save(theoryClass2);
-//
-//        // Prekjučerašnji čas (završen)
-//        TheoryClass theoryClass3 = new TheoryClass();
-//        theoryClass3.setProfessor(professor2);
-//        theoryClass3.setStartTime(LocalDateTime.now().minusDays(2).withHour(17).withMinute(0));
-//        theoryClass3.setEndTime(LocalDateTime.now().minusDays(2).withHour(19).withMinute(0));
-//        theoryClass3.setCapacity(25);
-//        theoryClass3.setEnrolledStudents(3);
-//        theoryClass3.setTheoryLesson(theoryLessonRepository.findAll().get(5)); // Šesta lekcija
-//        // Dodaj par kandidata koji su prisustvovali
-//        theoryClass3.getStudents().add(c1);
-//        theoryClass3.getStudents().add(c2);
-//        theoryClass3.getStudents().add(c3);
-//        theoryClassRepository.save(theoryClass3);
+        // ---------------- PENDING CANDIDATES (završili teoriju, svih 40 lekcija) ----------------
+        List<TheoryLesson> allLessons = theoryLessonRepository.findAll();
 
+        Candidate p1 = makePendingCandidate("zoran@gmail.com", "Zoran", "Zoranic", "zoran", Category.B, instructor1, candidateRole);
+        p1.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p1);
+
+        Candidate p2 = makePendingCandidate("vesna@gmail.com", "Vesna", "Vesnic", "vesna", Category.B, instructor2, candidateRole);
+        p2.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p2);
+
+        Candidate p3 = makePendingCandidate("dragan@gmail.com", "Dragan", "Draganovic", "dragan", Category.A, instructor1, candidateRole);
+        p3.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p3);
+
+        Candidate p4 = makePendingCandidate("ivana@gmail.com", "Ivana", "Ivanic", "ivana", Category.B, instructor2, candidateRole);
+        p4.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p4);
+
+        Candidate p5 = makePendingCandidate("nemanja@gmail.com", "Nemanja", "Nemanjic", "nemanja", Category.A, instructor1, candidateRole);
+        p5.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p5);
+
+        Candidate p6 = makePendingCandidate("gordana@gmail.com", "Gordana", "Gordanic", "gordana", Category.B, instructor1, candidateRole);
+        p6.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p6);
+
+        Candidate p7 = makePendingCandidate("slobodan@gmail.com", "Slobodan", "Slobodanovic", "slobodan", Category.B, instructor2, candidateRole);
+        p7.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p7);
+
+        Candidate p8 = makePendingCandidate("milica@gmail.com", "Milica", "Milicic", "milica", Category.B, instructor1, candidateRole);
+        p8.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p8);
+
+        Candidate p9 = makePendingCandidate("vladislav@gmail.com", "Vladislav", "Vladicic", "vladislav", Category.A, instructor2, candidateRole);
+        p9.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p9);
+
+        Candidate p10 = makePendingCandidate("biljana@gmail.com", "Biljana", "Biljanic", "biljana", Category.B, instructor1, candidateRole);
+        p10.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p10);
+
+        Candidate p11 = makePendingCandidate("radoslav@gmail.com", "Radoslav", "Radosavljevic", "radoslav", Category.B, instructor2, candidateRole);
+        p11.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p11);
+
+        Candidate p12 = makePendingCandidate("mirjana@gmail.com", "Mirjana", "Mirjanic", "mirjana", Category.B, instructor1, candidateRole);
+        p12.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p12);
+
+        Candidate p13 = makePendingCandidate("branislav@gmail.com", "Branislav", "Brankovic", "branislav", Category.A, instructor2, candidateRole);
+        p13.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p13);
+
+        Candidate p14 = makePendingCandidate("snezana@gmail.com", "Snezana", "Snezic", "snezana", Category.B, instructor1, candidateRole);
+        p14.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p14);
+
+        Candidate p15 = makePendingCandidate("aleksandrap@gmail.com", "Aleksandra", "Petrovic", "aleksandrap", Category.B, instructor2, candidateRole);
+        p15.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p15);
+
+        Candidate p16 = makePendingCandidate("bogdan@gmail.com", "Bogdan", "Bogdanovic", "bogdan", Category.B, instructor1, candidateRole);
+        p16.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p16);
+
+        Candidate p17 = makePendingCandidate("tatjana@gmail.com", "Tatjana", "Tatjanic", "tatjana", Category.A, instructor2, candidateRole);
+        p17.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p17);
+
+        Candidate p18 = makePendingCandidate("nebojsa@gmail.com", "Nebojsa", "Nebojsic", "nebojsa", Category.B, instructor1, candidateRole);
+        p18.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p18);
+
+        Candidate p19 = makePendingCandidate("jasmina@gmail.com", "Jasmina", "Jasminic", "jasmina", Category.B, instructor2, candidateRole);
+        p19.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p19);
+
+        Candidate p20 = makePendingCandidate("dragutin@gmail.com", "Dragutin", "Dragutinovic", "dragutin", Category.B, instructor1, candidateRole);
+        p20.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p20);
+
+        Candidate p21 = makePendingCandidate("ljiljana@gmail.com", "Ljiljana", "Ljiljanic", "ljiljana", Category.A, instructor2, candidateRole);
+        p21.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p21);
+
+        Candidate p22 = makePendingCandidate("goran@gmail.com", "Goran", "Goranic", "goran", Category.B, instructor1, candidateRole);
+        p22.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p22);
+
+        Candidate p23 = makePendingCandidate("zorana@gmail.com", "Zorana", "Zoranic2", "zorana", Category.B, instructor2, candidateRole);
+        p23.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p23);
+
+        Candidate p24 = makePendingCandidate("miodrag@gmail.com", "Miodrag", "Miodrovic", "miodrag", Category.B, instructor1, candidateRole);
+        p24.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p24);
+
+        Candidate p25 = makePendingCandidate("svetlana@gmail.com", "Svetlana", "Svetlanic", "svetlana", Category.A, instructor2, candidateRole);
+        p25.getAttendedLessons().addAll(allLessons);
+        candidateRepository.save(p25);
 
         System.out.println("TEST DATA LOADED SUCCESSFULLY");
+    }
+
+    // ---------------- HELPER METODE ----------------
+
+    private Candidate makePendingCandidate(String email, String name, String lastname, String username,
+                                           Category category, Instructor instructor, Role role) {
+        Candidate c = new Candidate();
+        c.setEmail(email);
+        c.setName(name);
+        c.setLastname(lastname);
+        c.setUsername(username);
+        c.setPassword(passwordEncoder.encode("123"));
+        c.setEnabled(true);
+        c.setRole(role);
+        c.setStartOfTraining(LocalDateTime.now().minusMonths(2));
+        c.setCategory(category);
+        c.setStatus(TrainingStatus.PENDING);
+        c.setTheoryCompleted(true);
+        c.setInstructor(instructor);
+        c.setPreferredLocation("Novi Sad");
+        return c;
     }
 
     private Candidate makeCandidate(String email, String name, String lastname, String username,
