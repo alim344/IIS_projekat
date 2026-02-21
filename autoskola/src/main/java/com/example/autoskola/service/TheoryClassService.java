@@ -88,5 +88,20 @@ public class TheoryClassService {
 
     }
 
+    @Transactional
+    public void deleteTheoryClass(Long classId) {
+        TheoryClass theoryClass = findById(classId);
+
+        theoryClass.getStudents().clear();
+        theoryClass.setProfessor(null);
+        theoryClass.setTheoryLesson(null);
+
+        theoryClassRepository.save(theoryClass);
+
+        theoryClassRepository.deleteById(classId);
+
+        System.out.println("Theory class with id " + classId + " deleted successfully");
+    }
+
 
 }
