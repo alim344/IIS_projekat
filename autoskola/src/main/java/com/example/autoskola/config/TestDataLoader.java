@@ -27,6 +27,7 @@ public class TestDataLoader implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final PracticalClassRepository practicalClassRepository;
     private final TheoryLessonRepository theoryLessonRepository;
+    private final TheoryClassRepository theoryClassRepository;
 
     @Override
     public void run(String... args) {
@@ -336,6 +337,42 @@ public class TestDataLoader implements CommandLineRunner {
         savePracticalClass(c1, instructor1, LocalDateTime.now().minusDays(2).withHour(12).withMinute(30), LocalDateTime.now().minusDays(2).withHour(15).withMinute(30), true);
         savePracticalClass(c4, instructor2, LocalDateTime.now().plusDays(1).withHour(14).withMinute(0), LocalDateTime.now().plusDays(1).withHour(15).withMinute(30), false);
         savePracticalClass(c7, instructor1, LocalDateTime.now().plusDays(3).withHour(18).withMinute(0), LocalDateTime.now().plusDays(3).withHour(19).withMinute(30), false);
+
+//        // ---------------- THEORY CLASSES ----------------
+//        // Današnji čas (sada)
+//        TheoryClass theoryClass1 = new TheoryClass();
+//        theoryClass1.setProfessor(professor1);
+//        theoryClass1.setStartTime(LocalDateTime.now());
+//        theoryClass1.setEndTime(LocalDateTime.now().plusHours(1));
+//        theoryClass1.setCapacity(20);
+//        theoryClass1.setEnrolledStudents(0);
+//        theoryClass1.setTheoryLesson(theoryLessonRepository.findAll().get(0));
+//        theoryClassRepository.save(theoryClass1);
+//
+//        // Sutrašnji čas
+//        TheoryClass theoryClass2 = new TheoryClass();
+//        theoryClass2.setProfessor(professor1);
+//        theoryClass2.setStartTime(LocalDateTime.now().plusDays(1).withHour(10).withMinute(0));
+//        theoryClass2.setEndTime(LocalDateTime.now().plusDays(1).withHour(12).withMinute(0));
+//        theoryClass2.setCapacity(15);
+//        theoryClass2.setEnrolledStudents(0);
+//        theoryClass2.setTheoryLesson(theoryLessonRepository.findAll().get(1));
+//        theoryClassRepository.save(theoryClass2);
+//
+//        // Prekjučerašnji čas (završen)
+//        TheoryClass theoryClass3 = new TheoryClass();
+//        theoryClass3.setProfessor(professor2);
+//        theoryClass3.setStartTime(LocalDateTime.now().minusDays(2).withHour(17).withMinute(0));
+//        theoryClass3.setEndTime(LocalDateTime.now().minusDays(2).withHour(19).withMinute(0));
+//        theoryClass3.setCapacity(25);
+//        theoryClass3.setEnrolledStudents(3);
+//        theoryClass3.setTheoryLesson(theoryLessonRepository.findAll().get(5)); // Šesta lekcija
+//        // Dodaj par kandidata koji su prisustvovali
+//        theoryClass3.getStudents().add(c1);
+//        theoryClass3.getStudents().add(c2);
+//        theoryClass3.getStudents().add(c3);
+//        theoryClassRepository.save(theoryClass3);
+
 
         System.out.println("TEST DATA LOADED SUCCESSFULLY");
     }

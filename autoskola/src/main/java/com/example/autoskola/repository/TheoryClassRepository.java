@@ -1,5 +1,6 @@
 package com.example.autoskola.repository;
 
+import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.TheoryClass;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +29,5 @@ public interface TheoryClassRepository extends JpaRepository<TheoryClass, Long> 
 
     List<TheoryClass> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
 
+    List<TheoryClass> findByStudentsContainingAndEndTimeBefore(Candidate candidate, LocalDateTime time);
 }

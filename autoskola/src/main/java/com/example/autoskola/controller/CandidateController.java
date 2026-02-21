@@ -1,14 +1,11 @@
 package com.example.autoskola.controller;
 
-import com.example.autoskola.dto.CandidateProfileDTO;
-import com.example.autoskola.dto.PreferencesDTO;
-import com.example.autoskola.dto.PreferencesUpdateDTO;
-import com.example.autoskola.dto.UpdateCandidateProfileDTO;
+import com.example.autoskola.dto.*;
 import com.example.autoskola.model.Candidate;
+import com.example.autoskola.model.PracticalClass;
+import com.example.autoskola.model.TheoryClass;
 import com.example.autoskola.model.User;
-import com.example.autoskola.service.CandidateService;
-import com.example.autoskola.service.PreferenceService;
-import com.example.autoskola.service.UserService;
+import com.example.autoskola.service.*;
 import com.example.autoskola.util.TokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/candidates")
@@ -31,6 +31,12 @@ public class CandidateController {
     private PreferenceService preferenceService;
     @Autowired
     private TokenUtils tokenUtils;
+
+    @Autowired
+    private TheoryClassService theoryClassService;
+
+    @Autowired
+    private PracticalClassService practicalClassService;
 
     @PutMapping("/update/{id}")
     public ResponseEntity<CandidateProfileDTO> updateCandidateProfile(@PathVariable Long id, @RequestBody UpdateCandidateProfileDTO candidateDTO) {
@@ -102,5 +108,47 @@ public class CandidateController {
         String email = tokenUtils.getEmailFromToken(token);
         Candidate candidate = candidateService.findByEmail(email);
         return ResponseEntity.ok(candidate.getStatus().toString());
+    }
+
+    @GetMapping("/progress/theory")
+    public ResponseEntity<TheoryProgressDTO> getTheoryProgress(Authentication authentication) {
+        if (authentication == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+
+        User user = (User) authentication.getPrincipal();
+        Candidate candidate = candidateService.findById(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidate not found"));
+
+        List<TheoryClass> attendedClasses = theoryClassService
+                .findByStudentsContainingAndEndTimeBefore(candidate, LocalDateTime.now());
+
+        int attended = attendedClasses.size();
+        double percentage = (attended * 100.0) / 40;
+
+        TheoryProgressDTO progress = new TheoryProgressDTO(attended, 40, percentage);
+
+        return ResponseEntity.ok(progress);
+    }
+
+    @GetMapping("/progress/practical")
+    public ResponseEntity<PracticalProgressDTO> getPracticalProgress(Authentication authentication) {
+        if (authentication == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+
+        User user = (User) authentication.getPrincipal();
+        Candidate candidate = candidateService.findById(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidate not found"));
+
+        List<PracticalClass> attendedClasses = practicalClassService
+                .findByCandidateAndAcceptedTrueAndEndTimeBefore(candidate, LocalDateTime.now());
+
+        int attended = attendedClasses.size();
+        double percentage = (attended * 100.0) / 40;
+
+        PracticalProgressDTO progress = new PracticalProgressDTO(attended, 40, percentage);
+
+        return ResponseEntity.ok(progress);
     }
 }

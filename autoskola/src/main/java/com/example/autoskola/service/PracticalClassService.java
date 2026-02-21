@@ -348,5 +348,7 @@ public class PracticalClassService {
         return new PracticalDTO(savedClass.getCandidate(), savedClass);
     }
 
-
+    public List<PracticalClass> findByCandidateAndAcceptedTrueAndEndTimeBefore(Candidate candidate, LocalDateTime endTime) {
+        return practicalClassRepository.findByCandidateAndAcceptedTrueAndEndTimeBefore(candidate, endTime);
+    }
 }

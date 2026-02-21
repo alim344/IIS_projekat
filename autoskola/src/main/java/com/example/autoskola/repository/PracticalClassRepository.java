@@ -28,6 +28,7 @@ public interface PracticalClassRepository extends JpaRepository<PracticalClass, 
 
     List<PracticalClass> findByCandidateId(Long candidateId);
 
+    List<PracticalClass> findByCandidateAndAcceptedTrueAndEndTimeBefore(Candidate candidate, LocalDateTime time);
 
      @Query("""
         SELECT COUNT(c) > 0 FROM PracticalClass c

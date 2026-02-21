@@ -256,4 +256,8 @@ public class TheoryClassService {
 
         return convertToDTO(theoryClass);
     }
+
+    public List<TheoryClass> findByStudentsContainingAndEndTimeBefore(Candidate candidate, LocalDateTime endTime) {
+        return theoryClassRepository.findByStudentsContainingAndEndTimeBefore(candidate, endTime);
+    }
 }
