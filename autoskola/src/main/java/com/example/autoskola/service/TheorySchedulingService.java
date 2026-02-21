@@ -1,6 +1,5 @@
 package com.example.autoskola.service;
 
-import com.example.autoskola.dto.TheoryLessonDTO;
 import com.example.autoskola.model.*;
 import com.example.autoskola.repository.CandidateRepository;
 import com.example.autoskola.repository.ProfessorRepository;

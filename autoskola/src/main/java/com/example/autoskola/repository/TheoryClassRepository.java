@@ -27,4 +27,5 @@ public interface TheoryClassRepository extends JpaRepository<TheoryClass, Long> 
     boolean existsByProfessorIdAndStartTimeBetween(Long professorId, LocalDateTime startTime, LocalDateTime endTime);
 
     List<TheoryClass> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
+
 }

@@ -1,10 +1,13 @@
 package com.example.autoskola.controller;
 
 import com.example.autoskola.dto.CandidateTheoryClassDTO;
+import com.example.autoskola.dto.TheoryClassAdminInfoDTO;
 import com.example.autoskola.dto.TheoryClassInfoDTO;
 import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.Professor;
 import com.example.autoskola.model.TheoryClass;
+import com.example.autoskola.repository.TheoryClassRepository;
+import com.example.autoskola.repository.TheoryLessonRepository;
 import com.example.autoskola.service.CandidateService;
 import com.example.autoskola.service.ProfessorService;
 import com.example.autoskola.service.TheoryClassService;
@@ -18,6 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +38,16 @@ public class TheoryClassController {
     private final TheoryClassService theoryClassService;
     private final TheorySchedulingService theorySchedulingService;
     private final ProfessorService professorService;
+    private final TheoryClassRepository theoryClassRepository;
 
 
-    public TheoryClassController(TokenUtils tokenUtils, CandidateService candidateService, TheoryClassService theoryClassService, ProfessorService professorService, TheorySchedulingService theorySchedulingService) {
+    public TheoryClassController(TokenUtils tokenUtils, CandidateService candidateService, TheoryClassService theoryClassService, ProfessorService professorService, TheorySchedulingService theorySchedulingService, TheoryClassRepository theoryClassRepository) {
         this.tokenUtils = tokenUtils;
         this.candidateService = candidateService;
         this.theoryClassService = theoryClassService;
         this.professorService = professorService;
         this.theorySchedulingService = theorySchedulingService;
+        this.theoryClassRepository = theoryClassRepository;
     }
 
     @GetMapping("/candidateschedule")
@@ -119,6 +127,45 @@ public class TheoryClassController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/this-week")
+    public ResponseEntity<List<TheoryClassAdminInfoDTO>> getThisWeekClasses(HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+        LocalDateTime start = startOfWeek.atStartOfDay();
+        LocalDateTime end = endOfWeek.atTime(23, 59, 59);
+
+        List<TheoryClass> classes = theoryClassRepository.findByStartTimeBetween(start, end);
+        List<TheoryClassAdminInfoDTO> dtos = classes.stream()
+                .map(theoryClassService::toDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/next-week")
+    public ResponseEntity<List<TheoryClassAdminInfoDTO>> getNextWeekClasses(HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+
+        LocalDate today = LocalDate.now();
+        LocalDate nextMonday = today.with(DayOfWeek.MONDAY).plusWeeks(1);
+        LocalDate nextSunday = nextMonday.plusDays(6);
+
+        LocalDateTime start = nextMonday.atStartOfDay();
+        LocalDateTime end = nextSunday.atTime(23, 59, 59);
+
+        List<TheoryClass> classes = theoryClassRepository.findByStartTimeBetween(start, end);
+        List<TheoryClassAdminInfoDTO> dtos = classes.stream()
+                .map(theoryClassService::toDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
 
 
 }

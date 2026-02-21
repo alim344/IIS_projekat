@@ -1,7 +1,6 @@
 package com.example.autoskola.service;
 
-import com.example.autoskola.dto.CandidateTheoryClassDTO;
-import com.example.autoskola.dto.TheoryClassInfoDTO;
+import com.example.autoskola.dto.*;
 import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.Professor;
 import com.example.autoskola.model.TheoryClass;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TheoryClassService {
@@ -143,5 +143,53 @@ public class TheoryClassService {
         theoryClassRepository.saveAndFlush(tclass);
     }
 
+    public TheoryClassAdminInfoDTO convertToDTO(TheoryClass theoryClass) {
+        TheoryClassAdminInfoDTO dto = new TheoryClassAdminInfoDTO();
+        dto.setId(theoryClass.getId());
+        dto.setStartTime(theoryClass.getStartTime());
+        dto.setEndTime(theoryClass.getEndTime());
+        dto.setCapacity(theoryClass.getCapacity());
+        dto.setEnrolledStudents(theoryClass.getEnrolledStudents());
 
+        if (theoryClass.getTheoryLesson() != null) {
+            dto.setTheoryLesson(new TheoryLessonSimpleDTO(theoryClass.getTheoryLesson()));
+        }
+
+        if (theoryClass.getProfessor() != null) {
+            dto.setProfessor(new ProfessorDTO(theoryClass.getProfessor()));
+        }
+
+        if (theoryClass.getStudents() != null) {
+            dto.setStudents(theoryClass.getStudents().stream()
+                    .map(CandidateSimpleDTO::new)
+                    .collect(Collectors.toList()));
+        }
+
+        return dto;
+    }
+
+    public TheoryClassAdminInfoDTO toDTO(TheoryClass tc) {
+        TheoryClassAdminInfoDTO dto = new TheoryClassAdminInfoDTO();
+        dto.setId(tc.getId());
+        dto.setStartTime(tc.getStartTime());
+        dto.setEndTime(tc.getEndTime());
+        dto.setCapacity(tc.getCapacity());
+        dto.setEnrolledStudents(tc.getEnrolledStudents());
+
+        if (tc.getTheoryLesson() != null) {
+            dto.setTheoryLesson(new TheoryLessonSimpleDTO(tc.getTheoryLesson())); // Use TheoryLessonSimpleDTO instead
+        }
+
+        if (tc.getProfessor() != null) {
+            dto.setProfessor(new ProfessorDTO(tc.getProfessor()));
+        }
+
+        if (tc.getStudents() != null) {
+            dto.setStudents(tc.getStudents().stream()
+                    .map(CandidateSimpleDTO::new)
+                    .collect(Collectors.toList()));
+        }
+
+        return dto;
+    }
 }
