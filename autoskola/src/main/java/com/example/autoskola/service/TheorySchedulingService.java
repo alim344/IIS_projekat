@@ -81,7 +81,7 @@ public class TheorySchedulingService {
 
         allCandidates.forEach(c -> candidateWeeklyCount.put(c.getId(), 0));
 
-        Set<String> professorBusySlots = new HashSet<>();
+        Set<LocalDateTime> occupiedSlots = new HashSet<>();
 
         for (Map.Entry<FixedSlot, List<Candidate>> slotEntry : bySlot.entrySet()) { // MORNING, AFTERNOON EVENING
             FixedSlot slot = slotEntry.getKey();
@@ -91,7 +91,8 @@ public class TheorySchedulingService {
 
             List<LocalDateTime> slotsForThisFixedSlot = availableSlots.stream()
                     .filter(dt -> dt.toLocalTime().equals(slot.getStartTime()))
-                    .collect(Collectors.toList()); //od svih termina filtriramo samo onaj koji je isti kao onaj sto trenutno gledamo a da  je pritom slobodan
+                    .sorted() // sort po datumu
+                    .collect(Collectors.toList()); //od svih termina filtriram samo onaj koji je isti kao onaj sto trenutno gledamo a da je pritom slobodan
             // npr MORNING  u pon, uto , sre, cet, pet
 
             for (TheoryLesson lesson : lessons) {
@@ -111,22 +112,28 @@ public class TheorySchedulingService {
 
                 for (List<Candidate> batch : batches) {
 
-                    LocalDateTime classTime = findNextAvailableSlot(slotsForThisFixedSlot, professors, professorBusySlots); //prolazi kroz svaki npr MORNING termin i trazi onaj koji odgovara bar jednom prof
-
+                    // PRVI SLOBODAN TERMIN za ovaj slot
+                    LocalDateTime classTime = null;
+                    for (LocalDateTime slotTime : slotsForThisFixedSlot) {
+                        if (!occupiedSlots.contains(slotTime)) {
+                            classTime = slotTime;
+                            break;
+                        }
+                    }
                     if (classTime == null) {
-                        System.out.println("Could not find available slot for batch");
-                        break;
+                        System.out.println("No more available slots for this FixedSlot");
+                        break; // nema više slobodnih termina ovog slota
                     }
 
                     // nalazi profesora koji je slobodan u tom terminu a da ima najmanje zakazanih casova
-                    Professor professor = findFreeProfessor(professors, classTime, professorBusySlots);
+                    Professor professor = findProfessorWithLeastClasses(professors, generatedClasses);
 
                     if (professor == null) {
                         System.out.println("No free professor at " + classTime);
                         continue;
                     }
 
-                    professorBusySlots.add(professor.getId() + "_" + classTime);
+                    occupiedSlots.add(classTime);
 
                     TheoryClass theoryClass = new TheoryClass();
                     theoryClass.setTheoryLesson(lesson);
@@ -154,28 +161,18 @@ public class TheorySchedulingService {
         return generatedClasses;
     }
 
-    private LocalDateTime findNextAvailableSlot(
-            List<LocalDateTime> weekSlots,
-            List<Professor> professors,
-            Set<String> professorBusySlots) {
+    private Professor findProfessorWithLeastClasses(List<Professor> professors, List<TheoryClass> generatedClasses) {
+        Map<Long, Long> professorClassCount = new HashMap<>();
 
-        for (LocalDateTime slot : weekSlots) {
-            boolean anyFree = professors.stream()
-                    .anyMatch(p -> !professorBusySlots.contains(p.getId() + "_" + slot));
-            if (anyFree) return slot;
+        // koliko casova ima svaki profesor
+        for (TheoryClass tc : generatedClasses) {
+            Long profId = tc.getProfessor().getId();
+            professorClassCount.merge(profId, 1L, Long::sum);
         }
 
-        return null;
-    }
-
-    private Professor findFreeProfessor(List<Professor> professors, LocalDateTime classTime,
-                                        Set<String> professorBusySlots) {
+        // prof sa najmanje casova se uzima
         return professors.stream()
-                .filter(p -> !professorBusySlots.contains(p.getId() + "_" + classTime))
-                .min(Comparator.comparingInt(p ->
-                        (int) professorBusySlots.stream()
-                                .filter(s -> s.startsWith(p.getId() + "_"))
-                                .count()))
+                .min(Comparator.comparingLong(p -> professorClassCount.getOrDefault(p.getId(), 0L)))
                 .orElse(null);
     }
 
