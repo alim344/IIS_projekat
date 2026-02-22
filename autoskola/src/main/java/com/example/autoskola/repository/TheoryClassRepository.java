@@ -25,9 +25,16 @@ public interface TheoryClassRepository extends JpaRepository<TheoryClass, Long> 
     boolean isCandidateEnrolledInLesson(@Param("candidateId") Long candidateId,
                                         @Param("lessonId") Long lessonId);
 
-    boolean existsByProfessorIdAndStartTimeBetween(Long professorId, LocalDateTime startTime, LocalDateTime endTime);
+    boolean existsByProfessorIdAndStartTime(Long professorId, LocalDateTime startTime);
+
+    boolean existsByStudentsIdAndTheoryLessonId(Long candidateId, Long lessonId);
+
 
     List<TheoryClass> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
 
     List<TheoryClass> findByStudentsContainingAndEndTimeBefore(Candidate candidate, LocalDateTime time);
+
+    boolean existsByStudentsIdAndStartTime(Long studentId, LocalDateTime startTime);
+
+
 }

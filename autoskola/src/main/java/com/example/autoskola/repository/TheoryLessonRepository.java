@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface TheoryLessonRepository extends JpaRepository<TheoryLesson, Long> {
     List<TheoryLesson> findAllByOrderByOrderNumberAsc();
+
 }

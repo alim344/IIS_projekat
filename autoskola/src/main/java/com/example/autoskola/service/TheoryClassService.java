@@ -260,4 +260,5 @@ public class TheoryClassService {
     public List<TheoryClass> findByStudentsContainingAndEndTimeBefore(Candidate candidate, LocalDateTime endTime) {
         return theoryClassRepository.findByStudentsContainingAndEndTimeBefore(candidate, endTime);
     }
+
 }

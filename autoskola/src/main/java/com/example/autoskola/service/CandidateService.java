@@ -113,6 +113,6 @@ public class CandidateService {
     public Candidate findByEmail(String email){
         return candidateRepository.getByEmail(email);
     }
-
+    public List<Candidate> findByStatus(TrainingStatus status){ return candidateRepository.findByStatus(status);}
 
 }

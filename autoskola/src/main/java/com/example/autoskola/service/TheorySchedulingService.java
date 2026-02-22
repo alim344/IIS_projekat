@@ -1,5 +1,6 @@
 package com.example.autoskola.service;
 
+import com.example.autoskola.dto.ManualTheoryClassRequestDTO;
 import com.example.autoskola.model.*;
 import com.example.autoskola.repository.CandidateRepository;
 import com.example.autoskola.repository.ProfessorRepository;
@@ -243,5 +244,102 @@ public class TheorySchedulingService {
         }
         return batches;
     }
+
+    @Transactional
+    public TheoryClass createManualClass(ManualTheoryClassRequestDTO requestDTO) {
+        if(requestDTO.getDate() == null || requestDTO.getDate().isBefore(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Date must be valid. Unable to schedule class");
+        }
+
+        if (requestDTO.getSlot() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Slot is required (MORNING, AFTERNOON, EVENING)");
+        }
+
+        if (requestDTO.getCandidateIds() == null || requestDTO.getCandidateIds().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one candidate is required");
+        }
+
+        if (requestDTO.getCandidateIds().size() > MAX_STUDENTS_PER_CLASS) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Maximum " + MAX_STUDENTS_PER_CLASS + " candidates per class");
+        }
+
+        TheoryLesson lesson = theoryLessonRepository.findById(requestDTO.getLessonId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found"));
+
+        Professor professor = professorRepository.findById(requestDTO.getProfessorId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor not found"));
+
+        List<Candidate> candidates = candidateRepository.findAllById(requestDTO.getCandidateIds());
+
+        if (candidates.size() != requestDTO.getCandidateIds().size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more candidate IDs are invalid");
+        }
+
+        List<String> notInTheory = candidates.stream()
+                .filter(c -> c.getStatus() != TrainingStatus.THEORY)
+                .map(c -> c.getName() + " " + c.getLastname())
+                .collect(Collectors.toList());
+
+        if(!notInTheory.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Not in THEORY status: " + String.join(", ", notInTheory));
+        }
+
+        List<String> alreadyAttended = candidates.stream()
+                .filter(c -> c.getAttendedLessons().stream().anyMatch(l -> l.getId().equals(lesson.getId())))
+                .map(c -> c.getName() + " " + c.getLastname())
+                .collect(Collectors.toList());
+
+        if(!alreadyAttended.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Already attended this lesson: " + String.join(", ", alreadyAttended));
+        }
+
+        for (Candidate c : candidates) {
+            boolean alreadyEnrolled = theoryClassRepository.existsByStudentsIdAndTheoryLessonId(c.getId(), lesson.getId());
+            if (alreadyEnrolled) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        c.getName() + " " + c.getLastname() + " is already enrolled in another class for: " + lesson.getName());
+            }
+        }
+
+        LocalDateTime startTime = LocalDateTime.of(requestDTO.getDate(), requestDTO.getSlot().getStartTime());
+        LocalDateTime endTime = LocalDateTime.of(requestDTO.getDate(), requestDTO.getSlot().getEndTime());
+
+        boolean professorBusy = theoryClassRepository.existsByProfessorIdAndStartTime(professor.getId(), startTime);
+        if (professorBusy) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Professor " + professor.getName() + " " + professor.getLastname() + " already has a class at this time");
+        }
+
+        List<String> candidatesWithConflict = new ArrayList<>();
+        for (Candidate candidate : candidates) {
+            boolean hasClassAtTime = theoryClassRepository.existsByStudentsIdAndStartTime(
+                    candidate.getId(), startTime);
+
+            if (hasClassAtTime) {
+                candidatesWithConflict.add(candidate.getName() + " " + candidate.getLastname());
+            }
+        }
+
+        if (!candidatesWithConflict.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Following candidates already have a class at this time: " +
+                            String.join(", ", candidatesWithConflict));
+        }
+
+        TheoryClass tc = new TheoryClass();
+        tc.setStartTime(startTime);
+        tc.setEndTime(endTime);
+        tc.setProfessor(professor);
+        tc.setTheoryLesson(lesson);
+        tc.setCapacity(MAX_STUDENTS_PER_CLASS);
+        tc.setEnrolledStudents(candidates.size());
+        tc.setStudents(new ArrayList<>(candidates));
+
+        return theoryClassRepository.save(tc);
+    }
+
 
 }

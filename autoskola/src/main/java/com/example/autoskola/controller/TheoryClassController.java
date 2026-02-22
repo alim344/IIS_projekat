@@ -1,18 +1,10 @@
 package com.example.autoskola.controller;
 
-import com.example.autoskola.dto.AttendanceTheorySubmitDTO;
-import com.example.autoskola.dto.CandidateTheoryClassDTO;
-import com.example.autoskola.dto.TheoryClassAdminInfoDTO;
-import com.example.autoskola.dto.TheoryClassInfoDTO;
-import com.example.autoskola.model.Candidate;
-import com.example.autoskola.model.Professor;
-import com.example.autoskola.model.TheoryClass;
+import com.example.autoskola.dto.*;
+import com.example.autoskola.model.*;
 import com.example.autoskola.repository.TheoryClassRepository;
 import com.example.autoskola.repository.TheoryLessonRepository;
-import com.example.autoskola.service.CandidateService;
-import com.example.autoskola.service.ProfessorService;
-import com.example.autoskola.service.TheoryClassService;
-import com.example.autoskola.service.TheorySchedulingService;
+import com.example.autoskola.service.*;
 import com.example.autoskola.util.TokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -25,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,15 +33,17 @@ public class TheoryClassController {
     private final TheorySchedulingService theorySchedulingService;
     private final ProfessorService professorService;
     private final TheoryClassRepository theoryClassRepository;
+    private final TheoryLessonService theoryLessonService;
 
 
-    public TheoryClassController(TokenUtils tokenUtils, CandidateService candidateService, TheoryClassService theoryClassService, ProfessorService professorService, TheorySchedulingService theorySchedulingService, TheoryClassRepository theoryClassRepository) {
+    public TheoryClassController(TokenUtils tokenUtils, CandidateService candidateService, TheoryClassService theoryClassService, ProfessorService professorService, TheorySchedulingService theorySchedulingService, TheoryClassRepository theoryClassRepository, TheoryLessonService theoryLessonService) {
         this.tokenUtils = tokenUtils;
         this.candidateService = candidateService;
         this.theoryClassService = theoryClassService;
         this.professorService = professorService;
         this.theorySchedulingService = theorySchedulingService;
         this.theoryClassRepository = theoryClassRepository;
+        this.theoryLessonService = theoryLessonService;
     }
 
     @GetMapping("/candidateschedule")
@@ -217,5 +212,62 @@ public class TheoryClassController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/manual")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> createManualClass(@RequestBody ManualTheoryClassRequestDTO request) {
+        try {
+            TheoryClass created = theorySchedulingService.createManualClass(request);
+            return ResponseEntity.ok(theoryClassService.toDTO(created));
+        } catch (Exception e) {
+            Map<String, String> err = new HashMap<>();
+            err.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(err);
+        }
+    }
+
+    @GetMapping("/candidates/available")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<Map<String, Object>>> getAvailableCandidates(@RequestParam FixedSlot slot) {
+        List<Candidate> allInTheory = candidateService.findByStatus(TrainingStatus.THEORY);
+
+        List<Map<String, Object>> result = allInTheory.stream()
+                .filter(c -> {
+                    if (c.getTimePreference() == null) return true; // bez preference — uvek dostupan
+                    LocalTime prefStart = c.getTimePreference().getStartTime();
+                    LocalTime prefEnd = c.getTimePreference().getEndTime();
+                    return !slot.getStartTime().isBefore(prefStart) && !slot.getEndTime().isAfter(prefEnd);
+                })
+                .map(c -> {
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("id", c.getId());
+                    m.put("name", c.getName());
+                    m.put("lastname", c.getLastname());
+                    m.put("category", c.getCategory());
+                    m.put("attendedLessons", c.getAttendedLessons().size());
+                    m.put("hasPreference", c.getTimePreference() != null);
+                    m.put("preferenceStart", c.getTimePreference() != null ? c.getTimePreference().getStartTime() : null);
+                    m.put("preferenceEnd", c.getTimePreference() != null ? c.getTimePreference().getEndTime() : null);
+                    return m;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/theory-lessons")
+    public ResponseEntity<List<TheoryLessonDTO>> getAllLessons() {
+        List<TheoryLesson> lessons = theoryLessonService.findAllByOrderByOrderNumberAsc();
+        List<TheoryLessonDTO> dtos = lessons.stream()
+                .map(l -> {
+                    TheoryLessonDTO dto = new TheoryLessonDTO();
+                    dto.setId(l.getId());
+                    dto.setName(l.getName());
+                    dto.setOrderNumber(l.getOrderNumber());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 }
