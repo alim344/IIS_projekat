@@ -185,6 +185,10 @@ public class PracticalClassController {
     @PostMapping("/schedule/alg")
     public ResponseEntity<List<PracticalDTO>> generateSchedule(@RequestBody GeneratorDTO dto) {
 
+        if(dto.getEmails().size() > 12){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
         return ResponseEntity.ok(instructorScheduleGenerator.generateSchedule(dto.getLightDays(), dto.getEmails()));
     }
 

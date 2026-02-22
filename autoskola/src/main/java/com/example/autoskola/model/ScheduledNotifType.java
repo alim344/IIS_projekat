@@ -6,5 +6,6 @@ public enum ScheduledNotifType {
     CLASS,
     REQUEST,
     TIME_PREFERENCE,
+    THEORY_EXAM
 
 }

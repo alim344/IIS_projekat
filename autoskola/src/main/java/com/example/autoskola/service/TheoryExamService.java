@@ -34,6 +34,8 @@ public class TheoryExamService {
     private TheoryLessonRepository theoryLessonRepository;
 
     private static final int MIN_CANDIDATES_FOR_EXAM = 20;
+    @Autowired
+    private ScheduledNotificationService scheduledNotificationService;
 
     public List<EligibleCandidateTheoryDTO> getEligibleCandidates() {
         List<Candidate> candidates = candidateRepository.findByStatus(TrainingStatus.PENDING);
@@ -154,6 +156,9 @@ public class TheoryExamService {
 
 
         // NOTIFIKACIJE KANDIDATIMA
+        List<Candidate> candidates = exam.getCandidates();
+        scheduledNotificationService.sendTheoryExamNotification(candidates,examDate);
+
 
         return new TheoryExamDTO(saved);
     }

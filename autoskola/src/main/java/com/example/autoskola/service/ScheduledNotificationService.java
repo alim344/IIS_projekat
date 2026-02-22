@@ -287,4 +287,11 @@ public class ScheduledNotificationService {
         }
     }
 
+    public void sendTheoryExamNotification(List<Candidate> candidates, LocalDate date){
+        for(Candidate candidate : candidates){
+            sendNotification("Your theory exam has been scheduled for " + date.toString() ,candidate,ScheduledNotifType.THEORY_EXAM);
+        }
+    }
+
+
 }
