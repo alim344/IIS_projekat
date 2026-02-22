@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -29,12 +30,12 @@ public class TestDataLoader implements CommandLineRunner {
     private final PracticalClassRepository practicalClassRepository;
     private final TheoryLessonRepository theoryLessonRepository;
     private final TheoryExamRepository theoryExamRepository;
+    private final TheoryClassRepository theoryClassRepository;
 
     @Override
     public void run(String... args) {
 
         if (userRepository.count() > 0) return;
-
         // ---------------- ROLES ----------------
         Role candidateRole = roleRepository.save(new Role("ROLE_CANDIDATE"));
         Role instructorRole = roleRepository.save(new Role("ROLE_INSTRUCTOR"));
@@ -43,46 +44,46 @@ public class TestDataLoader implements CommandLineRunner {
 
         // ---------------- THEORY LESSONS (40) ----------------
         String[][] lessons = {
-                {"Uvod u saobraćajne propise", "1"},
-                {"Osnovna pravila saobraćaja", "2"},
-                {"Saobraćajni znaci - opšte", "3"},
-                {"Znaci opasnosti", "4"},
-                {"Znaci izričitih naredbi", "5"},
-                {"Znaci obaveštenja", "6"},
-                {"Dopunske table", "7"},
-                {"Svetlosna saobraćajna signalizacija", "8"},
-                {"Oznake na kolovozu", "9"},
-                {"Ovlašćena lica za regulisanje saobraćaja", "10"},
-                {"Pravo prolaza na raskrsnici", "11"},
-                {"Pravo prolaza na raskrsnici - posebni slučajevi", "12"},
-                {"Brzina kretanja vozila", "13"},
-                {"Razmak između vozila", "14"},
-                {"Obilaženje i preticanje", "15"},
-                {"Mimoilaženje vozila", "16"},
-                {"Prolaženje pored zaustavljenog vozila", "17"},
-                {"Skretanje vozila", "18"},
-                {"Kretanje vozila unazad", "19"},
-                {"Kretanje vozila u kružnom toku", "20"},
-                {"Zaustavljanje i parkiranje", "21"},
-                {"Zaustavljanje i parkiranje - zabrane", "22"},
-                {"Upotreba svetala", "23"},
-                {"Upotreba zvučnih i svetlosnih znakova", "24"},
-                {"Teret na vozilu", "25"},
-                {"Vučenje neispravnog vozila", "26"},
-                {"Pešaci u saobraćaju", "27"},
-                {"Biciklisti u saobraćaju", "28"},
-                {"Motociklisti u saobraćaju", "29"},
-                {"Posebni učesnici u saobraćaju", "30"},
-                {"Saobraćaj na auto-putu", "31"},
-                {"Saobraćaj u tunelima", "32"},
-                {"Saobraćaj po lošim vremenskim uslovima", "33"},
-                {"Tehničke karakteristike vozila", "34"},
-                {"Aktivna i pasivna bezbednost vozila", "35"},
-                {"Upravljanje vozilom - osnove", "36"},
-                {"Opasnost od alkohola i droga u saobraćaju", "37"},
-                {"Zamor i bolesti vozača", "38"},
-                {"Prva pomoć u saobraćaju", "39"},
-                {"Ekološka vožnja i ekonomičnost", "40"}
+                {"Introduction to traffic regulations", "1"},
+                {"Basic traffic rules", "2"},
+                {"Traffic signs - general", "3"},
+                {"Danger warning signs", "4"},
+                {"Mandatory signs", "5"},
+                {"Information signs", "6"},
+                {"Supplementary panels", "7"},
+                {"Traffic light signals", "8"},
+                {"Road markings", "9"},
+                {"Authorized traffic personnel", "10"},
+                {"Right of way at intersections", "11"},
+                {"Right of way at intersections - special cases", "12"},
+                {"Vehicle speed", "13"},
+                {"Distance between vehicles", "14"},
+                {"Overtaking", "15"},
+                {"Passing oncoming traffic", "16"},
+                {"Passing a stopped vehicle", "17"},
+                {"Turning", "18"},
+                {"Reversing", "19"},
+                {"Driving in a roundabout", "20"},
+                {"Stopping and parking", "21"},
+                {"Stopping and parking - restrictions", "22"},
+                {"Use of lights", "23"},
+                {"Use of audible and light signals", "24"},
+                {"Vehicle load", "25"},
+                {"Towing a disabled vehicle", "26"},
+                {"Pedestrians in traffic", "27"},
+                {"Cyclists in traffic", "28"},
+                {"Motorcyclists in traffic", "29"},
+                {"Special traffic participants", "30"},
+                {"Driving on the highway", "31"},
+                {"Driving in tunnels", "32"},
+                {"Driving in bad weather conditions", "33"},
+                {"Vehicle technical characteristics", "34"},
+                {"Active and passive vehicle safety", "35"},
+                {"Vehicle handling - basics", "36"},
+                {"Dangers of alcohol and drugs in traffic", "37"},
+                {"Driver fatigue and illness", "38"},
+                {"First aid in traffic", "39"},
+                {"Eco-driving and fuel efficiency", "40"}
         };
 
         for (String[] lesson : lessons) {
@@ -358,13 +359,40 @@ public class TestDataLoader implements CommandLineRunner {
 
         TheoryExam pastExam = new TheoryExam();
         pastExam.setRegistrationDate(LocalDateTime.now().minusDays(14));
-        pastExam.setExamDate(LocalDate.now().minusDays(3));   // 3 dana u prošlosti
+        pastExam.setExamDate(LocalDate.now().minusDays(3));
         pastExam.setRegisteredBy(professor1);
         pastExam.setCandidates(new java.util.ArrayList<>(examCandidates));
-        pastExam.setStatus(TheoryExamStatus.SCHEDULED);       // SCHEDULED + datum prošao = "Enter Results" se prikazuje
+        pastExam.setStatus(TheoryExamStatus.SCHEDULED);
         theoryExamRepository.save(pastExam);
 
-        System.out.println("TEST DATA LOADED SUCCESSFULLY");
+        // ---------------- PAST CLASSES FOR ANA ---------------
+        Candidate ana = candidateRepository.getByEmail("ana@gmail.com");
+
+        if (ana != null) {
+            PracticalClass pastPractical = new PracticalClass();
+            pastPractical.setCandidate(ana);
+            pastPractical.setInstructor(instructor1);
+            pastPractical.setStartTime(LocalDateTime.now().minusDays(5).withHour(9).withMinute(0));
+            pastPractical.setEndTime(LocalDateTime.now().minusDays(5).withHour(10).withMinute(30));
+            pastPractical.setAccepted(true);
+            practicalClassRepository.save(pastPractical);
+
+            TheoryLesson firstLesson = theoryLessonRepository.findAll().get(0);
+
+            TheoryClass pastTheory = new TheoryClass();
+            pastTheory.setProfessor(professor1);
+            pastTheory.setTheoryLesson(firstLesson);
+            pastTheory.setStartTime(LocalDateTime.now().minusDays(7).withHour(10).withMinute(0));
+            pastTheory.setEndTime(LocalDateTime.now().minusDays(7).withHour(11).withMinute(30));
+            pastTheory.setCapacity(30);
+            pastTheory.setEnrolledStudents(1);
+
+            List<Candidate> students = new ArrayList<>();
+            students.add(ana);
+            pastTheory.setStudents(students);
+
+            theoryClassRepository.save(pastTheory);
+        }
 
         System.out.println("TEST DATA LOADED SUCCESSFULLY");
     }
