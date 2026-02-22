@@ -16,28 +16,22 @@ public class CandidateProfileDTO {
     private String email;
     private String username;
     private TrainingStatus status;
-    private Instructor instructor;
+    private String instructor;
     private Category category;
 
     public CandidateProfileDTO() {
-    }
-
-    public CandidateProfileDTO(String firstName, String lastName, String email, String username, Instructor instructor, TrainingStatus status, Category category) {
-        this.name = firstName;
-        this.lastname = lastName;
-        this.email = email;
-        this.username = username;
-        this.instructor = instructor;
-        this.status = status;
-        this.category = category;
     }
 
     public CandidateProfileDTO(Candidate candidate) {
         this.name = candidate.getName();
         this.lastname = candidate.getLastname();
         this.email = candidate.getEmail();
-        this.username = candidate.getEmail();
-        this.instructor = candidate.getInstructor();
+        this.username = candidate.getUsername();
+        if (candidate.getInstructor() != null) {
+            this.instructor = candidate.getInstructor().getName() + " " + candidate.getInstructor().getLastname();
+        } else {
+            this.instructor = null;
+        }
         this.status = candidate.getStatus();
         this.category = candidate.getCategory();
     }

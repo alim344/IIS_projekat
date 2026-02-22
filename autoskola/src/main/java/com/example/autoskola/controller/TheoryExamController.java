@@ -122,6 +122,22 @@ public class TheoryExamController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{examId}/results")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Map<String, Object>> submitExamResults(
+            @PathVariable Long examId,
+            @RequestBody TheoryExamResultsDTO dto) {
+
+        TheoryExamDTO exam = theoryExamService.submitExamResults(examId, dto);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", dto.getPassedCandidateIds().size() + " candidates passed and moved to PRACTICAL training.");
+        response.put("exam", exam);
+
+        return ResponseEntity.ok(response);
+    }
+
     private Long extractProfessorId(HttpServletRequest request) {
         String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);

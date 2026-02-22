@@ -28,6 +28,7 @@ public class TestDataLoader implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final PracticalClassRepository practicalClassRepository;
     private final TheoryLessonRepository theoryLessonRepository;
+    private final TheoryExamRepository theoryExamRepository;
 
     @Override
     public void run(String... args) {
@@ -347,6 +348,23 @@ public class TestDataLoader implements CommandLineRunner {
         Candidate p25 = makePendingCandidate("svetlana@gmail.com", "Svetlana", "Svetlanic", "svetlana", Category.A, instructor2, candidateRole);
         p25.getAttendedLessons().addAll(allLessons);
         candidateRepository.save(p25);
+
+        // ---------------- PAST THEORY EXAM (datum prošao) ----------------
+        // Uzmemo prvih 20 PENDING kandidata za ispit
+        List<Candidate> examCandidates = List.of(
+                p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
+                p11, p12, p13, p14, p15, p16, p17, p18, p19, p20
+        );
+
+        TheoryExam pastExam = new TheoryExam();
+        pastExam.setRegistrationDate(LocalDateTime.now().minusDays(14));
+        pastExam.setExamDate(LocalDate.now().minusDays(3));   // 3 dana u prošlosti
+        pastExam.setRegisteredBy(professor1);
+        pastExam.setCandidates(new java.util.ArrayList<>(examCandidates));
+        pastExam.setStatus(TheoryExamStatus.SCHEDULED);       // SCHEDULED + datum prošao = "Enter Results" se prikazuje
+        theoryExamRepository.save(pastExam);
+
+        System.out.println("TEST DATA LOADED SUCCESSFULLY");
 
         System.out.println("TEST DATA LOADED SUCCESSFULLY");
     }
