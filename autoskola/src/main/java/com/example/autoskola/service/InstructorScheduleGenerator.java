@@ -37,11 +37,21 @@ public class InstructorScheduleGenerator {
         return candidates;
     }
 
+
+    public boolean checkNextWeekAvailability(long instrictor_id){
+
+        List<PracticalClass> classes = practicalClassService.getInstructorNextWeekClasses(instrictor_id);
+
+        return classes.isEmpty();
+    }
+
     public List<PracticalDTO> generateSchedule(List<LocalDate> lightDays,List<String> emails){
 
         List<Candidate> candidates = getCandidates(emails);
         List<PracticalDTO> schedule = new ArrayList<>();
         List<TimeRangeDTO> busySlots = new ArrayList<>();
+
+
 
 
         //prvi cas po preferencama
