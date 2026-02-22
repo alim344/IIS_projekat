@@ -3,6 +3,7 @@ package com.example.autoskola.service;
 import com.example.autoskola.dto.TimePrefInstructorDTO;
 import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.TimePreference;
+import com.example.autoskola.model.TrainingStatus;
 import com.example.autoskola.repository.TimePreferenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,16 +31,20 @@ public class TimePreferenceService {
 
         List<TimePrefInstructorDTO> dtos = new ArrayList<>();
         for (Candidate c : candidates) {
-            TimePreference pref = c.getTimePreference();
-            TimePrefInstructorDTO dto = new TimePrefInstructorDTO();
-            dto.setEndTime(pref.getEndTime());
-            dto.setStartTime(pref.getStartTime());
-            dto.setDate(pref.getDate());
-            dto.setCandidate_name(c.getName());
-            dto.setCanddiate_lastname(c.getLastname());
-            dto.setEmail(c.getEmail());
-            dto.setCategory(c.getCategory().toString());
-            dtos.add(dto);
+
+                if(c.getStatus() == TrainingStatus.PRACTICAL){
+                    TimePreference pref = c.getTimePreference();
+                    TimePrefInstructorDTO dto = new TimePrefInstructorDTO();
+                    dto.setEndTime(pref.getEndTime());
+                    dto.setStartTime(pref.getStartTime());
+                    dto.setDate(pref.getDate());
+                    dto.setCandidate_name(c.getName());
+                    dto.setCanddiate_lastname(c.getLastname());
+                    dto.setEmail(c.getEmail());
+                    dto.setCategory(c.getCategory().toString());
+                    dtos.add(dto);
+                }
+
         }
         return dtos;
     }
