@@ -1,22 +1,21 @@
 package com.example.autoskola.controller;
 
 import com.example.autoskola.dto.*;
-import com.example.autoskola.model.Candidate;
-import com.example.autoskola.model.PracticalClass;
-import com.example.autoskola.model.TheoryClass;
-import com.example.autoskola.model.User;
+import com.example.autoskola.model.*;
 import com.example.autoskola.service.*;
 import com.example.autoskola.util.TokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/candidates")
@@ -37,6 +36,9 @@ public class CandidateController {
 
     @Autowired
     private PracticalClassService practicalClassService;
+
+    @Autowired
+    private InstructorService instructorService;
 
     @PutMapping("/update/{id}")
     public ResponseEntity<CandidateProfileDTO> updateCandidateProfile(@PathVariable Long id, @RequestBody UpdateCandidateProfileDTO candidateDTO) {
@@ -86,7 +88,6 @@ public class CandidateController {
         return ResponseEntity.ok(preferences);
     }
 
-    // UPDATE
     @PutMapping("/preferences")
     public ResponseEntity<PreferencesDTO> updatePreferences(
             @RequestBody PreferencesUpdateDTO dto,
@@ -150,5 +151,40 @@ public class CandidateController {
         PracticalProgressDTO progress = new PracticalProgressDTO(attended, 40, percentage);
 
         return ResponseEntity.ok(progress);
+    }
+
+    @GetMapping("/eligible-for-exam")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<EligibleCandidateDTO>> getEligibleCandidates() {
+        List<Candidate> candidates = candidateService.findCandidatesEligibleForExam();
+
+        List<EligibleCandidateDTO> dtos = candidates.stream()
+                .map(c -> new EligibleCandidateDTO(
+                        c.getId(),
+                        c.getName(),
+                        c.getLastname(),
+                        c.getCategory().toString(),
+                        c.getInstructor() != null ? c.getInstructor().getId() : null
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/{candidateId}/available-instructors")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<InstructorDTO>> getAvailableInstructorsForCandidate(
+            @PathVariable Long candidateId) {
+
+        Candidate candidate = candidateService.findById(candidateId)
+                .orElseThrow(() -> new RuntimeException("Candidate not found"));
+
+        List<Instructor> instructors = instructorService.findAvailableForExam(candidate);
+
+        List<InstructorDTO> dtos = instructors.stream()
+                .map(InstructorDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
 }

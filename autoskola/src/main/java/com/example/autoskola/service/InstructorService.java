@@ -3,20 +3,19 @@ package com.example.autoskola.service;
 import com.example.autoskola.dto.InstructorDTO;
 import com.example.autoskola.dto.InstructorDocumentsDTO;
 import com.example.autoskola.dto.InstructorUpdateDTO;
-import com.example.autoskola.model.Instructor;
-import com.example.autoskola.model.InstructorDocuments;
-import com.example.autoskola.model.Vehicle;
-import com.example.autoskola.model.VehicleStatus;
+import com.example.autoskola.model.*;
 
 import com.example.autoskola.dto.InstructorRegistrationDTO;
 
 import com.example.autoskola.repository.InstructorRepository;
+import com.example.autoskola.repository.PracticalExamRepository;
 import com.example.autoskola.repository.VehicleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +43,9 @@ public class InstructorService {
 
     @Autowired
     private VehicleService vehicleService;
+
+    @Autowired
+    private PracticalExamRepository practicalExamRepository;
 
     public Optional<Instructor> findById(Long id) {
         return instructorRepository.findById(id);
@@ -165,6 +167,31 @@ public class InstructorService {
 
     public Long findVehicleIdByInstructorId(Long id) {
         return instructorRepository.findVehicleIdByInstructorId(id);
+    }
+
+    public List<Instructor> findAvailableForExam(Candidate candidate) {
+        // Instruktor koji je dodeljen kandidatu (jedini koji može da ga ispituje)
+        return Arrays.asList(candidate.getInstructor());
+    }
+
+    public Instructor suggestInstructorForExam(LocalDateTime dateTime, Candidate candidate) {
+        Instructor instructor = candidate.getInstructor();
+
+        if (instructor == null) {
+            throw new RuntimeException("Candidate has no assigned instructor");
+        }
+
+        LocalDateTime start = dateTime;
+        LocalDateTime end = dateTime.plusHours(1);
+
+        List<PracticalExam> conflictingExams = practicalExamRepository
+                .findByInstructorIdAndDateTimeBetween(instructor.getId(), start, end);
+
+        if (!conflictingExams.isEmpty()) {
+            throw new RuntimeException("Instructor is not available at this time");
+        }
+
+        return instructor;
     }
 
 }

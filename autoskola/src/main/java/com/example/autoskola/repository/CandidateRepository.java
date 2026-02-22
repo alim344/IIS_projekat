@@ -20,4 +20,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
         List<Candidate> findByStatus(TrainingStatus status);
 
         long countByStatus(TrainingStatus status);
+
+        List<Candidate> findByStatusAndTheoryCompletedAndInstructorIsNotNull(
+                TrainingStatus status, boolean theoryCompleted);
 }

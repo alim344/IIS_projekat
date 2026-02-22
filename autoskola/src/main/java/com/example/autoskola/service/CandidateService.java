@@ -43,7 +43,7 @@ public class CandidateService {
         c.setName(registrationDTO.getFirstName());
         c.setLastname(registrationDTO.getLastName());
         c.setEmail(registrationDTO.getEmail());
-        c.setStartOfTraining(LocalDateTime.now());  // da li ocemo da bude now ili admin klikne kad cel agurpa krene
+        c.setStartOfTraining(LocalDateTime.now());
         c.setUsername(registrationDTO.getUsername());
         c.setCategory(registrationDTO.getCategory());
         c.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
@@ -64,7 +64,7 @@ public class CandidateService {
     public List<Candidate> getByInstructorId(long instructorId) {
         return candidateRepository.getByInstructorId(instructorId);
     }
-    
+
 
     public CandidateProfileDTO updateProfile(Long id, UpdateCandidateProfileDTO dto) {
         System.out.println("=== UPDATE PROFILE SERVICE ===");
@@ -114,5 +114,12 @@ public class CandidateService {
         return candidateRepository.getByEmail(email);
     }
     public List<Candidate> findByStatus(TrainingStatus status){ return candidateRepository.findByStatus(status);}
+
+    public List<Candidate> findCandidatesEligibleForExam() {
+
+        return candidateRepository.findByStatusAndTheoryCompletedAndInstructorIsNotNull(
+                TrainingStatus.PRACTICAL, true);
+    }
+
 
 }
