@@ -76,6 +76,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/foo").permitAll()		// /api/foo
                 .requestMatchers("/candidates/**").permitAll()
                 .requestMatchers("/professor/theory-exam/**").permitAll()
+                .requestMatchers("/analytics").permitAll()
                 .requestMatchers("/auth/**","/practicalclass/**","/time_pref/**","/request/**","/schedulednotif/**","/theoryclass/**").permitAll()
                 .requestMatchers(
                         "/favicon.ico",

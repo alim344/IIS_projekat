@@ -235,7 +235,7 @@ public class TheoryClassService {
                 if (!alreadyAttended) {
                     candidate.getAttendedLessons().add(lesson);
 
-                    // Provjeri da li je završio sve lekcije
+                    // da li je odslusao sve lekcije
                     if (candidate.getAttendedLessons().size() >= totalLessons) {
                         candidate.setTheoryCompleted(true);
                         candidate.setStatus(TrainingStatus.PENDING);

@@ -42,5 +42,7 @@ public interface PracticalClassRepository extends JpaRepository<PracticalClass, 
             LocalDateTime end
     );
 
+    List<PracticalClass> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
+
 
 }
