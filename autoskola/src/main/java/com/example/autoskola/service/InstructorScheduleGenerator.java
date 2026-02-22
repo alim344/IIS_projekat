@@ -9,10 +9,7 @@ import com.example.autoskola.model.PracticalClass;
 import com.example.autoskola.model.TimePreference;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,11 +37,21 @@ public class InstructorScheduleGenerator {
         return candidates;
     }
 
+
+    public boolean checkNextWeekAvailability(long instrictor_id){
+
+        List<PracticalClass> classes = practicalClassService.getInstructorNextWeekClasses(instrictor_id);
+
+        return classes.isEmpty();
+    }
+
     public List<PracticalDTO> generateSchedule(List<LocalDate> lightDays,List<String> emails){
 
         List<Candidate> candidates = getCandidates(emails);
         List<PracticalDTO> schedule = new ArrayList<>();
         List<TimeRangeDTO> busySlots = new ArrayList<>();
+
+
 
 
         //prvi cas po preferencama
@@ -174,7 +181,25 @@ public class InstructorScheduleGenerator {
             if(!isOverlapping(start,end,busySlots) && !isInstructorOverloaded(date,busySlots,lightDays)){
                 return new PracticalDTO(null, c.getName(),c.getLastname(),c.getCategory().toString(),start,end,c.getEmail(),false,"",c.getPreferredLocation());
             }
+
+
+
+            LocalTime limit = LocalTime.of(20, 0);
+            LocalTime currentTry = LocalTime.of(8, 0);
+
+            while (currentTry.isBefore(limit)) {
+                if (!currentTry.equals(favTime)) {
+                    LocalDateTime begin = LocalDateTime.of(date, currentTry);
+                    LocalDateTime theend = start.plusMinutes(90);
+
+                    if (!isOverlapping(start, end, busySlots) && !isInstructorOverloaded(date, busySlots, lightDays)) {
+                        return new PracticalDTO(null, c.getName(), c.getLastname(), c.getCategory().toString(), start, end, c.getEmail(), false, "", c.getPreferredLocation());
+                    }
+                }
+                currentTry = currentTry.plusMinutes(30);
+            }
         }
+
 
         return null;
     }
@@ -205,8 +230,29 @@ public class InstructorScheduleGenerator {
                 }
             }
         }
+
+        if (isDailyHourLimitReached(date, busySlots)) {
+            return true;
+        }
+
+
         return false;
 
+    }
+
+
+    private boolean isDailyHourLimitReached(LocalDate date, List<TimeRangeDTO> busySlots) {
+        long minutesScheduled = 0;
+
+        for (TimeRangeDTO slot : busySlots) {
+            if (slot.getStart().toLocalDate().equals(date)) {
+                Duration duration = Duration.between(slot.getStart(), slot.getEnd());
+                minutesScheduled += duration.toMinutes();
+            }
+        }
+
+        //ako dodamo jos ovaj cas ice preci radnih 8 sati dnevno
+        return (minutesScheduled + 90) > 480;
     }
 
 /*public List<PracticalDTO> generateSchedule( List<LocalDate> lightDays, List<String> candidate_emails) {

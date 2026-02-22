@@ -183,7 +183,20 @@ public class PracticalClassController {
 
 
     @PostMapping("/schedule/alg")
-    public ResponseEntity<List<PracticalDTO>> generateSchedule(@RequestBody GeneratorDTO dto) {
+    public ResponseEntity<List<PracticalDTO>> generateSchedule(@RequestBody GeneratorDTO dto,HttpServletRequest request) {
+
+        String token = tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Instructor i = instructorService.findByEmail(email);
+        if(dto.getEmails().size() > 12){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        boolean available = instructorScheduleGenerator.checkNextWeekAvailability(i.getId());
+
+        if(!available){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
 
         return ResponseEntity.ok(instructorScheduleGenerator.generateSchedule(dto.getLightDays(), dto.getEmails()));
     }
