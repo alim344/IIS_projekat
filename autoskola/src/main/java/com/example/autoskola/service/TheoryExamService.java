@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -129,6 +130,32 @@ public class TheoryExamService {
 
         exam.setStatus(TheoryExamStatus.CANCELLED);
         theoryExamRepository.save(exam);
+    }
+
+    @Transactional
+    public TheoryExamDTO setExamDate(Long examId, LocalDate examDate) {
+
+        TheoryExam exam = theoryExamRepository.findById(examId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exam not found"));
+
+        if(exam.getStatus() == TheoryExamStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot cancelled exam");
+        }
+        if (exam.getStatus() == TheoryExamStatus.COMPLETED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Cannot modify a completed exam");
+        }
+        if (examDate == null || examDate.isBefore(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Exam date must be in the future");
+        }
+        exam.setExamDate(examDate);
+        exam.setStatus(TheoryExamStatus.SCHEDULED);
+        TheoryExam saved = theoryExamRepository.save(exam);
+
+
+        // NOTIFIKACIJE KANDIDATIMA
+
+        return new TheoryExamDTO(saved);
     }
 
 }

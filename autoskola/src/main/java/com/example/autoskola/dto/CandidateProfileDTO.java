@@ -4,11 +4,15 @@ import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.Category;
 import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.TrainingStatus;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class CandidateProfileDTO {
     private Long candidateId;
-    private String firstName;
-    private String lastName;
+    private String name;
+    private String lastname;
     private String email;
     private String username;
     private TrainingStatus status;
@@ -19,8 +23,8 @@ public class CandidateProfileDTO {
     }
 
     public CandidateProfileDTO(String firstName, String lastName, String email, String username, Instructor instructor, TrainingStatus status, Category category) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = firstName;
+        this.lastname = lastName;
         this.email = email;
         this.username = username;
         this.instructor = instructor;
@@ -29,8 +33,8 @@ public class CandidateProfileDTO {
     }
 
     public CandidateProfileDTO(Candidate candidate) {
-        this.firstName = candidate.getName();
-        this.lastName = candidate.getLastname();
+        this.name = candidate.getName();
+        this.lastname = candidate.getLastname();
         this.email = candidate.getEmail();
         this.username = candidate.getEmail();
         this.instructor = candidate.getInstructor();
@@ -38,67 +42,4 @@ public class CandidateProfileDTO {
         this.category = candidate.getCategory();
     }
 
-    public Long getId() {
-        return candidateId;
-    }
-
-    public void setId(Long candidateId) {
-        this.candidateId = candidateId;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public TrainingStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TrainingStatus status) {
-        this.status = status;
-    }
-
-    public Instructor getInstructor() {
-        return instructor;
-    }
-
-    public void setInstructor(Instructor instructor) {
-        this.instructor = instructor;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
 }

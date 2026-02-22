@@ -32,7 +32,7 @@ public class TheoryExamController {
 
 
     @GetMapping("/check-eligibility")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_PROFESSOR', 'ROLE_ADMIN')")
     public ResponseEntity<Map<String, Object>> checkEligibility() {
         boolean hasMinimum = theoryExamService.hasMinimumCandidates();
         List<EligibleCandidateTheoryDTO> candidates = theoryExamService.getEligibleCandidates();
@@ -47,7 +47,7 @@ public class TheoryExamController {
     }
 
     @GetMapping("/eligible-candidates")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_PROFESSOR', 'ROLE_ADMIN')")
     public ResponseEntity<List<EligibleCandidateTheoryDTO>> getEligibleCandidates() {
         List<EligibleCandidateTheoryDTO> candidates = theoryExamService.getEligibleCandidates();
         return ResponseEntity.ok(candidates);
@@ -70,6 +70,22 @@ public class TheoryExamController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/{examId}/set-date")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Map<String, Object>> setExamDate(
+            @PathVariable Long examId,
+            @RequestBody SetTheoryExamDateDTO dto) {
+
+        TheoryExamDTO exam = theoryExamService.setExamDate(examId, dto.getExamDate());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Exam date set. Candidates have been notified by email.");
+        response.put("exam", exam);
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/my-exams")
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public ResponseEntity<List<TheoryExamDTO>> getMyExams(HttpServletRequest request) {
@@ -78,20 +94,20 @@ public class TheoryExamController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_PROFESSOR', 'ROLE_ADMIN')")
     public ResponseEntity<List<TheoryExamDTO>> getAllExams() {
         return ResponseEntity.ok(theoryExamService.getAllExams());
     }
 
     @GetMapping("/{examId}")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_PROFESSOR', 'ROLE_ADMIN')")
     public ResponseEntity<TheoryExamDTO> getExamDetails(@PathVariable Long examId) {
         TheoryExamDTO exam = theoryExamService.getExamDetails(examId);
         return ResponseEntity.ok(exam);
     }
 
     @DeleteMapping("/{examId}")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_PROFESSOR', 'ROLE_ADMIN')")
     public ResponseEntity<Map<String, String>> cancelExam(
             @PathVariable Long examId,
             HttpServletRequest request) {

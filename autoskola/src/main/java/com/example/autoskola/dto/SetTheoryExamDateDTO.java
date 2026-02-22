@@ -1,0 +1,11 @@
+package com.example.autoskola.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+@Getter
+@Setter
+public class SetTheoryExamDateDTO {
+    private LocalDate examDate;
+}

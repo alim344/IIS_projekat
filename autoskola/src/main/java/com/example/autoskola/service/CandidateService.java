@@ -90,8 +90,8 @@ public class CandidateService {
 
         CandidateProfileDTO response = new CandidateProfileDTO(saved);
 
-        System.out.println("Response ID: " + response.getId());
-        System.out.println("Response name: " + response.getFirstName());
+        System.out.println("Response ID: " + response.getCandidateId());
+        System.out.println("Response name: " + response.getName());
 
         return response;
     }
