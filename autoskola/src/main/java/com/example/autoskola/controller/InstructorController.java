@@ -1,11 +1,15 @@
 package com.example.autoskola.controller;
 
+import com.example.autoskola.dto.InstructorAnalyticsDTO;
 import com.example.autoskola.dto.InstructorDTO;
 import com.example.autoskola.dto.InstructorUpdateDTO;
 import com.example.autoskola.dto.VehicleDTO;
 import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.User;
+import com.example.autoskola.service.InstructorAnalytics;
 import com.example.autoskola.service.InstructorService;
+import com.example.autoskola.util.TokenUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +25,10 @@ import java.util.List;
 public class InstructorController {
     @Autowired
     private InstructorService instructorService;
+    @Autowired
+    private TokenUtils tokenUtils;
+    @Autowired
+    private InstructorAnalytics instructorAnalytics;
 
     @GetMapping("/me")
     public ResponseEntity<InstructorDTO> getMyProfile(Authentication authentication) {
@@ -93,6 +101,16 @@ public class InstructorController {
         }
 
         return ResponseEntity.ok(new VehicleDTO(instructor.getVehicle()));
+    }
+
+
+    @GetMapping("/getAnalytics")
+    public ResponseEntity<InstructorAnalyticsDTO> getExamAnalytics(HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Instructor instructor = instructorService.findByEmail(email);
+
+        return ResponseEntity.ok(instructorAnalytics.getAnalytics(instructor.getId()));
     }
 
 }

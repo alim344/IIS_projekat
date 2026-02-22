@@ -1,10 +1,7 @@
 package com.example.autoskola.service;
 
+import com.example.autoskola.dto.*;
 import com.example.autoskola.dto.CandidatePracticalDTO;
-import com.example.autoskola.dto.CandidatePracticalDTO;
-import com.example.autoskola.dto.DraftPracticalClassDTO;
-import com.example.autoskola.dto.PracticalDTO;
-import com.example.autoskola.dto.RecordPracticalDTO;
 import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.PracticalClass;
@@ -19,13 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
-
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -351,4 +344,57 @@ public class PracticalClassService {
     public List<PracticalClass> findByCandidateAndAcceptedTrueAndEndTimeBefore(Candidate candidate, LocalDateTime endTime) {
         return practicalClassRepository.findByCandidateAndAcceptedTrueAndEndTimeBefore(candidate, endTime);
     }
+
+
+    public FailPracticalDTO getCandidatesPracticalAnalytics(Candidate candidate) {
+
+        List<PracticalClass> pclass = practicalClassRepository.findByCandidateId(candidate.getId());
+        pclass.sort(Comparator.comparing(PracticalClass::getStartTime));
+        int numberOfClasses = pclass.size();
+
+        double totalHours = getTotalHours(pclass);
+
+        double avgClassesAWeek = getAvgPerWeek(pclass,numberOfClasses);
+        double avgHoursAWeek = getAvgPerWeek(pclass,totalHours);
+
+        FailPracticalDTO dto = new FailPracticalDTO();
+        dto.setTotalHours(totalHours);
+        dto.setTotalClasses( numberOfClasses  );
+        dto.setAvgClassAWeek(avgClassesAWeek);
+        dto.setAvgHourAWeek(avgHoursAWeek);
+        return dto;
+
+
+    }
+
+    private double getTotalHours(List<PracticalClass> pclass) {
+        long totalMinutes = 0;
+        for(PracticalClass pc: pclass){
+            if(pc.getStartTime() != null && pc.getEndTime() != null){
+                long minutes = Duration.between(pc.getStartTime(),pc.getEndTime()).toMinutes();
+                totalMinutes += minutes;
+            }
+        }
+        double totalHours = totalMinutes / 60;
+        return totalHours;
+    }
+
+    private double getAvgPerWeek(List<PracticalClass> pclass, double amount) {
+
+        if ( pclass.isEmpty()) return 0;
+
+        LocalDateTime firstClass = pclass.get(0).getStartTime();
+        LocalDateTime lastClass = pclass.get(pclass.size()-1).getStartTime();
+
+        long daysInBetween = java.time.temporal.ChronoUnit.DAYS.between(firstClass, lastClass);
+
+        double totalWeeks = (daysInBetween +1) / 7.0;
+
+
+       double avg =   amount / totalWeeks;
+       return Math.round(avg * 100.0) / 100.0;
+
+    }
+
+
 }
