@@ -3,6 +3,7 @@ package com.example.autoskola.service;
 import com.example.autoskola.dto.EligibleCandidateTheoryDTO;
 import com.example.autoskola.dto.RegisterExamDTO;
 import com.example.autoskola.dto.TheoryExamDTO;
+import com.example.autoskola.dto.TheoryExamResultsDTO;
 import com.example.autoskola.model.*;
 import com.example.autoskola.repository.CandidateRepository;
 import com.example.autoskola.repository.ProfessorRepository;
@@ -152,10 +153,51 @@ public class TheoryExamService {
         exam.setStatus(TheoryExamStatus.SCHEDULED);
         TheoryExam saved = theoryExamRepository.save(exam);
 
-
         // NOTIFIKACIJE KANDIDATIMA
 
         return new TheoryExamDTO(saved);
+    }
+
+    public TheoryExamDTO submitExamResults(Long examId, TheoryExamResultsDTO dto){
+        TheoryExam exam = theoryExamRepository.findById(examId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exam not found"));
+
+        if(exam.getStatus() != TheoryExamStatus.SCHEDULED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Results can only be submitted for SCHEDULED exams");
+        }
+
+        if (exam.getExamDate() == null || exam.getExamDate().isAfter(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Exam has not taken place yet");
+        }
+
+        List<Long> examCandidateIds = exam.getCandidates().stream()
+                .map(c -> c.getId())
+                .collect(Collectors.toList());
+
+        List<Long> invalidIds = dto.getPassedCandidateIds().stream()
+                .filter(id -> !examCandidateIds.contains(id))
+                .collect(Collectors.toList());
+
+        if (!invalidIds.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Some candidate IDs are not part of this exam: " + invalidIds);
+        }
+
+        if (dto.getPassedCandidateIds() != null && !dto.getPassedCandidateIds().isEmpty()) {
+            List<Candidate> passed = candidateRepository.findAllById(dto.getPassedCandidateIds());
+            for (Candidate c : passed) {
+                c.setStatus(TrainingStatus.PRACTICAL);
+            }
+            candidateRepository.saveAll(passed);
+        }
+
+        exam.setStatus(TheoryExamStatus.COMPLETED);
+        TheoryExam saved = theoryExamRepository.save(exam);
+
+        return new TheoryExamDTO(saved);
+
     }
 
 }
