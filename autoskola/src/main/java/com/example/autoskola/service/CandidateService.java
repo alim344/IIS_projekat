@@ -115,4 +115,16 @@ public class CandidateService {
     }
     public List<Candidate> findByStatus(TrainingStatus status){ return candidateRepository.findByStatus(status);}
 
+
+    public List<Candidate> getAllForPreferenceNotification(){
+        List<Candidate> candidates = candidateRepository.findAll();
+
+        List<Candidate> forNotification = new ArrayList<>();
+        for(Candidate c : candidates){
+            if(c.getStatus() == TrainingStatus.THEORY || c.getStatus() == TrainingStatus.PRACTICAL){
+                forNotification.add(c);
+            }
+        }
+        return forNotification;
+    }
 }

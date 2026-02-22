@@ -4,6 +4,7 @@ public enum ScheduledNotifType {
 
     UPDATE,
     CLASS,
-    REQUEST
+    REQUEST,
+    TIME_PREFERENCE,
 
 }

@@ -37,6 +37,8 @@ public class ScheduledNotificationService {
 
     @Autowired
     private AdminRepository adminRepository;
+    @Autowired
+    private CandidateService candidateService;
 
 
     public void sendNotification(String text, User user, ScheduledNotifType type){
@@ -45,6 +47,7 @@ public class ScheduledNotificationService {
         notif.setText(text);
         notif.setUser(user);
         notif.setType(type);
+        notif.setCreatedAt(LocalDateTime.now());
         save(notif);
 
     }
@@ -272,6 +275,16 @@ public class ScheduledNotificationService {
 
     public void deleteById(Long id) {
         scheduledNotificationRepository.deleteById(id);
+    }
+
+
+    @Scheduled(cron = "0 0 20 * * WED", zone = "Europe/Belgrade")
+    @Transactional
+    public void sendTimePreferenceNotification(){
+        List<Candidate> candidates = candidateService.getAllForPreferenceNotification();
+        for(Candidate candidate : candidates){
+            sendNotification("Update your time preference for next weeks classes!",candidate,ScheduledNotifType.TIME_PREFERENCE);
+        }
     }
 
 }
