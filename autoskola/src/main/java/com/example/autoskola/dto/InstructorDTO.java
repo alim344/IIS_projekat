@@ -26,6 +26,8 @@ public class InstructorDTO {
 
     private Integer maxCapacity;
 
+    public InstructorDTO() {}
+
     public InstructorDTO(Instructor instructor) {
         this.id = instructor.getId();
         this.username = instructor.getUsername();

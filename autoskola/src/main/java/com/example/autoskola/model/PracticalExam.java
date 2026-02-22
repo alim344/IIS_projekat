@@ -16,10 +16,7 @@ public class PracticalExam {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime date;
-
-    @Column(nullable = false)
-    private LocalDateTime time;
+    private LocalDateTime dateTime;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
