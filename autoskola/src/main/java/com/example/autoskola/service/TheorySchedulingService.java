@@ -276,6 +276,13 @@ public class TheorySchedulingService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more candidate IDs are invalid");
         }
 
+        LocalDateTime proposedStart = LocalDateTime.of(requestDTO.getDate(), requestDTO.getSlot().getStartTime());
+        if (proposedStart.isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Cannot schedule a class in the past. Selected slot " +
+                            requestDTO.getSlot().name() + " on " + requestDTO.getDate() + " has already passed.");
+        }
+
         List<String> notInTheory = candidates.stream()
                 .filter(c -> c.getStatus() != TrainingStatus.THEORY)
                 .map(c -> c.getName() + " " + c.getLastname())
