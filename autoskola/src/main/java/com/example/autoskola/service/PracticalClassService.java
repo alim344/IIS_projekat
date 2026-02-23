@@ -334,7 +334,7 @@ public class PracticalClassService {
                 throw new RuntimeException("Instructor nema vozilo");
             }
             Vehicle vehicle = vehicleService.getById(vehicleId);
-            vehicle.setCurrentMileage(dto.getMileage());
+            vehicle.setCurrentMileage(dto.getMileage()+vehicle.getCurrentMileage());
             vehicleService.save(vehicle);
         }
 

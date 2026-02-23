@@ -723,14 +723,6 @@ public class TestDataLoader implements CommandLineRunner {
         Candidate ana = candidateRepository.getByEmail("ana@gmail.com");
 
         if (ana != null) {
-            // Praktični čas
-            PracticalClass pastPractical = new PracticalClass();
-            pastPractical.setCandidate(ana);
-            pastPractical.setInstructor(instructor1);
-            pastPractical.setStartTime(LocalDateTime.now().minusDays(5).withHour(9).withMinute(0));
-            pastPractical.setEndTime(LocalDateTime.now().minusDays(5).withHour(10).withMinute(30));
-            pastPractical.setAccepted(true);
-            practicalClassRepository.save(pastPractical);
 
             List<TheoryLesson> lessons1 = theoryLessonRepository.findAll();
 

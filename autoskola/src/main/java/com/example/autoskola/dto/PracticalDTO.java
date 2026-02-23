@@ -38,13 +38,14 @@ public class PracticalDTO {
     }
 
     public PracticalDTO(Candidate candidate, PracticalClass pc) {
-        this.id = candidate.getId();
+        this.id = pc.getId();
         this.name = candidate.getName();
         this.lastname = candidate.getLastname();
         this.category = candidate.getCategory().toString();
         this.startTime = pc.getStartTime();
         this.endTime = pc.getEndTime();
         this.email = candidate.getEmail();
+        this.note = pc.getNotes();
         this.accepted = pc.isAccepted();
     }
 
