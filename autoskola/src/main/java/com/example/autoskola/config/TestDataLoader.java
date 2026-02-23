@@ -2,6 +2,7 @@ package com.example.autoskola.config;
 import com.example.autoskola.model.*;
 import com.example.autoskola.repository.*;
 import com.example.autoskola.service.CandidateService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -36,7 +37,7 @@ public class TestDataLoader implements CommandLineRunner {
     private final TheoryClassRepository theoryClassRepository;
     private final PracticalExamRepository practicalExamRepository;
     private final CandidateService candidateService;
-
+    @Transactional
     @Override
     public void run(String... args) {
 
@@ -719,10 +720,10 @@ public class TestDataLoader implements CommandLineRunner {
         pastExam.setStatus(TheoryExamStatus.SCHEDULED);
         theoryExamRepository.save(pastExam);
 
-        // ---------------- PAST CLASSES FOR ANA ---------------
         Candidate ana = candidateRepository.getByEmail("ana@gmail.com");
 
         if (ana != null) {
+            // Praktični čas
             PracticalClass pastPractical = new PracticalClass();
             pastPractical.setCandidate(ana);
             pastPractical.setInstructor(instructor1);
@@ -731,21 +732,36 @@ public class TestDataLoader implements CommandLineRunner {
             pastPractical.setAccepted(true);
             practicalClassRepository.save(pastPractical);
 
-            TheoryLesson firstLesson = theoryLessonRepository.findAll().get(0);
+            List<TheoryLesson> lessons1 = theoryLessonRepository.findAll();
 
-            TheoryClass pastTheory = new TheoryClass();
-            pastTheory.setProfessor(professor1);
-            pastTheory.setTheoryLesson(firstLesson);
-            pastTheory.setStartTime(LocalDateTime.now().minusDays(7).withHour(10).withMinute(0));
-            pastTheory.setEndTime(LocalDateTime.now().minusDays(7).withHour(11).withMinute(30));
-            pastTheory.setCapacity(30);
-            pastTheory.setEnrolledStudents(1);
+            ana = candidateRepository.findById(ana.getId())
+                    .orElseThrow(() -> new RuntimeException("Ana not found"));
 
-            List<Candidate> students = new ArrayList<>();
-            students.add(ana);
-            pastTheory.setStudents(students);
+            for (int i = 0; i < 5; i++) {
+                TheoryLesson lesson = lessons1.get(i);
 
-            theoryClassRepository.save(pastTheory);
+                TheoryClass pastTheory = new TheoryClass();
+                pastTheory.setProfessor(professor1);
+                pastTheory.setTheoryLesson(lesson);
+                pastTheory.setStartTime(LocalDateTime.now().minusDays(7 + i * 2).withHour(10).withMinute(0));
+                pastTheory.setEndTime(LocalDateTime.now().minusDays(7 + i * 2).withHour(12).withMinute(0));
+                pastTheory.setCapacity(20);
+                pastTheory.setEnrolledStudents(1);
+
+                List<Candidate> students = new ArrayList<>();
+                students.add(ana);
+                pastTheory.setStudents(students);
+
+                theoryClassRepository.save(pastTheory);
+
+                if (lesson.getId() != 1) {
+                    ana.getAttendedLessons().add(lesson);
+                }
+            }
+
+            candidateRepository.save(ana);
+            System.out.println("✓ Created 5 past theory classes for Ana with attendance");
+
         }
 
         System.out.println("TEST DATA LOADED SUCCESSFULLY");

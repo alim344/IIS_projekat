@@ -121,10 +121,7 @@ public class CandidateController {
         Candidate candidate = candidateService.findById(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidate not found"));
 
-        List<TheoryClass> attendedClasses = theoryClassService
-                .findByStudentsContainingAndEndTimeBefore(candidate, LocalDateTime.now());
-
-        int attended = attendedClasses.size();
+        int attended = candidate.getAttendedLessons().size();
         double percentage = (attended * 100.0) / 40;
 
         TheoryProgressDTO progress = new TheoryProgressDTO(attended, 40, percentage);
