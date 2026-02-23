@@ -27,4 +27,6 @@ public interface PracticalExamRepository extends JpaRepository<PracticalExam, Lo
                                                             LocalDateTime end);
 
 
+    List<PracticalExam> findByProfessorId(Long professorId);
+
 }

@@ -1,5 +1,6 @@
 package com.example.autoskola.service;
 
+import com.example.autoskola.dto.ProfExamDTO;
 import com.example.autoskola.model.PracticalExam;
 import com.example.autoskola.dto.ProfessorAvailabilityDTO;
 import com.example.autoskola.model.Professor;
@@ -114,5 +115,25 @@ public class PracticalExamService {
                 .filter(p -> isProfessorFreeAtTime(p.getId(), dateTime))
                 .collect(Collectors.toList());
     }
+
+    public List<PracticalExam> getProfessorExams(long id) {
+        return practicalExamRepository.findByProfessorId(id);
+    }
+
+    public List<ProfExamDTO> getExamDTO(long prof_id){
+        List<PracticalExam> exams = getProfessorExams(prof_id);
+        List<ProfExamDTO> dtos = new ArrayList<>();
+
+        for(PracticalExam exam : exams){
+            ProfExamDTO dto = new ProfExamDTO();
+            dto.setPractical(true);
+            dto.setDate(exam.getDateTime());
+            dtos.add(dto);
+        }
+
+        return dtos;
+
+    }
+
 }
 

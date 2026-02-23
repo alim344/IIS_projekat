@@ -66,4 +66,6 @@ public class PracticalExamController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
 }
