@@ -187,12 +187,12 @@ public class PracticalClassController {
 
         String token = tokenUtils.getToken(request);
         String email = tokenUtils.getEmailFromToken(token);
-        Instructor i = instructorService.findByEmail(email);
+        long instructorId = instructorService.getIdByEmail(email);
         if(dto.getEmails().size() > 12){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        boolean available = instructorScheduleGenerator.checkNextWeekAvailability(i.getId());
+        boolean available = instructorScheduleGenerator.checkNextWeekAvailability(instructorId);
 
         if(!available){
             return new ResponseEntity<>(HttpStatus.CONFLICT);

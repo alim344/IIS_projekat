@@ -45,7 +45,7 @@ public class InstructorScheduleGenerator {
         return classes.isEmpty();
     }
 
-    public List<PracticalDTO> generateSchedule(List<LocalDate> lightDays,List<String> emails){
+ /*   public List<PracticalDTO> generateSchedule(List<LocalDate> lightDays,List<String> emails){
 
         List<Candidate> candidates = getCandidates(emails);
         List<PracticalDTO> schedule = new ArrayList<>();
@@ -104,7 +104,7 @@ public class InstructorScheduleGenerator {
             }
         }
     return schedule;
-    }
+    }*/
 
     public LocalTime getFavoriteTime(long candidate_id) {
 
@@ -190,10 +190,11 @@ public class InstructorScheduleGenerator {
             while (currentTry.isBefore(limit)) {
                 if (!currentTry.equals(favTime)) {
                     LocalDateTime begin = LocalDateTime.of(date, currentTry);
-                    LocalDateTime theend = start.plusMinutes(90);
+                    LocalDateTime theend = begin.plusMinutes(90); // Corrected calculation
 
-                    if (!isOverlapping(start, end, busySlots) && !isInstructorOverloaded(date, busySlots, lightDays)) {
-                        return new PracticalDTO(null, c.getName(), c.getLastname(), c.getCategory().toString(), start, end, c.getEmail(), false, "", c.getPreferredLocation());
+                    // Use 'begin' and 'theend' here, not 'start' and 'end'
+                    if (!isOverlapping(begin, theend, busySlots) && !isInstructorOverloaded(date, busySlots, lightDays)) {
+                        return new PracticalDTO(null, c.getName(), c.getLastname(), c.getCategory().toString(), begin, theend, c.getEmail(), false, "", c.getPreferredLocation());
                     }
                 }
                 currentTry = currentTry.plusMinutes(30);
@@ -255,7 +256,7 @@ public class InstructorScheduleGenerator {
         return (minutesScheduled + 90) > 480;
     }
 
-/*public List<PracticalDTO> generateSchedule( List<LocalDate> lightDays, List<String> candidate_emails) {
+public List<PracticalDTO> generateSchedule( List<LocalDate> lightDays, List<String> candidate_emails) {
 
         List<Candidate> candidates = getCandidates(candidate_emails);
 
@@ -300,6 +301,6 @@ public class InstructorScheduleGenerator {
 
         return schedule;
 
-    }*/
+    }
 
 }

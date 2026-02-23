@@ -61,7 +61,7 @@ public class ScheduledNotificationService {
 
     public List<ScheduledNotifDTO> getCandidateClassNotif(Candidate candidate){
         List<ScheduledNotifDTO> dtos = new ArrayList<>();
-        List<ScheduledNotification> notifications = findByUser(candidate);
+        List<ScheduledNotification> notifications = scheduledNotificationRepository.findByUserOrderByCreatedAtDesc(candidate);
         for (ScheduledNotification notification : notifications) {
             ScheduledNotifDTO dto = new ScheduledNotifDTO();
             dto.setText(notification.getText());
