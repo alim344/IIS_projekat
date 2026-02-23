@@ -208,6 +208,38 @@ public class ScheduledNotificationService {
         }
     }
 
+    public void sendPracticalExamNotification(Candidate candidate, Professor professor, LocalDateTime dateTime) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        String formattedDate = dateTime.format(dateFormatter);
+        String formattedTime = dateTime.format(timeFormatter);
+        String day = dateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+
+        String text = String.format(
+                "Practical Exam scheduled for %s, %s at %s with professor %s %s",
+                day, formattedDate, formattedTime, professor.getName(), professor.getLastname()
+        );
+
+        sendNotification(text, candidate, ScheduledNotifType.PRACTICAL_EXAM);
+    }
+
+    public void sendPracticalExamNotificationToProfessor(Candidate candidate, Professor professor, LocalDateTime dateTime) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        String formattedDate = dateTime.format(dateFormatter);
+        String formattedTime = dateTime.format(timeFormatter);
+        String day = dateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+
+        String text = String.format(
+                "You are assigned as witness for practical exam on %s, %s at %s with candidate %s %s",
+                day, formattedDate, formattedTime, candidate.getName(), candidate.getLastname()
+        );
+
+        sendNotification(text, professor, ScheduledNotifType.PRACTICAL_EXAM);
+    }
+
     private void createNotificationForAdmins(List<User> admins, String text, ScheduledNotifType type) {
         LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
 

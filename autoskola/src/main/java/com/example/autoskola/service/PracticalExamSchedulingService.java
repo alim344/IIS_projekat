@@ -21,7 +21,7 @@ public class PracticalExamSchedulingService {
     private final ProfessorRepository professorRepository;
     private final ProfessorSchedulingService schedulingService;
     private final InstructorService instructorService;
-   // private final NotificationService notificationService;
+    private final ScheduledNotificationService scheduledNotificationService;
 
     public Professor suggestProfessorForExam(LocalDateTime dateTime) {
         return schedulingService.suggestProfessor(dateTime);
@@ -71,6 +71,9 @@ public class PracticalExamSchedulingService {
         exam.setProfessor(professor);
 
         PracticalExam savedExam = practicalExamRepository.save(exam);
+
+        scheduledNotificationService.sendPracticalExamNotification(candidate, professor, request.getDateTime());
+        scheduledNotificationService.sendPracticalExamNotificationToProfessor(candidate, professor, request.getDateTime());
 
         return savedExam;
     }

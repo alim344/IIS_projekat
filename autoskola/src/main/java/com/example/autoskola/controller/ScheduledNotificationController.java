@@ -31,6 +31,15 @@ public class ScheduledNotificationController {
         this.scheduledNotificationService = scheduledNotificationService;
     }
 
+    @GetMapping("/professor")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    public ResponseEntity<List<AdminNotificationDTO>> getProfessorNotifications(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Long userId = user.getId();
+
+        return ResponseEntity.ok(scheduledNotificationService.getNotificationsForUser(userId));
+    }
+
     @GetMapping("/getcandidate")
     public ResponseEntity<List<ScheduledNotifDTO>> getCandidateNotifs(HttpServletRequest req) {
         String token = tokenUtils.getToken(req);
