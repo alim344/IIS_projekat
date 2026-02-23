@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class ExamSuggestionDTO {
     private ProfessorDTO professor;
-    private InstructorDTO instructor;
+   // private InstructorDTO instructor;
 }
