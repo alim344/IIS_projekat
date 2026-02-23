@@ -37,6 +37,7 @@ public class TestDataLoader implements CommandLineRunner {
     private final TheoryClassRepository theoryClassRepository;
     private final PracticalExamRepository practicalExamRepository;
     private final CandidateService candidateService;
+    private final FuelRecordRepository fuelRecordRepository;
     @Transactional
     @Override
     public void run(String... args) {
@@ -778,6 +779,159 @@ public class TestDataLoader implements CommandLineRunner {
 
             candidateRepository.save(ana);
             System.out.println("✓ Created 5 past theory classes for Ana with attendance");
+
+            // ---------------- FUEL RECORDS ----------------
+// Kreiramo test podatke za točenje goriva - 4-5 točenja po vozilu
+            List<FuelRecord> fuelRecords = new ArrayList<>();
+
+// Trenutni datum za reference
+            LocalDate today = LocalDate.now();
+
+// VOZILO 1 (NS-123-AA) - 5 točenja
+            Vehicle veh1 = vehicleRepository.findByRegistrationNumber("NS-123-AA").orElse(vehicle1);
+            FuelRecord fr1_1 = new FuelRecord();
+            fr1_1.setRefuelDate(today.minusMonths(2).minusDays(3));
+            fr1_1.setLiters(42.5);
+            fr1_1.setTotalCost(7125.75); // 167.66 RSD/L približno
+            fr1_1.setMileageAtRefuel(45200);
+            fr1_1.setVehicle(veh1);
+            fr1_1.setInstructor(instructor1); // Marko Markovic
+            fuelRecords.add(fr1_1);
+
+            FuelRecord fr1_2 = new FuelRecord();
+            fr1_2.setRefuelDate(today.minusMonths(1).minusDays(15));
+            fr1_2.setLiters(38.2);
+            fr1_2.setTotalCost(6450.50);
+            fr1_2.setMileageAtRefuel(45850);
+            fr1_2.setVehicle(veh1);
+            fr1_2.setInstructor(instructor1); // Marko Markovic
+            fuelRecords.add(fr1_2);
+
+            FuelRecord fr1_3 = new FuelRecord();
+            fr1_3.setRefuelDate(today.minusMonths(1).minusDays(2));
+            fr1_3.setLiters(45.0);
+            fr1_3.setTotalCost(7650.00);
+            fr1_3.setMileageAtRefuel(46520);
+            fr1_3.setVehicle(veh1);
+            fr1_3.setInstructor(instructor1); // Marko Markovic
+            fuelRecords.add(fr1_3);
+
+            FuelRecord fr1_4 = new FuelRecord();
+            fr1_4.setRefuelDate(today.minusDays(10));
+            fr1_4.setLiters(41.8);
+            fr1_4.setTotalCost(7315.00);
+            fr1_4.setMileageAtRefuel(47180);
+            fr1_4.setVehicle(veh1);
+            fr1_4.setInstructor(instructor3); // Nesa Radic - drugi instruktor
+            fuelRecords.add(fr1_4);
+
+            FuelRecord fr1_5 = new FuelRecord();
+            fr1_5.setRefuelDate(today.minusDays(2));
+            fr1_5.setLiters(44.3);
+            fr1_5.setTotalCost(7965.40);
+            fr1_5.setMileageAtRefuel(47850);
+            fr1_5.setVehicle(veh1);
+            fr1_5.setInstructor(instructor1); // Marko Markovic
+            fuelRecords.add(fr1_5);
+
+// VOZILO 2 (SU-456-BB) - 5 točenja
+            Vehicle veh2 = vehicleRepository.findByRegistrationNumber("SU-456-BB").orElse(vehicle2);
+            FuelRecord fr2_1 = new FuelRecord();
+            fr2_1.setRefuelDate(today.minusMonths(3).minusDays(5));
+            fr2_1.setLiters(52.0);
+            fr2_1.setTotalCost(8580.00); // 165 RSD/L
+            fr2_1.setMileageAtRefuel(81200);
+            fr2_1.setVehicle(veh2);
+            fr2_1.setInstructor(instructor2); // Nikola Nikolic
+            fuelRecords.add(fr2_1);
+
+            FuelRecord fr2_2 = new FuelRecord();
+            fr2_2.setRefuelDate(today.minusMonths(2).minusDays(10));
+            fr2_2.setLiters(47.5);
+            fr2_2.setTotalCost(8027.50); // 169 RSD/L
+            fr2_2.setMileageAtRefuel(81950);
+            fr2_2.setVehicle(veh2);
+            fr2_2.setInstructor(instructor2); // Nikola Nikolic
+            fuelRecords.add(fr2_2);
+
+            FuelRecord fr2_3 = new FuelRecord();
+            fr2_3.setRefuelDate(today.minusMonths(1).minusDays(8));
+            fr2_3.setLiters(49.8);
+            fr2_3.setTotalCost(8665.20); // 174 RSD/L
+            fr2_3.setMileageAtRefuel(82780);
+            fr2_3.setVehicle(veh2);
+            fr2_3.setInstructor(instructor2); // Nikola Nikolic
+            fuelRecords.add(fr2_3);
+
+            FuelRecord fr2_4 = new FuelRecord();
+            fr2_4.setRefuelDate(today.minusDays(18));
+            fr2_4.setLiters(44.2);
+            fr2_4.setTotalCost(7940.75); // ~179.65 RSD/L
+            fr2_4.setMileageAtRefuel(83560);
+            fr2_4.setVehicle(veh2);
+            fr2_4.setInstructor(instructor1); // Marko Markovic - drugi instruktor
+            fuelRecords.add(fr2_4);
+
+            FuelRecord fr2_5 = new FuelRecord();
+            fr2_5.setRefuelDate(today.minusDays(5));
+            fr2_5.setLiters(51.3);
+            fr2_5.setTotalCost(9387.90); // ~183 RSD/L
+            fr2_5.setMileageAtRefuel(84320);
+            fr2_5.setVehicle(veh2);
+            fr2_5.setInstructor(instructor2); // Nikola Nikolic
+            fuelRecords.add(fr2_5);
+
+// VOZILO 3 (BG-789-CC) - 4 točenja
+            Vehicle veh3 = vehicleRepository.findByRegistrationNumber("BG-789-CC").orElse(vehicle3);
+            FuelRecord fr3_1 = new FuelRecord();
+            fr3_1.setRefuelDate(today.minusMonths(2).minusDays(20));
+            fr3_1.setLiters(48.7);
+            fr3_1.setTotalCost(7941.62); // ~163.07 RSD/L
+            fr3_1.setMileageAtRefuel(125450);
+            fr3_1.setVehicle(veh3);
+            fr3_1.setInstructor(instructor3); // Nesa Radic
+            fuelRecords.add(fr3_1);
+
+            FuelRecord fr3_2 = new FuelRecord();
+            fr3_2.setRefuelDate(today.minusMonths(1).minusDays(12));
+            fr3_2.setLiters(52.3);
+            fr3_2.setTotalCost(8943.30); // ~171 RSD/L
+            fr3_2.setMileageAtRefuel(126320);
+            fr3_2.setVehicle(veh3);
+            fr3_2.setInstructor(instructor2); // Nikola Nikolic - drugi instruktor
+            fuelRecords.add(fr3_2);
+
+            FuelRecord fr3_3 = new FuelRecord();
+            fr3_3.setRefuelDate(today.minusDays(22));
+            fr3_3.setLiters(46.8);
+            fr3_3.setTotalCost(8424.00); // 180 RSD/L
+            fr3_3.setMileageAtRefuel(127150);
+            fr3_3.setVehicle(veh3);
+            fr3_3.setInstructor(instructor3); // Nesa Radic
+            fuelRecords.add(fr3_3);
+
+            FuelRecord fr3_4 = new FuelRecord();
+            fr3_4.setRefuelDate(today.minusDays(8));
+            fr3_4.setLiters(50.1);
+            fr3_4.setTotalCost(9268.50); // 185 RSD/L
+            fr3_4.setMileageAtRefuel(128050);
+            fr3_4.setVehicle(veh3);
+            fr3_4.setInstructor(instructor1); // Marko Markovic - drugi instruktor
+            fuelRecords.add(fr3_4);
+
+// Dodajemo dodatno 5-to točenje za vozilo 3 (da bude 5 umesto 4)
+            FuelRecord fr3_5 = new FuelRecord();
+            fr3_5.setRefuelDate(today.minusDays(1));
+            fr3_5.setLiters(39.5);
+            fr3_5.setTotalCost(7505.00); // 190 RSD/L
+            fr3_5.setMileageAtRefuel(128650);
+            fr3_5.setVehicle(veh3);
+            fr3_5.setInstructor(instructor3); // Nesa Radic
+            fuelRecords.add(fr3_5);
+
+// Čuvamo sve zapise u bazu
+            fuelRecordRepository.saveAll(fuelRecords);
+            System.out.println("✓ Created " + fuelRecords.size() + " fuel records across all vehicles");
 
         }
 
