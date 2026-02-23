@@ -38,6 +38,8 @@ public class TestDataLoader implements CommandLineRunner {
     private final PracticalExamRepository practicalExamRepository;
     private final CandidateService candidateService;
     private final FuelRecordRepository fuelRecordRepository;
+    private final InstructorDocumentsRepository instructorDocumentsRepository;
+
     @Transactional
     @Override
     public void run(String... args) {
@@ -933,6 +935,11 @@ public class TestDataLoader implements CommandLineRunner {
             fuelRecordRepository.saveAll(fuelRecords);
             System.out.println("✓ Created " + fuelRecords.size() + " fuel records across all vehicles");
 
+            // ---------------- INSTRUCTOR DOCUMENTS ----------------
+            createInstructorDocuments(instructor1);
+            createInstructorDocuments(instructor2);
+            createInstructorDocuments(instructor3);
+
         }
 
         System.out.println("TEST DATA LOADED SUCCESSFULLY");
@@ -994,5 +1001,30 @@ public class TestDataLoader implements CommandLineRunner {
         pc.setEndTime(end);
         pc.setAccepted(accepted);
         practicalClassRepository.save(pc);
+    }
+
+    private void createInstructorDocuments(Instructor instructor) {
+        LocalDate now = LocalDate.now();
+
+        // Vozačka dozvola - važi 10 godina
+        InstructorDocuments license = new InstructorDocuments();
+        license.setDocumentType(DocumentType.DRIVING_LICENSE);
+        license.setExpiryDate(now.plusYears(10));
+        license.setInstructor(instructor);
+        instructorDocumentsRepository.save(license);
+
+        // Instruktorska licenca - važi 5 godina
+        InstructorDocuments instructorLicense = new InstructorDocuments();
+        instructorLicense.setDocumentType(DocumentType.INSTRUCTOR_LICENSE);
+        instructorLicense.setExpiryDate(now.plusYears(5));
+        instructorLicense.setInstructor(instructor);
+        instructorDocumentsRepository.save(instructorLicense);
+
+        // Lekarsko uverenje - važi 1 godinu
+        InstructorDocuments medicalCert = new InstructorDocuments();
+        medicalCert.setDocumentType(DocumentType.MEDICAL_CERTIFICATE);
+        medicalCert.setExpiryDate(now.plusYears(1));
+        medicalCert.setInstructor(instructor);
+        instructorDocumentsRepository.save(medicalCert);
     }
 }
