@@ -2,11 +2,16 @@ package com.example.autoskola.controller;
 
 import com.example.autoskola.dto.InstructorDTO;
 import com.example.autoskola.dto.InstructorUpdateDTO;
+import com.example.autoskola.dto.ProfExamDTO;
 import com.example.autoskola.dto.ProfessorDTO;
 import com.example.autoskola.model.Instructor;
 import com.example.autoskola.model.Professor;
 import com.example.autoskola.model.User;
+import com.example.autoskola.service.PracticalExamService;
 import com.example.autoskola.service.ProfessorService;
+import com.example.autoskola.service.TheoryExamService;
+import com.example.autoskola.util.TokenUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,6 +28,12 @@ import java.util.List;
 public class ProfessorController {
     @Autowired
     private ProfessorService professorService;
+    @Autowired
+    private TokenUtils tokenUtils;
+    @Autowired
+    private PracticalExamService practicalExamService;
+    @Autowired
+    private TheoryExamService theoryExamService;
 
     @GetMapping("/me")
     public ResponseEntity<ProfessorDTO> getMyProfile(Authentication authentication) {
@@ -62,5 +74,20 @@ public class ProfessorController {
         ProfessorDTO response = new ProfessorDTO(updateProfessor);
 
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/getExams")
+    public ResponseEntity<List<ProfExamDTO>> getProfsExams(HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
+        String email = tokenUtils.getEmailFromToken(token);
+        Professor p = professorService.findByEmail(email);
+
+        List<ProfExamDTO> allExams = new ArrayList<>();
+        allExams.addAll(practicalExamService.getExamDTO(p.getId()));
+        allExams.addAll(theoryExamService.getTheoryExamDTO(p.getId()));
+
+        return ResponseEntity.ok(allExams);
+
     }
 }

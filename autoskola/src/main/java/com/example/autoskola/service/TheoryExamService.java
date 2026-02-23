@@ -1,9 +1,6 @@
 package com.example.autoskola.service;
 
-import com.example.autoskola.dto.EligibleCandidateTheoryDTO;
-import com.example.autoskola.dto.RegisterExamDTO;
-import com.example.autoskola.dto.TheoryExamDTO;
-import com.example.autoskola.dto.TheoryExamResultsDTO;
+import com.example.autoskola.dto.*;
 import com.example.autoskola.model.*;
 import com.example.autoskola.repository.CandidateRepository;
 import com.example.autoskola.repository.ProfessorRepository;
@@ -17,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,6 +105,23 @@ public class TheoryExamService {
                 .map(TheoryExamDTO::new)
                 .collect(Collectors.toList());
     }
+
+
+
+
+    public List<ProfExamDTO> getTheoryExamDTO(long professorId) {
+        List<TheoryExam> exams = theoryExamRepository.findByRegisteredById(professorId);
+        List<ProfExamDTO> dtos = new ArrayList<>();
+        for(TheoryExam exam : exams) {
+            ProfExamDTO dto = new ProfExamDTO();
+            LocalDateTime tiemDate = exam.getExamDate().atTime(10,0);
+            dto.setDate(tiemDate);
+            dto.setPractical(false);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
 
     public TheoryExamDTO getExamDetails(Long examId) {
         TheoryExam exam = theoryExamRepository.findById(examId)
