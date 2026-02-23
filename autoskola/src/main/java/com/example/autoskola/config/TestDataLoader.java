@@ -161,7 +161,7 @@ public class TestDataLoader implements CommandLineRunner {
         instructor1.setPassword(passwordEncoder.encode("123"));
         instructor1.setEnabled(true);
         instructor1.setRole(instructorRole);
-        instructor1.setMaxCapacity(10);
+        instructor1.setMaxCapacity(30);
         instructorRepository.save(instructor1);
 
         Instructor instructor2 = new Instructor();
@@ -172,7 +172,7 @@ public class TestDataLoader implements CommandLineRunner {
         instructor2.setPassword(passwordEncoder.encode("123"));
         instructor2.setEnabled(true);
         instructor2.setRole(instructorRole);
-        instructor2.setMaxCapacity(8);
+        instructor2.setMaxCapacity(24);
         instructorRepository.save(instructor2);
 
         Instructor instructor3 = new Instructor();
@@ -183,7 +183,7 @@ public class TestDataLoader implements CommandLineRunner {
         instructor3.setPassword(passwordEncoder.encode("123"));
         instructor3.setEnabled(true);
         instructor3.setRole(instructorRole);
-        instructor3.setMaxCapacity(10);
+        instructor3.setMaxCapacity(27);
         instructorRepository.save(instructor3);
 
         instructor1.setVehicle(vehicle1);
@@ -592,6 +592,31 @@ public class TestDataLoader implements CommandLineRunner {
         savePracticalClass(cActive7, instructor3, LocalDateTime.of(2026, 2, 26, 11, 0), LocalDateTime.of(2026, 2, 26, 12, 30), true);
 
 
+        // --- CANDIDATES WITH PASSED THEORY WITHOUT AN INSTRUCTOR ---
+        Candidate candNoProfessor1 = makeCandidate("eren@gmail.com", "Eren", "Bajunovic", "eren", Category.B, null, candidateRole);
+        candNoProfessor1.setStatus(TrainingStatus.PRACTICAL);
+        candNoProfessor1.setTheoryCompleted(true);
+        candidateRepository.save(candNoProfessor1);
+
+        Candidate candNoProfessor2 = makeCandidate("mikasa@gmail.com", "Mikasa", "Civic", "mikasa", Category.B, null, candidateRole);
+        candNoProfessor2.setStatus(TrainingStatus.PRACTICAL);
+        candNoProfessor2.setTheoryCompleted(true);
+        candidateRepository.save(candNoProfessor2);
+
+        Candidate candNoProfessor3 = makeCandidate("armin@gmail.com", "Armin", "Jekic", "armin", Category.B, null, candidateRole);
+        candNoProfessor3.setStatus(TrainingStatus.PRACTICAL);
+        candNoProfessor3.setTheoryCompleted(true);
+        candidateRepository.save(candNoProfessor3);
+
+        Candidate candNoProfessor4 = makeCandidate("kaneki@gmail.com", "Kaneki", "Jelic", "kaneki", Category.B, null, candidateRole);
+        candNoProfessor4.setStatus(TrainingStatus.PRACTICAL);
+        candNoProfessor4.setTheoryCompleted(true);
+        candidateRepository.save(candNoProfessor4);
+
+        Candidate candNoProfessor5 = makeCandidate("noel@gmail.com", "Noel", "Katic", "noel", Category.B, null, candidateRole);
+        candNoProfessor5.setStatus(TrainingStatus.PRACTICAL);
+        candNoProfessor5.setTheoryCompleted(true);
+        candidateRepository.save(candNoProfessor5);
 
 
         // ---------------- PRACTICAL CLASSES ----------------
