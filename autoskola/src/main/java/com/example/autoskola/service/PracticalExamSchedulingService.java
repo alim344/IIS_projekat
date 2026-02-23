@@ -45,18 +45,14 @@ public class PracticalExamSchedulingService {
             throw new RuntimeException("Candidate already has an exam at this time");
         }
 
-        Instructor instructor = instructorRepository.findById(request.getInstructorId())
-                .orElseThrow(() -> new RuntimeException("Instructor not found"));
-
-        if (!practicalExamRepository
-                .findByInstructorIdAndDateTimeBetween(instructor.getId(), start, end)
-                .isEmpty()) {
-            throw new RuntimeException("Instructor already has an exam at this time");
+        // Instruktor se uzima iz kandidata, ne šalje se iz requesta
+        Instructor instructor = candidate.getInstructor();
+        if (instructor == null) {
+            throw new RuntimeException("Candidate has no assigned instructor");
         }
 
         Professor professor;
         if (request.getSuggestedProfessorId() != null) {
-
             professor = professorRepository.findById(request.getSuggestedProfessorId())
                     .orElseThrow(() -> new RuntimeException("Professor not found"));
 
@@ -72,45 +68,43 @@ public class PracticalExamSchedulingService {
         exam.setDateTime(request.getDateTime());
         exam.setStatus(ExamStatus.SCHEDULED);
         exam.setCandidate(candidate);
-        exam.setInstructor(instructor);
         exam.setProfessor(professor);
 
         PracticalExam savedExam = practicalExamRepository.save(exam);
 
-        // Pošalji notifikacije
-        /*sendExamNotifications(savedExam); */
-
         return savedExam;
     }
 
-    @Transactional
-    public PracticalExam changeWitness(Long examId, Long newProfessorId) {
-        PracticalExam exam = practicalExamRepository.findById(examId)
-                .orElseThrow(() -> new RuntimeException("Exam not found"));
+// Izbrisana metoda suggestBoth jer više ne treba
 
-        Professor newProfessor = professorRepository.findById(newProfessorId)
-                .orElseThrow(() -> new RuntimeException("Professor not found"));
+        @Transactional
+        public PracticalExam changeWitness(Long examId, Long newProfessorId) {
+            PracticalExam exam = practicalExamRepository.findById(examId)
+                    .orElseThrow(() -> new RuntimeException("Exam not found"));
 
-        LocalDateTime start = exam.getDateTime();
-        LocalDateTime end = start.plusHours(1);
+            Professor newProfessor = professorRepository.findById(newProfessorId)
+                    .orElseThrow(() -> new RuntimeException("Professor not found"));
 
-        if (!practicalExamRepository
-                .findByProfessorIdAndDateTimeBetween(newProfessor.getId(), start, end)
-                .isEmpty()) {
-            throw new RuntimeException("New professor is not available at this time");
-        }
+            LocalDateTime start = exam.getDateTime();
+            LocalDateTime end = start.plusHours(1);
 
-        Professor oldProfessor = exam.getProfessor();
+            if (!practicalExamRepository
+                    .findByProfessorIdAndDateTimeBetween(newProfessor.getId(), start, end)
+                    .isEmpty()) {
+                throw new RuntimeException("New professor is not available at this time");
+            }
 
-        exam.setProfessor(newProfessor);
-        PracticalExam updatedExam = practicalExamRepository.save(exam);
+            Professor oldProfessor = exam.getProfessor();
 
-        // Pošalji notifikacije
+            exam.setProfessor(newProfessor);
+            PracticalExam updatedExam = practicalExamRepository.save(exam);
+
+            // Pošalji notifikacije
       /*  notificationService.sendWitnessChangedNotification(oldProfessor, exam);
         notificationService.sendExamScheduledNotification(newProfessor, exam);*/
 
-        return updatedExam;
-    }
+            return updatedExam;
+        }
 
     /*private void sendExamNotifications(PracticalExam exam) {
         notificationService.sendExamScheduledNotification(exam.getCandidate(), exam);
@@ -118,52 +112,48 @@ public class PracticalExamSchedulingService {
         notificationService.sendExamScheduledNotification(exam.getProfessor(), exam);
     } */
 
-    private PracticalExamResponseDTO mapToDTO(PracticalExam exam) {
-        PracticalExamResponseDTO dto = new PracticalExamResponseDTO();
-        dto.setId(exam.getId());
-        dto.setDateTime(exam.getDateTime());
-        dto.setStatus(exam.getStatus().toString());
-        dto.setCandidateId(exam.getCandidate().getId());
-        dto.setCandidateName(exam.getCandidate().getName());
-        dto.setCandidateLastName(exam.getCandidate().getLastname());
-        dto.setInstructorId(exam.getInstructor().getId());
-        dto.setInstructorName(exam.getInstructor().getName());
-        dto.setInstructorLastName(exam.getInstructor().getLastname());
-        dto.setProfessorId(exam.getProfessor().getId());
-        dto.setProfessorName(exam.getProfessor().getName());
-        dto.setProfessorLastName(exam.getProfessor().getLastname());
-        return dto;
-    }
-
-    public ExamSuggestionDTO suggestBoth(LocalDateTime dateTime, Long candidateId) {
-        Candidate candidate = candidateRepository.findById(candidateId)
-                .orElseThrow(() -> new RuntimeException("Candidate not found"));
-
-        Instructor instructor = candidate.getInstructor();
-        if (instructor == null) {
-            throw new RuntimeException("Candidate has no assigned instructor");
+        private PracticalExamResponseDTO mapToDTO(PracticalExam exam) {
+            PracticalExamResponseDTO dto = new PracticalExamResponseDTO();
+            dto.setId(exam.getId());
+            dto.setDateTime(exam.getDateTime());
+            dto.setStatus(exam.getStatus().toString());
+            dto.setCandidateId(exam.getCandidate().getId());
+            dto.setCandidateName(exam.getCandidate().getName());
+            dto.setCandidateLastName(exam.getCandidate().getLastname());
+            dto.setProfessorId(exam.getProfessor().getId());
+            dto.setProfessorName(exam.getProfessor().getName());
+            dto.setProfessorLastName(exam.getProfessor().getLastname());
+            return dto;
         }
 
-        Professor professor = schedulingService.suggestProfessor(dateTime);
+        public ExamSuggestionDTO suggestBoth(LocalDateTime dateTime, Long candidateId) {
+            Candidate candidate = candidateRepository.findById(candidateId)
+                    .orElseThrow(() -> new RuntimeException("Candidate not found"));
 
-        ExamSuggestionDTO result = new ExamSuggestionDTO();
+            Instructor instructor = candidate.getInstructor();
+            if (instructor == null) {
+                throw new RuntimeException("Candidate has no assigned instructor");
+            }
 
-        ProfessorDTO professorDTO = new ProfessorDTO();
-        professorDTO.setId(professor.getId());
-        professorDTO.setName(professor.getName());
-        professorDTO.setLastName(professor.getLastname());
-        professorDTO.setEmail(professor.getEmail());
-        professorDTO.setUsername(professor.getUsername());
-        result.setProfessor(professorDTO);
+            Professor professor = schedulingService.suggestProfessor(dateTime);
 
-        InstructorDTO instructorDTO = new InstructorDTO();
-        instructorDTO.setId(instructor.getId());
-        instructorDTO.setName(instructor.getName());
-        instructorDTO.setLastName(instructor.getLastname());
-        instructorDTO.setEmail(instructor.getEmail());
-        instructorDTO.setUsername(instructor.getUsername());
-        result.setInstructor(instructorDTO);
+            ExamSuggestionDTO result = new ExamSuggestionDTO();
 
-        return result;
+            ProfessorDTO professorDTO = new ProfessorDTO();
+            professorDTO.setId(professor.getId());
+            professorDTO.setName(professor.getName());
+            professorDTO.setLastName(professor.getLastname());
+            professorDTO.setEmail(professor.getEmail());
+            professorDTO.setUsername(professor.getUsername());
+            result.setProfessor(professorDTO);
+
+            InstructorDTO instructorDTO = new InstructorDTO();
+            instructorDTO.setId(instructor.getId());
+            instructorDTO.setName(instructor.getName());
+            instructorDTO.setLastName(instructor.getLastname());
+            instructorDTO.setEmail(instructor.getEmail());
+            instructorDTO.setUsername(instructor.getUsername());
+
+            return result;
     }
 }

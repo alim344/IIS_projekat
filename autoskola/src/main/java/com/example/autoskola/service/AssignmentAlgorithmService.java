@@ -4,6 +4,7 @@ import com.example.autoskola.dto.CandidateAssignmentDTO;
 import com.example.autoskola.dto.InstructorWorkloadDTO;
 import com.example.autoskola.model.Candidate;
 import com.example.autoskola.model.Instructor;
+import com.example.autoskola.model.TrainingStatus;
 import com.example.autoskola.repository.CandidateRepository;
 import com.example.autoskola.repository.InstructorRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,23 +23,72 @@ public class AssignmentAlgorithmService {
     public Map<Long, Long> proposeOptimalAssignment(List<Long> candidateIds) {
         List<Instructor> instructors = instructorRepository.findAll();
 
-        List<InstructorWorkloadDTO> workloads = calculateWorkload(instructors);
+        List<InstructorAssignmentInfo> instructorInfo = new ArrayList<>();
 
-        workloads.sort(Comparator.comparingInt(InstructorWorkloadDTO::getCurrentStudentCount));
+        for (Instructor instructor : instructors) {
+            int currentCount = instructor.getCandidates() != null ? instructor.getCandidates().size() : 0;
+            int maxCapacity = instructor.getMaxCapacity();
+            int freeSpots = maxCapacity - currentCount;
+
+            double priority = calculatePriority(currentCount, maxCapacity);
+
+            instructorInfo.add(new InstructorAssignmentInfo(
+                    instructor.getId(),
+                    instructor.getName(),
+                    instructor.getLastname(),
+                    currentCount,
+                    maxCapacity,
+                    freeSpots,
+                    priority
+            ));
+        }
+
+        List<InstructorAssignmentInfo> availableInstructors = instructorInfo.stream()
+                .filter(i -> i.getFreeSpots() > 0)
+                .collect(Collectors.toList());
+
+        if (availableInstructors.isEmpty()) {
+            throw new RuntimeException("Nema dostupnih instruktora!");
+        }
+
+        availableInstructors.sort(Comparator.comparingDouble(InstructorAssignmentInfo::getPriority));
 
         Map<Long, Long> assignments = new HashMap<>();
+        int instructorIndex = 0;
 
         for (Long candidateId : candidateIds) {
-            InstructorWorkloadDTO leastLoaded = workloads.get(0);
-            assignments.put(candidateId, leastLoaded.getInstructorId());
+            InstructorAssignmentInfo selected = availableInstructors.get(instructorIndex);
 
-            leastLoaded.setCurrentStudentCount(leastLoaded.getCurrentStudentCount() + 1);
+            assignments.put(candidateId, selected.getInstructorId());
 
-            workloads.sort(Comparator.comparingInt(InstructorWorkloadDTO::getCurrentStudentCount));
+            selected.setCurrentCount(selected.getCurrentCount() + 1);
+            selected.setFreeSpots(selected.getFreeSpots() - 1);
+            selected.setPriority(calculatePriority(selected.getCurrentCount(), selected.getMaxCapacity()));
+
+            if (selected.getFreeSpots() == 0) {
+                availableInstructors.remove(instructorIndex);
+                if (instructorIndex >= availableInstructors.size()) {
+                    instructorIndex = 0;
+                }
+            } else {
+                instructorIndex = (instructorIndex + 1) % availableInstructors.size();
+            }
+
+            if (assignments.size() % 5 == 0) {
+                availableInstructors.sort(Comparator.comparingDouble(InstructorAssignmentInfo::getPriority));
+                instructorIndex = instructorIndex % availableInstructors.size();
+            }
         }
 
         return assignments;
     }
+
+    private double calculatePriority(int currentCount, int maxCapacity) {
+        // Priority = (currentCount / maxCapacity) * 100
+        if (maxCapacity == 0) return Double.MAX_VALUE;
+        return (double) currentCount / maxCapacity * 100;
+    }
+
 
     public List<InstructorWorkloadDTO> calculateWorkload(List<Instructor> instructors) {
         List<InstructorWorkloadDTO> workloads = new ArrayList<>();
@@ -68,11 +118,18 @@ public class AssignmentAlgorithmService {
     }
 
     public List<CandidateAssignmentDTO> getPendingCandidates() {
-        List<Candidate> candidates = candidateRepository.findByTheoryCompletedTrueAndInstructorIsNull();
+        try {
+            List<Candidate> candidates = candidateRepository.findCandidatesForAssignment();
 
-        return candidates.stream()
-                .map(this::mapToCandidateDTO)
-                .collect(Collectors.toList());
+            return candidates.stream()
+                    .map(this::mapToCandidateDTO)
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            System.err.println("Greška pri pronalaženju kandidata: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     private CandidateAssignmentDTO mapToCandidateDTO(Candidate candidate) {
@@ -80,7 +137,6 @@ public class AssignmentAlgorithmService {
         dto.setCandidateId(candidate.getId());
         dto.setFirstName(candidate.getName());
         dto.setLastName(candidate.getLastname());
-        dto.setStatus("PENDING");
         dto.setManuallyAssigned(false);
         return dto;
     }

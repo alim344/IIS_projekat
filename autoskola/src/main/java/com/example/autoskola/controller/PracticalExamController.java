@@ -66,18 +66,4 @@ public class PracticalExamController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    @GetMapping("/suggest-both")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> suggestBoth(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
-            @RequestParam Long candidateId) {
-        try {
-            ExamSuggestionDTO result = examSchedulingService.suggestBoth(dateTime, candidateId);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 }

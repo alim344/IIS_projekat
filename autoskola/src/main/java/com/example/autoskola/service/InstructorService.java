@@ -174,24 +174,4 @@ public class InstructorService {
         return Arrays.asList(candidate.getInstructor());
     }
 
-    public Instructor suggestInstructorForExam(LocalDateTime dateTime, Candidate candidate) {
-        Instructor instructor = candidate.getInstructor();
-
-        if (instructor == null) {
-            throw new RuntimeException("Candidate has no assigned instructor");
-        }
-
-        LocalDateTime start = dateTime;
-        LocalDateTime end = dateTime.plusHours(1);
-
-        List<PracticalExam> conflictingExams = practicalExamRepository
-                .findByInstructorIdAndDateTimeBetween(instructor.getId(), start, end);
-
-        if (!conflictingExams.isEmpty()) {
-            throw new RuntimeException("Instructor is not available at this time");
-        }
-
-        return instructor;
-    }
-
 }
